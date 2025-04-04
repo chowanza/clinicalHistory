@@ -8,17 +8,17 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(true)
   const navigate = useNavigate()
   const location = useLocation()
-  const currentPath = location.pathname.split('/')[2]
+  const currentPath = location.pathname
 
   useEffect(() => {
-    if (currentPath === 'signin') {
-      setIsSignUp(false)
-    } else if (currentPath === 'signup') {
+    if (currentPath === '/signup') {
       setIsSignUp(true)
+    } else if (currentPath === '/signin') {
+      setIsSignUp(false)
     } else {
       navigate('/signup')
     }
-  }, [])
+  }, [currentPath])
 
   return (
     <div className='relative flex flex-col justify-center items-center h-screen bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark'>

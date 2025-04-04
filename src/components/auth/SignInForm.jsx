@@ -36,7 +36,7 @@ const SignInForm = () => {
             Don't have an account?{' '}
           </span>
           <Link
-            to='/signin'
+            to='/signup'
             className='font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'
           >
             Sign Up
