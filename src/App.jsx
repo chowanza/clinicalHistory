@@ -4,6 +4,7 @@ import AuthContainer from './pages/Auth'
 import NotFound from './pages/NotFound'
 import SignInForm from './components/auth/SignInForm'
 import SignUpForm from './components/auth/SignUpForm'
+import DashboardDoctor from './pages/DashboardDoctor'
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
           <Route index path='signup' element={<SignUpForm />} />
           <Route path='signin' element={<SignInForm />} />
         </Route>
+        <Route path='dashboard-doctor' element={<DashboardDoctor />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </Router>
