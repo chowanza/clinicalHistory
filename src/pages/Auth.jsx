@@ -3,6 +3,7 @@ import ThemeSwitch from '../components/ui/ThemeSwitch'
 import RightSidebar from '../components/auth/RightSidebar'
 import Switch from '../components/auth/Switch'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(true)
@@ -25,8 +26,12 @@ const Auth = () => {
       <div className='absolute top-0 right-0 p-4'>
         <ThemeSwitch />
       </div>
-      <div className='flex justify-center items-center w-[800px] mx-auto m-0 p-0 overflow-hidden rounded-lg relative bg-white max-h-max dark:bg-slate-800'>
-        <div className='w-[55%] h-full flex justify-center items-center flex-col pt-4'>
+      <motion.div
+        layout
+        transition={{ duration: 0.3, ease: 'circIn' }}
+        className='flex justify-center items-center w-[800px] mx-auto m-0 p-0 overflow-hidden rounded-lg relative bg-white max-h-max dark:bg-slate-800'
+      >
+        <div className='w-[55%] flex justify-center items-center flex-col pt-4'>
           <div className='flex flex-col gap-2'>
             <h1 className='text-center text-2xl text-primary dark:text-secondary font-bold'>
               {isSignUp ? 'Create an Account' : 'Welcome Back! Sign In'}
@@ -36,7 +41,7 @@ const Auth = () => {
           <Outlet />
         </div>
         <RightSidebar />
-      </div>
+      </motion.div>
     </div>
   )
 }

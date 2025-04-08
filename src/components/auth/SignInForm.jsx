@@ -27,7 +27,11 @@ const SignInForm = () => {
         </Link>
         <button
           type='submit'
-          className='font-semibold bg-gradient-to-r from-primary to-secondary p-2 rounded-xl text-white'
+          className='font-semibold bg-gradient-to-r from-primary to-secondary p-2 rounded-xl text-white border-slate-400 border cursor-pointer
+             hover:scale-105 transition-transform duration-300 
+             hover:shadow-lg hover:shadow-secondary/50 
+             hover:outline-2 hover:outline-white 
+             hover:bg-opacity-80 hover:animate-pulse'
         >
           Sign In
         </button>
