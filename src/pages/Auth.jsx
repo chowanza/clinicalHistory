@@ -29,7 +29,7 @@ const Auth = () => {
       <motion.div
         layout
         transition={{ duration: 0.3, ease: 'circIn' }}
-        className='flex justify-center items-center w-[800px] mx-auto m-0 p-0 overflow-hidden rounded-lg relative bg-white max-h-max dark:bg-slate-800'
+        className='flex justify-center items-center w-[800px] mx-auto m-0 p-0 overflow-hidden rounded-lg relative bg-white max-h-max dark:bg-slate-800 shadow-[0_3px_10px_rgb(0,0,0,0.2)] dark:shadow-[0_3px_20px_rgb(20,10,100,0.5)]'
       >
         <div className='w-[55%] flex justify-center items-center flex-col pt-4'>
           <div className='flex flex-col gap-2'>
