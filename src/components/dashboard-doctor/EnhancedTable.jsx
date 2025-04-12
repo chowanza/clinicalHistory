@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import { FaTrash, FaFilter } from 'react-icons/fa6'
 import { visuallyHidden } from '@mui/utils'
+import useThemeToggle from '../../hooks/useThemeToggle'
 
 function createData(id, name, dni, birthDate, lastConsultation, diagnosis) {
   return {
@@ -244,14 +245,18 @@ function EnhancedTableHead(props) {
     rowCount,
     onRequestSort,
   } = props
+
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property)
   }
 
   return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding='checkbox'>
+    <TableHead className='dark:bg-gray-800'>
+      <TableRow className='dark:border-gray-700'>
+        <TableCell
+          padding='checkbox'
+          className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
+        >
           <Checkbox
             color='primary'
             indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -259,6 +264,16 @@ function EnhancedTableHead(props) {
             onChange={onSelectAllClick}
             inputProps={{
               'aria-label': 'select all desserts',
+            }}
+            className='dark:text-blue-400'
+            sx={{
+              color: 'inherit',
+              '&.Mui-checked': {
+                color: 'inherit',
+              },
+              '&.MuiCheckbox-indeterminate': {
+                color: 'inherit',
+              },
             }}
           />
         </TableCell>
@@ -268,11 +283,27 @@ function EnhancedTableHead(props) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
+            className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
+              className='dark:text-gray-300'
+              sx={{
+                '&.MuiTableSortLabel-root': {
+                  color: 'inherit',
+                },
+                '&.MuiTableSortLabel-root:hover': {
+                  color: 'inherit',
+                },
+                '&.MuiTableSortLabel-root.Mui-active': {
+                  color: 'inherit',
+                },
+                '& .MuiTableSortLabel-icon': {
+                  color: 'inherit !important',
+                },
+              }}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -299,28 +330,47 @@ EnhancedTableHead.propTypes = {
 
 function EnhancedTableToolbar(props) {
   const { numSelected } = props
-  return (
-    <Toolbar
-      sx={[
+
+  const toolbarStyles = React.useMemo(() => {
+    const baseStyles = {
+      pl: { sm: 2 },
+      pr: { xs: 1, sm: 1 },
+    }
+
+    if (numSelected > 0) {
+      return [
+        baseStyles,
         {
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        },
-        numSelected > 0 && {
           bgcolor: (theme) =>
             alpha(
               theme.palette.primary.main,
               theme.palette.action.activatedOpacity
             ),
+          '&.dark-mode': {
+            background: `linear-gradient(
+              to right,
+              oklch(0.41 0.2072 300),
+              oklch(0.58 0.185 261)
+            )`,
+          },
         },
-      ]}
+      ]
+    }
+
+    return [baseStyles]
+  }, [numSelected])
+
+  return (
+    <Toolbar
+      className={`dark:bg-gray-700 ${numSelected > 0 ? 'dark-mode' : ''}`}
+      sx={toolbarStyles}
     >
       {numSelected > 0 ? (
         <Typography
           sx={{ flex: '1 1 100%' }}
-          color='inherit'
           variant='subtitle1'
           component='div'
+          className='text-gray-200'
         >
           {numSelected} selected
         </Typography>
@@ -330,20 +380,21 @@ function EnhancedTableToolbar(props) {
           variant='h6'
           id='tableTitle'
           component='div'
+          className='dark:text-gray-200'
         >
           Patient Information
         </Typography>
       )}
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
-          <IconButton>
-            <FaTrash />
+          <IconButton className='dark:text-gray-300 dark:hover:text-red-400'>
+            <FaTrash className='text-gray-300 hover:text-red-400' />
           </IconButton>
         </Tooltip>
       ) : (
         <Tooltip title='Filter list'>
-          <IconButton>
-            <FaFilter />
+          <IconButton className='dark:text-gray-300 dark:hover:text-secondary'>
+            <FaFilter className='dark:text-gray-300 dark:hover:text-secondary' />
           </IconButton>
         </Tooltip>
       )}
@@ -422,15 +473,34 @@ export default function EnhancedTable() {
     [order, orderBy, page, rowsPerPage]
   )
 
+  const { isDarkMode, toggleTheme } = useThemeToggle()
+
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: '100%' }} className='dark:bg-gray-900 dark:text-gray-300'>
+      <Paper
+        sx={{ width: '100%', mb: 2 }}
+        className='dark:bg-gray-800 dark:text-gray-200 dark:shadow-md'
+      >
         <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer>
+        <TableContainer className='dark:bg-gray-800 dark:text-gray-300'>
           <Table
-            sx={{ minWidth: 750 }}
+            sx={{
+              minWidth: 750,
+              '.MuiTableCell-root': {
+                color: 'inherit',
+              },
+              '.MuiTableRow-root': {
+                '&.Mui-selected': {
+                  backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                },
+                '&.Mui-selected:hover': {
+                  backgroundColor: 'rgba(25, 118, 210, 0.12)',
+                },
+              },
+            }}
             aria-labelledby='tableTitle'
             size={dense ? 'small' : 'medium'}
+            className='dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700'
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -440,7 +510,7 @@ export default function EnhancedTable() {
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
-            <TableBody>
+            <TableBody className='dark:bg-gray-800 dark:text-gray-300'>
               {visibleRows.map((row, index) => {
                 const isItemSelected = selected.includes(row.id)
                 const labelId = `enhanced-table-checkbox-${index}`
@@ -455,13 +525,28 @@ export default function EnhancedTable() {
                     key={row.id}
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
+                    className={`dark:hover:bg-gray-700 dark:border-gray-700 ${
+                      isItemSelected
+                        ? 'dark:bg-gray-700 dark:text-gray-200'
+                        : 'dark:bg-gray-800 dark:text-gray-300'
+                    }`}
                   >
-                    <TableCell padding='checkbox'>
+                    <TableCell
+                      padding='checkbox'
+                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                    >
                       <Checkbox
                         color='primary'
                         checked={isItemSelected}
                         inputProps={{
                           'aria-labelledby': labelId,
+                        }}
+                        className='dark:text-blue-400'
+                        sx={{
+                          color: 'inherit',
+                          '&.Mui-checked': {
+                            color: 'inherit',
+                          },
                         }}
                       />
                     </TableCell>
@@ -470,13 +555,34 @@ export default function EnhancedTable() {
                       id={labelId}
                       scope='row'
                       padding='none'
+                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
                     >
                       {row.name}
                     </TableCell>
-                    <TableCell align='right'>{row.dni}</TableCell>
-                    <TableCell align='right'>{row.birthDate}</TableCell>
-                    <TableCell align='right'>{row.lastConsultation}</TableCell>
-                    <TableCell align='right'>{row.diagnosis}</TableCell>
+                    <TableCell
+                      align='right'
+                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                    >
+                      {row.dni}
+                    </TableCell>
+                    <TableCell
+                      align='right'
+                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                    >
+                      {row.birthDate}
+                    </TableCell>
+                    <TableCell
+                      align='right'
+                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                    >
+                      {row.lastConsultation}
+                    </TableCell>
+                    <TableCell
+                      align='right'
+                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                    >
+                      {row.diagnosis}
+                    </TableCell>
                   </TableRow>
                 )
               })}
@@ -485,8 +591,12 @@ export default function EnhancedTable() {
                   style={{
                     height: (dense ? 33 : 53) * emptyRows,
                   }}
+                  className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
                 >
-                  <TableCell colSpan={6} />
+                  <TableCell
+                    colSpan={6}
+                    className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
+                  />
                 </TableRow>
               )}
             </TableBody>
@@ -500,6 +610,27 @@ export default function EnhancedTable() {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
+          sx={{
+            '.MuiTablePagination-toolbar': {
+              color: `${isDarkMode ? 'white' : 'black'}`,
+            },
+            '.MuiTablePagination-selectLabel': {
+              color: 'inherit',
+            },
+            '.MuiTablePagination-displayedRows': {
+              color: 'inherit',
+            },
+            '.MuiTablePagination-select': {
+              color: 'inherit',
+            },
+            '.MuiTablePagination-selectIcon': {
+              color: 'inherit',
+            },
+            '.MuiTablePagination-actions': {
+              color: 'inherit',
+            },
+          }}
         />
       </Paper>
     </Box>
