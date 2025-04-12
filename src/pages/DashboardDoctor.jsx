@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 const DashboardDoctor = () => {
   return (
-    <div className='relative min-h-screen bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark px-24 py-5 gap-5 flex flex-col justify-around'>
+    <main className='relative min-h-screen bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark px-24 py-5 gap-5 flex flex-col justify-around'>
       <header className='flex justify-end p-0 w-full'>
         <Link className='flex justify-center items-center gap-3 font-semibold text-secondary'>
           Log Out <FaArrowRightFromBracket />
@@ -45,7 +45,7 @@ const DashboardDoctor = () => {
       <div>
         <EnhancedTable />
       </div>
-    </div>
+    </main>
   )
 }
 
