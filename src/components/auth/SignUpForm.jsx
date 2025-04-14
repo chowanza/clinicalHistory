@@ -1,55 +1,81 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { useAuth } from '../../context/AuthContext'
+import { useEffect } from 'react'
 
 const SignUpForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm()
+  const { signup, isAuthenticated, errors: SignupErrors } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard-doctor')
+    }
+  }, [isAuthenticated])
+
+  const onSubmit = handleSubmit(async (values) => {
+    signup(values)
+  })
+
   return (
     <div className='h-full w-full mx-auto p-6 flex flex-col gap-5'>
-      <form className='flex flex-col gap-4'>
+      {SignupErrors.map((error, i) => (
+        <div
+          key={i}
+          className='bg-red-500 text-white p-2 rounded-xl text-center'
+        >
+          {error}
+        </div>
+      ))}
+      <form className='flex flex-col gap-4' onSubmit={onSubmit}>
         <div className='flex gap-2 justify-center items-center'>
           <div className='flex flex-col gap-2 w-[calc(50%_-_0.25rem)]'>
             <label htmlFor='first-name'>First Name:</label>
             <input
-              className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700'
+              className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
               type='text'
-              id='first-name'
-              name='first-name'
-              required
+              {...register('firstname', { required: true })}
+              placeholder={errors.firstname && 'First name is required'}
             />
           </div>
           <div className='flex flex-col gap-2 w-[calc(50%_-_0.25rem)]'>
             <label htmlFor='last-name'>Last Name:</label>
             <input
-              className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700'
+              className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
               type='text'
-              id='last-name'
-              name='last-name'
-              required
+              {...register('lastname', { required: true })}
+              placeholder={errors.lastname && 'Last name is required'}
             />
           </div>
         </div>
         <div className='flex flex-col gap-2'>
           <label htmlFor='email'>Email:</label>
           <input
-            className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700'
+            className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='email'
-            id='email'
-            name='email'
-            required
+            {...register('email', { required: true })}
+            placeholder={errors.email && 'Email is required'}
           />
           <label htmlFor='password'>Password:</label>
           <input
-            className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700'
+            className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='password'
-            id='password'
-            name='password'
-            required
+            {...register('password', { required: true })}
+            placeholder={errors.password && 'Password is required'}
           />
           <label htmlFor='confirm-password'>Confirm Password:</label>
           <input
-            className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700'
+            className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='password'
-            id='confirm-password'
-            name='confirm-password'
-            required
+            {...register('confirmPassword', { required: true })}
+            placeholder={
+              errors.confirmPassword && 'Confirm password is required'
+            }
           />
         </div>
         <button
