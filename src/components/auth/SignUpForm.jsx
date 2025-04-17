@@ -39,8 +39,8 @@ const SignUpForm = () => {
             <input
               className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
               type='text'
-              {...register('firstname', { required: true })}
-              placeholder={errors.firstname && 'First name is required'}
+              {...register('firstName', { required: true })}
+              placeholder={errors.firstName && 'First name is required'}
             />
           </div>
           <div className='flex flex-col gap-2 w-[calc(50%_-_0.25rem)]'>
@@ -48,8 +48,8 @@ const SignUpForm = () => {
             <input
               className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
               type='text'
-              {...register('lastname', { required: true })}
-              placeholder={errors.lastname && 'Last name is required'}
+              {...register('lastName', { required: true })}
+              placeholder={errors.lastName && 'Last name is required'}
             />
           </div>
         </div>
