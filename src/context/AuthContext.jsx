@@ -1,5 +1,5 @@
-import { createContext, useState, useContext } from 'react'
-import { signupRequest } from '../api/axios'
+import { createContext, useState, useContext, useEffect } from 'react'
+import { signupRequest, signinRequest } from '../api/axios'
 
 export const AuthContext = createContext()
 
@@ -28,11 +28,38 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  const signin = async (user) => {
+    try {
+      const res = await signinRequest(user)
+      console.log(res)
+      /* setUser(res.data)
+      setIsAuthenticated(true) */
+    } catch (error) {
+      if (Array.isArray(error.response.data)) {
+        setErrors(error.response.data)
+      } else if (error.response.data.message) {
+        setErrors([error.response.data.message])
+      } else {
+        setErrors(['An unknown error occurred'])
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (errors.length > 0) {
+      const timer = setTimeout(() => {
+        setErrors([])
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [errors])
+
   return (
     <AuthContext.Provider
       value={{
         user,
         signup,
+        signin,
         isAuthenticated,
         errors,
       }}

@@ -9,7 +9,7 @@ const SignUpForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm()
-  const { signup, isAuthenticated, errors: SignupErrors } = useAuth()
+  const { signup, isAuthenticated, errors: signupErrors } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const SignUpForm = () => {
 
   return (
     <div className='h-full w-full mx-auto p-6 flex flex-col gap-5'>
-      {SignupErrors.map((error, i) => (
+      {signupErrors.map((error, i) => (
         <div
           key={i}
           className='bg-red-500 text-white p-2 rounded-xl text-center'
