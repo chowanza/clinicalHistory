@@ -1,7 +1,8 @@
 import axios from 'axios'
 
-const API = 'http://localhost:4000/api'
+const instance = axios.create({
+  baseURL: 'http://localhost:4000/api',
+  withCredentials: true,
+})
 
-export const signupRequest = (user) => axios.post(`${API}/register`, user)
-
-export const signinRequest = (user) => axios.post(`${API}/login`, user)
+export default instance

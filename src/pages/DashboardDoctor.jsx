@@ -3,8 +3,12 @@ import { FaFileExport, FaArrowRightFromBracket } from 'react-icons/fa6'
 import EnhancedTable from '../components/dashboard-doctor/EnhancedTable'
 import ThemeSwitch from '../components/ui/ThemeSwitch'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const DashboardDoctor = () => {
+  const { user } = useAuth()
+  console.log(user)
+
   return (
     <main className='relative min-h-screen bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark px-24 py-5 gap-5 flex flex-col justify-around'>
       <header className='flex justify-end p-0 w-full'>

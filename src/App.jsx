@@ -7,6 +7,7 @@ import SignUpForm from './components/auth/SignUpForm'
 import DashboardDoctor from './pages/DashboardDoctor'
 import DashboardPatient from './pages/DashboardPatient'
 import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './ProtectedRoute'
 
 const App = () => {
   return (
@@ -17,8 +18,10 @@ const App = () => {
             <Route index path='signup' element={<SignUpForm />} />
             <Route path='signin' element={<SignInForm />} />
           </Route>
-          <Route path='dashboard-doctor' element={<DashboardDoctor />} />
-          <Route path='dashboard-patient' element={<DashboardPatient />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path='dashboard-doctor' element={<DashboardDoctor />} />
+            <Route path='dashboard-patient' element={<DashboardPatient />} />
+          </Route>
           <Route path='*' element={<NotFound />} />
         </Routes>
       </Router>

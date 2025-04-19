@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react'
-import { signupRequest, signinRequest } from '../api/axios'
+import { signupRequest, signinRequest, verifyTokenRequest } from '../api/auth'
+import Cookies from 'js-cookie'
 
 export const AuthContext = createContext()
 
@@ -15,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [errors, setErrors] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const signup = async (user) => {
     try {
@@ -32,8 +34,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await signinRequest(user)
       console.log(res)
-      /* setUser(res.data)
-      setIsAuthenticated(true) */
+      setUser(res.data)
+      setIsAuthenticated(true)
     } catch (error) {
       if (Array.isArray(error.response.data)) {
         setErrors(error.response.data)
@@ -54,12 +56,43 @@ export const AuthProvider = ({ children }) => {
     }
   }, [errors])
 
+  useEffect(() => {
+    async function checkLogin() {
+      const cookies = Cookies.get()
+      console.log(cookies)
+      if (!cookies.token) {
+        setIsAuthenticated(false)
+        setLoading(false)
+        return setUser(null)
+      }
+
+      try {
+        const res = await verifyTokenRequest(cookies.token)
+        console.log(res)
+        if (!res.data) {
+          setIsAuthenticated(false)
+          setLoading(false)
+          return
+        }
+        setIsAuthenticated(true)
+        setUser(res.data)
+        setLoading(false)
+      } catch (error) {
+        setIsAuthenticated(false)
+        setUser(null)
+        setLoading(false)
+      }
+    }
+    checkLogin()
+  }, [])
+
   return (
     <AuthContext.Provider
       value={{
         user,
         signup,
         signin,
+        loading,
         isAuthenticated,
         errors,
       }}
