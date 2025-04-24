@@ -7,10 +7,12 @@ import EnhancedTable from '../components/dashboard-doctor/EnhancedTable'
 import ThemeSwitch from '../components/ui/ThemeSwitch'
 import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
+import PatientSearchBar from '../components/dashboard-doctor/PatientSearchBar'
 
 const DashboardDoctor = () => {
   const { user } = useAuth()
 
+  const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
 
   const openModal = useCallback(() => setIsOpen(true), [])
@@ -63,8 +65,9 @@ const DashboardDoctor = () => {
             </button>
           </div>
         </div>
-        <div className='flex justify-center items-center w-full h-full grow'>
-          <EnhancedTable />
+        <div className='flex flex-col justify-center w-full h-full grow'>
+          <PatientSearchBar filter={filter} setFilter={setFilter} />
+          <EnhancedTable filter={filter} />
         </div>
       </main>
     </>

@@ -406,7 +406,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 }
 
-export default function EnhancedTable() {
+export default function EnhancedTable({ filter }) {
   const [order, setOrder] = React.useState('asc')
   const [orderBy, setOrderBy] = React.useState('calories')
   const [selected, setSelected] = React.useState([])
@@ -465,15 +465,17 @@ export default function EnhancedTable() {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
 
-  const visibleRows = React.useMemo(
-    () =>
-      [...rows]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
+  const filteredRows = rows.filter((row) =>
+    row.name.toLowerCase().includes(filter.toLowerCase())
   )
 
-  const { isDarkMode, toggleTheme } = useThemeToggle()
+  const visibleRows = React.useMemo(
+    () =>
+      [...filteredRows]
+        .sort(getComparator(order, orderBy))
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [filteredRows, order, orderBy, page, rowsPerPage]
+  )
 
   return (
     <Box sx={{ width: '100%' }} className='dark:bg-gray-900 dark:text-gray-300'>
@@ -605,7 +607,7 @@ export default function EnhancedTable() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={rows.length}
+          count={filteredRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
