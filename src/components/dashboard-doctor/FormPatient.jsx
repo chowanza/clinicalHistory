@@ -1,7 +1,7 @@
 const FormPatient = ({ closeModal }) => {
   return (
     <div className='w-full min-h-full dark:bg-background-dark dark:text-text-dark bg-background-light text-text-light flex justify-center items-center flex-col'>
-      <h1 className='text-center text-3xl font-bold'>Patient Form</h1>
+      <h1 className='text-center text-3xl font-bold'>New Patient</h1>
       <form className='w-2/3 flex flex-col gap-4 p-4 px-8 rounded-lg mt-8 mx-auto m-0 overflow-hidden relative bg-white max-h-max dark:bg-slate-800 shadow-[0_3px_10px_rgb(0,0,0,0.2)] dark:shadow-[0_3px_20px_rgb(20,10,100,0.5)]'>
         <section className='grid grid-cols-6 grid-rows-[auto_1fr_1fr_1fr] gap-2'>
           <h2 className='col-span-6 text-xl font-bold'>Personal Information</h2>
