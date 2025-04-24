@@ -1,6 +1,9 @@
 import PatientCard from '../components/dashboard-patient/PatientCard'
 import PatientInfo from '../components/dashboard-patient/PatientInfo'
 import PatientContact from '../components/dashboard-patient/PatientContact'
+import ThemeSwitch from '../components/ui/ThemeSwitch'
+import { FaArrowRightFromBracket } from 'react-icons/fa6'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useEffect } from 'react'
 
@@ -69,11 +72,28 @@ const DashboardPatient = () => {
   }
 
   return (
-    <main className='w-full grid place-items-center bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark min-h-screen'>
+    <main className='w-full grid place-items-center bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark min-h-screen py-10'>
+      <header className='flex justify-end p-0 w-full absolute top-6 right-30 bg-background-transparent dark:bg-background-transparent'>
+        <Link className='flex justify-center items-center gap-3 font-semibold text-secondary'>
+          Log Out <FaArrowRightFromBracket />
+        </Link>
+      </header>
+      <div className='absolute top-0 right-0 p-4'>
+        <ThemeSwitch />
+      </div>
       <article className='w-full p-4 px-60 flex flex-col gap-6'>
         <PatientCard patient={patientExample} />
         <PatientInfo patient={patientExample} />
         <PatientContact contact={patientExample.contact} />
+        <button
+          className='self-end h-10 p-3 text-white font-semibold rounded-xl bg-[#FA0F00] flex items-center gap-2 border-slate-400 border cursor-pointer
+                   hover:scale-105 transition-transform duration-300 
+                   hover:shadow-lg hover:shadow-[#FA0F00]/50 
+                   hover:outline-2 hover:outline-white 
+                   hover:bg-opacity-80 hover:animate-pulse'
+        >
+          Download PDF
+        </button>
       </article>
     </main>
   )

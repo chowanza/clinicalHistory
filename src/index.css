@@ -17,3 +17,36 @@
   interpolate-size: allow-keywords;
   transition: all 0.3s ease-in-out;
 }
+
+@layer utilities {
+  .scrollbar-modal {
+    scrollbar-width: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .scrollbar-modal::-webkit-scrollbar {
+    width: 1rem;
+  }
+
+  .scrollbar-modal::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 2rem;
+  }
+
+  .scrollbar-modal::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 2rem;
+  }
+
+  .scrollbar-modal::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+
+  .dark .scrollbar-modal::-webkit-scrollbar-thumb {
+    background: #374151;
+  }
+
+  .dark .scrollbar-modal::-webkit-scrollbar-thumb:hover {
+    background: #1f2937;
+  }
+}

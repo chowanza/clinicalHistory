@@ -6,7 +6,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 const Auth = () => {
-  const [isSignUp, setIsSignUp] = useState(true)
+  const [isSignUp, setIsSignUp] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const currentPath = location.pathname
@@ -17,7 +17,7 @@ const Auth = () => {
     } else if (currentPath === '/signin') {
       setIsSignUp(false)
     } else {
-      navigate('/signup')
+      navigate('/signin')
     }
   }, [currentPath])
 

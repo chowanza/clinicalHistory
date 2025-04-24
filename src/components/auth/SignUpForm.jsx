@@ -14,7 +14,7 @@ const SignUpForm = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard-doctor')
+      navigate('/dashboard-patient')
     }
   }, [isAuthenticated])
 

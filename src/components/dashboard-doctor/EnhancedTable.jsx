@@ -613,7 +613,8 @@ export default function EnhancedTable() {
           className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
           sx={{
             '.MuiTablePagination-toolbar': {
-              color: `${isDarkMode ? 'white' : 'black'}`,
+              color: 'white',
+              backgroundColor: 'oklch(0.41 0.2072 300)',
             },
             '.MuiTablePagination-selectLabel': {
               color: 'inherit',

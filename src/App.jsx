@@ -15,11 +15,11 @@ const App = () => {
       <Router>
         <Routes>
           <Route path='/' element={<AuthContainer />}>
-            <Route index path='signup' element={<SignUpForm />} />
-            <Route path='signin' element={<SignInForm />} />
+            <Route index path='signin' element={<SignInForm />} />
+            <Route path='signup' element={<SignUpForm />} />
           </Route>
+          <Route path='dashboard-doctor' element={<DashboardDoctor />} />
           <Route element={<ProtectedRoute />}>
-            <Route path='dashboard-doctor' element={<DashboardDoctor />} />
             <Route path='dashboard-patient' element={<DashboardPatient />} />
           </Route>
           <Route path='*' element={<NotFound />} />
