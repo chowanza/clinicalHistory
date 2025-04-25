@@ -18,8 +18,8 @@ const App = () => {
             <Route index path='signin' element={<SignInForm />} />
             <Route path='signup' element={<SignUpForm />} />
           </Route>
-          <Route path='dashboard-doctor' element={<DashboardDoctor />} />
           <Route element={<ProtectedRoute />}>
+            <Route path='dashboard-doctor' element={<DashboardDoctor />} />
             <Route path='dashboard-patient' element={<DashboardPatient />} />
           </Route>
           <Route path='*' element={<NotFound />} />
