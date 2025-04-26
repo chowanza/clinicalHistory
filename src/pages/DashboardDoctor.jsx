@@ -10,7 +10,7 @@ import FormPatient from '../components/dashboard-doctor/FormPatient'
 import PatientSearchBar from '../components/dashboard-doctor/PatientSearchBar'
 
 const DashboardDoctor = () => {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
 
   const [filter, setFilter] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -22,7 +22,11 @@ const DashboardDoctor = () => {
   return (
     <>
       <header className='flex justify-end p-5 gap-5 w-full bg-background-light dark:bg-background-dark'>
-        <Link className='flex justify-center items-center gap-3 font-semibold text-secondary'>
+        <Link
+          to='/login'
+          onClick={() => logout()}
+          className='flex justify-center items-center gap-3 font-semibold text-secondary'
+        >
           Log Out <FaArrowRightFromBracket />
         </Link>
         <ThemeSwitch />
