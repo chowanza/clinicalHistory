@@ -1,5 +1,6 @@
-import { useForm } from 'react-hook-form'
 import FormSection from './formPatient/FormSection'
+import { useForm } from 'react-hook-form'
+import { usePatients } from '../../context/PatientsCotext'
 import {
   diagnosisFields,
   measurementsFields,
@@ -11,9 +12,11 @@ import {
 
 const FormPatient = ({ closeModal }) => {
   const { register, handleSubmit } = useForm()
+  const { createPatient } = usePatients()
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
+    createPatient(data)
   })
 
   return (

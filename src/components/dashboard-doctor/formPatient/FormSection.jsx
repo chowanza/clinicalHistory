@@ -8,7 +8,10 @@ const FormSection = ({
     <section className={`grid ${gridColumns} gap-2`}>
       <h2 className='col-span-full text-xl font-bold mb-4'>{sectionTitle}</h2>
       {fields.map((field, index) => (
-        <div key={index} className={`col-span-${field.colSpan}`}>
+        <div
+          key={index}
+          className={field.colSpan ? `${field.colSpan}` : 'col-span-3'}
+        >
           <label
             htmlFor={field.name}
             className='block text-sm font-medium text-text-light/60 dark:text-text-dark/70'

@@ -8,23 +8,26 @@ import DashboardDoctor from './pages/DashboardDoctor'
 import DashboardPatient from './pages/DashboardPatient'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './ProtectedRoute'
+import { PatientProvider } from './context/PatientsCotext'
 
 const App = () => {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path='/' element={<AuthContainer />}>
-            <Route index path='signin' element={<SignInForm />} />
-            <Route path='signup' element={<SignUpForm />} />
-          </Route>
-          <Route element={<ProtectedRoute />}>
-            <Route path='dashboard-doctor' element={<DashboardDoctor />} />
-            <Route path='dashboard-patient' element={<DashboardPatient />} />
-          </Route>
-          <Route path='*' element={<NotFound />} />
-        </Routes>
-      </Router>
+      <PatientProvider>
+        <Router>
+          <Routes>
+            <Route path='/' element={<AuthContainer />}>
+              <Route index path='signin' element={<SignInForm />} />
+              <Route path='signup' element={<SignUpForm />} />
+            </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path='dashboard-doctor' element={<DashboardDoctor />} />
+              <Route path='dashboard-patient' element={<DashboardPatient />} />
+            </Route>
+            <Route path='*' element={<NotFound />} />
+          </Routes>
+        </Router>
+      </PatientProvider>
     </AuthProvider>
   )
 }
