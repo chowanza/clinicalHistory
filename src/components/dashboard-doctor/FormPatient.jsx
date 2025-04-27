@@ -1,6 +1,6 @@
 import FormSection from './formPatient/FormSection'
 import { useForm } from 'react-hook-form'
-import { usePatients } from '../../context/PatientsCotext'
+import { usePatients } from '../../context/PatientsContext'
 import {
   diagnosisFields,
   measurementsFields,

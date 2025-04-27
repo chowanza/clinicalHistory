@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react'
 import { signupRequest, signinRequest, verifyTokenRequest } from '../api/auth'
-import { usePatients } from './PatientsCotext'
+import { usePatients } from './PatientsContext'
 import Cookies from 'js-cookie'
 
 export const AuthContext = createContext()

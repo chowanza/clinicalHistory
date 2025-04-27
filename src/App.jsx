@@ -8,7 +8,7 @@ import DashboardDoctor from './pages/DashboardDoctor'
 import DashboardPatient from './pages/DashboardPatient'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './ProtectedRoute'
-import { PatientProvider } from './context/PatientsCotext'
+import { PatientProvider } from './context/PatientsContext'
 
 const App = () => {
   return (
@@ -22,7 +22,10 @@ const App = () => {
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path='dashboard-doctor' element={<DashboardDoctor />} />
-              <Route path='dashboard-patient' element={<DashboardPatient />} />
+              <Route
+                path='dashboard-doctor/patients/:id'
+                element={<DashboardPatient />}
+              />
             </Route>
             <Route path='*' element={<NotFound />} />
           </Routes>

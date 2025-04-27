@@ -1,7 +1,16 @@
 import React from 'react'
 import { FaUserCheck } from 'react-icons/fa6'
 
-const PatientCard = ({ patient }) => {
+const PatientCard = ({
+  patient = {
+    firstName: 'John',
+    lastName: 'Doe',
+    recordNumber: '123456',
+    age: 30,
+    bloodType: 'O+',
+    gender: 'male',
+  },
+}) => {
   return (
     <section className='w-full p-7 bg-white dark:bg-slate-800 rounded-lg shadow-md flex gap-5'>
       <div className='w-28 h-28'>

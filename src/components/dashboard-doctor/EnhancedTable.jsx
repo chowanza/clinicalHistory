@@ -19,7 +19,8 @@ import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import { FaTrash, FaFilter, FaArrowRight } from 'react-icons/fa6'
 import { visuallyHidden } from '@mui/utils'
-import { usePatients } from '../../context/PatientsCotext'
+import { usePatients } from '../../context/PatientsContext'
+import { useNavigate } from 'react-router-dom'
 
 function createData(id, name, dni, birthDate, lastConsultation, diagnosis) {
   return {
@@ -296,7 +297,6 @@ export default function EnhancedTable({ filter }) {
 
   React.useEffect(() => {
     if (patients.length === 0) return
-    console.log(patients)
 
     const formattedRows = patients.map((patient) => {
       return createData(
@@ -408,6 +408,8 @@ export default function EnhancedTable({ filter }) {
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [filteredRows, order, orderBy, page, rowsPerPage]
   )
+
+  const navigate = useNavigate()
 
   return (
     <Box sx={{ width: '100%' }} className='dark:bg-gray-900 dark:text-gray-300'>
@@ -536,7 +538,8 @@ export default function EnhancedTable({ filter }) {
                       <Tooltip title='Abrir ficha'>
                         <Button
                           onClick={(e) => {
-                            e.stopPropagation() // Esto evita que el evento llegue a la fila
+                            e.stopPropagation()
+                            navigate(`/dashboard-doctor/patients/${row.id}`)
                           }}
                           size='small'
                           variant='outlined'
