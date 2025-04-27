@@ -37,7 +37,7 @@ const DashboardPatient = () => {
         <ThemeSwitch />
       </div>
       <article className='w-full p-4 px-60 flex flex-col gap-6'>
-        <PatientCard />
+        <PatientCard patient={patient} />
         {patientContactSections.map((section, index) => {
           const processedSections = section.sections.map((item) => ({
             ...item,
