@@ -34,14 +34,8 @@ function createData(id, name, dni, birthDate, lastConsultation, diagnosis) {
 }
 
 function formatDate(isoString) {
-  const date = new Date(isoString)
-  return date.toLocaleString('es-ES', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const [year, month, day] = isoString.split('T')[0].split('-')
+  return `${day}/${month}/${year}`
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -303,9 +297,7 @@ export default function EnhancedTable({ filter }) {
         patient._id,
         `${patient.firstNames} ${patient.lastNames}`,
         patient.phone || 'N/A',
-        patient.birthDate
-          ? new Date(patient.birthDate).toLocaleDateString()
-          : 'N/A',
+        patient.birthDate ? formatDate(patient.birthDate) : 'N/A',
         patient.date ? formatDate(patient.date) : 'N/A',
         patient.diagnostic || 'No diagnosis'
       )
