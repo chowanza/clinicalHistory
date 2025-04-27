@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react'
 import { signupRequest, signinRequest, verifyTokenRequest } from '../api/auth'
+import { usePatients } from './PatientsCotext'
 import Cookies from 'js-cookie'
 
 export const AuthContext = createContext()
@@ -17,6 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [errors, setErrors] = useState([])
   const [loading, setLoading] = useState(true)
+  const { setPatients } = usePatients()
 
   const signup = async (user) => {
     try {
@@ -50,6 +52,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     Cookies.remove('token')
     setUser(null)
+    setPatients([])
     setIsAuthenticated(false)
   }
 

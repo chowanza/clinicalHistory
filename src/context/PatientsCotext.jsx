@@ -44,7 +44,13 @@ export function PatientProvider({ children }) {
 
   return (
     <PatientsContext.Provider
-      value={{ patients, createPatient, getPatients, deletePatient }}
+      value={{
+        patients,
+        createPatient,
+        getPatients,
+        deletePatient,
+        setPatients,
+      }}
     >
       {children}
     </PatientsContext.Provider>

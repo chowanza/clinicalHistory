@@ -12,8 +12,8 @@ import { PatientProvider } from './context/PatientsCotext'
 
 const App = () => {
   return (
-    <AuthProvider>
-      <PatientProvider>
+    <PatientProvider>
+      <AuthProvider>
         <Router>
           <Routes>
             <Route path='/' element={<AuthContainer />}>
@@ -27,8 +27,8 @@ const App = () => {
             <Route path='*' element={<NotFound />} />
           </Routes>
         </Router>
-      </PatientProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </PatientProvider>
   )
 }
 
