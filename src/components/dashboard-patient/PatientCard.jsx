@@ -12,8 +12,8 @@ const PatientCard = ({
       <div className='w-28 h-28'>
         <div className='w-full h-full bg-blue-100 border-[3px] border-blue-500 rounded-full flex items-center justify-center'>
           <span className='text-4xl text-blue-500 font-bold'>
-            {patient.firstNames.charAt(0)}
-            {patient.lastNames.charAt(0)}
+            {patient.firstNames.charAt(0).toUpperCase()}
+            {patient.lastNames.charAt(0).toUpperCase()}
           </span>
         </div>
       </div>

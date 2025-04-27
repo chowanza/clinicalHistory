@@ -9,6 +9,7 @@ import DashboardPatient from './pages/DashboardPatient'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './ProtectedRoute'
 import { PatientProvider } from './context/PatientsContext'
+import Header from './components/ui/Header'
 
 const App = () => {
   return (
@@ -21,10 +22,23 @@ const App = () => {
               <Route path='signup' element={<SignUpForm />} />
             </Route>
             <Route element={<ProtectedRoute />}>
-              <Route path='dashboard-doctor' element={<DashboardDoctor />} />
+              <Route
+                path='dashboard-doctor'
+                element={
+                  <>
+                    <Header />
+                    <DashboardDoctor />
+                  </>
+                }
+              />
               <Route
                 path='dashboard-doctor/patients/:id'
-                element={<DashboardPatient />}
+                element={
+                  <>
+                    <Header patient />
+                    <DashboardPatient />
+                  </>
+                }
               />
             </Route>
             <Route path='*' element={<NotFound />} />
