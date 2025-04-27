@@ -4,12 +4,20 @@ import RightSidebar from '../components/auth/RightSidebar'
 import Switch from '../components/auth/Switch'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useAuth } from '../context/AuthContext'
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const currentPath = location.pathname
+  const { isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard-doctor')
+    }
+  }, [isAuthenticated])
 
   useEffect(() => {
     if (currentPath === '/signup') {

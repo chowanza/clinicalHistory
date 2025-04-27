@@ -16,7 +16,8 @@ import Paper from '@mui/material/Paper'
 import Checkbox from '@mui/material/Checkbox'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
-import { FaTrash, FaFilter } from 'react-icons/fa6'
+import Button from '@mui/material/Button'
+import { FaTrash, FaFilter, FaArrowRight } from 'react-icons/fa6'
 import { visuallyHidden } from '@mui/utils'
 import { usePatients } from '../../context/PatientsCotext'
 
@@ -88,6 +89,12 @@ const headCells = [
     numeric: true,
     disablePadding: false,
     label: 'Diagnosis',
+  },
+  {
+    id: 'actions',
+    numeric: true,
+    disablePadding: false,
+    label: 'Actions',
   },
 ]
 
@@ -524,6 +531,21 @@ export default function EnhancedTable({ filter }) {
                       className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
                     >
                       {row.diagnosis}
+                    </TableCell>
+                    <TableCell align='right'>
+                      <Tooltip title='Abrir ficha'>
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation() // Esto evita que el evento llegue a la fila
+                          }}
+                          size='small'
+                          variant='outlined'
+                          className='flex justify-center items-center dark:border-primary dark:text-primary'
+                          endIcon={<FaArrowRight size={14} className='' />}
+                        >
+                          Ver
+                        </Button>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 )

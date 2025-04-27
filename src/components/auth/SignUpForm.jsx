@@ -1,7 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useAuth } from '../../context/AuthContext'
-import { useEffect } from 'react'
 
 const SignUpForm = () => {
   const {
@@ -9,14 +8,7 @@ const SignUpForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm()
-  const { signup, isAuthenticated, errors: signupErrors } = useAuth()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard-patient')
-    }
-  }, [isAuthenticated])
+  const { signup, errors: signupErrors } = useAuth()
 
   const onSubmit = handleSubmit(async (values) => {
     signup(values)

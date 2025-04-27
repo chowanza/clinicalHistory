@@ -1,23 +1,14 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useAuth } from '../../context/AuthContext'
-import { useEffect } from 'react'
 
 const SignInForm = () => {
-  const navigate = useNavigate()
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm()
   const { signin, errors: signinErrors, isAuthenticated } = useAuth()
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard-doctor')
-    }
-  }, [isAuthenticated])
 
   const onSubmit = handleSubmit((data) => {
     signin(data)
