@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import { FaTrash, FaFilter } from 'react-icons/fa6'
 import { visuallyHidden } from '@mui/utils'
-import useThemeToggle from '../../hooks/useThemeToggle'
+import { usePatients } from '../../context/PatientsCotext'
 
 function createData(id, name, dni, birthDate, lastConsultation, diagnosis) {
   return {
@@ -31,161 +31,16 @@ function createData(id, name, dni, birthDate, lastConsultation, diagnosis) {
   }
 }
 
-const rows = [
-  createData(
-    1,
-    'John Doe',
-    '12345678',
-    '1985-06-15',
-    '2025-03-10',
-    'Hypertension'
-  ),
-  createData(
-    2,
-    'Jane Smith',
-    '87654321',
-    '1990-11-20',
-    '2025-04-01',
-    'Diabetes'
-  ),
-  createData(
-    3,
-    'Michael Brown',
-    '11223344',
-    '1978-02-03',
-    '2025-02-20',
-    'Asthma'
-  ),
-  createData(
-    4,
-    'Emily Davis',
-    '55667788',
-    '2000-07-30',
-    '2025-03-25',
-    'Migraine'
-  ),
-  createData(
-    5,
-    'William Johnson',
-    '99887766',
-    '1995-12-18',
-    '2025-04-03',
-    'Back Pain'
-  ),
-  createData(
-    6,
-    'Emma Wilson',
-    '22334455',
-    '1988-04-23',
-    '2025-03-15',
-    'Anxiety'
-  ),
-  createData(
-    7,
-    'Oliver Garcia',
-    '33445566',
-    '1975-09-12',
-    '2025-02-28',
-    'Arthritis'
-  ),
-  createData(
-    8,
-    'Sophia Martinez',
-    '44556677',
-    '1992-01-05',
-    '2025-03-22',
-    'Insomnia'
-  ),
-  createData(
-    9,
-    'Liam Robinson',
-    '55667799',
-    '1983-06-10',
-    '2025-03-18',
-    'Hypertension'
-  ),
-  createData(
-    10,
-    'Isabella Thompson',
-    '66778800',
-    '2001-11-25',
-    '2025-04-01',
-    'Thyroid Issues'
-  ),
-  createData(
-    11,
-    'James Clark',
-    '77889911',
-    '1969-07-14',
-    '2025-03-29',
-    'Heart Disease'
-  ),
-  createData(
-    12,
-    'Charlotte Lewis',
-    '88990022',
-    '1986-02-07',
-    '2025-03-24',
-    'Chronic Pain'
-  ),
-  createData(
-    13,
-    'Benjamin Walker',
-    '99001133',
-    '1970-12-22',
-    '2025-02-14',
-    'Obesity'
-  ),
-  createData(
-    14,
-    'Amelia Hall',
-    '10111223',
-    '1999-03-03',
-    '2025-04-02',
-    'Migraines'
-  ),
-  createData(
-    15,
-    'Lucas Allen',
-    '11121334',
-    '1982-10-18',
-    '2025-03-27',
-    'Depression'
-  ),
-  createData(16, 'Mia Young', '12131445', '1993-08-09', '2025-03-21', 'Asthma'),
-  createData(
-    17,
-    'Elijah King',
-    '13141556',
-    '1987-01-30',
-    '2025-02-19',
-    'Diabetes'
-  ),
-  createData(
-    18,
-    'Ava Wright',
-    '14151667',
-    '1996-05-25',
-    '2025-04-01',
-    'Stress Disorder'
-  ),
-  createData(
-    19,
-    'Noah Scott',
-    '15161778',
-    '2004-07-17',
-    '2025-03-20',
-    'Allergies'
-  ),
-  createData(
-    20,
-    'Harper Adams',
-    '16171889',
-    '1984-11-02',
-    '2025-03-31',
-    'Hypertension'
-  ),
-]
+function formatDate(isoString) {
+  const date = new Date(isoString)
+  return date.toLocaleString('es-ES', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -329,7 +184,7 @@ EnhancedTableHead.propTypes = {
 }
 
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props
+  const { numSelected, onDelete, isDeleting } = props
 
   const toolbarStyles = React.useMemo(() => {
     const baseStyles = {
@@ -387,7 +242,12 @@ function EnhancedTableToolbar(props) {
       )}
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
-          <IconButton className='dark:text-gray-300 dark:hover:text-red-400'>
+          <IconButton
+            onClick={onDelete}
+            disabled={isDeleting}
+            className='dark:text-gray-300 dark:hover:text-red-400'
+          >
+            {isDeleting && <span className='ml-2'>Eliminando...</span>}
             <FaTrash className='text-gray-300 hover:text-red-400' />
           </IconButton>
         </Tooltip>
@@ -403,16 +263,81 @@ function EnhancedTableToolbar(props) {
 }
 
 EnhancedTableToolbar.propTypes = {
+  onDelete: PropTypes.func.isRequired,
   numSelected: PropTypes.number.isRequired,
 }
 
 export default function EnhancedTable({ filter }) {
   const [order, setOrder] = React.useState('asc')
   const [orderBy, setOrderBy] = React.useState('calories')
-  const [selected, setSelected] = React.useState([])
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [rows, setRows] = React.useState([])
+  const [isDeleting, setIsDeleting] = React.useState(false)
+  const [error, setError] = React.useState(null)
+  const { getPatients, patients, deletePatient } = usePatients()
+  const [selected, setSelected] = React.useState([])
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      await getPatients()
+    }
+
+    fetchData()
+  }, [])
+
+  React.useEffect(() => {
+    if (patients.length === 0) return
+    console.log(patients)
+
+    const formattedRows = patients.map((patient) => {
+      return createData(
+        patient._id,
+        `${patient.firstNames} ${patient.lastNames}`,
+        patient.phone || 'N/A',
+        patient.birthDate
+          ? new Date(patient.birthDate).toLocaleDateString()
+          : 'N/A',
+        patient.date ? formatDate(patient.date) : 'N/A',
+        patient.diagnostic || 'No diagnosis'
+      )
+    })
+
+    setRows(formattedRows)
+  }, [patients])
+
+  const handleDelete = async () => {
+    if (selected.length === 0 || isDeleting) return
+
+    setIsDeleting(true)
+    setError(null)
+
+    try {
+      // Eliminación en lote (recomendado para +5 registros)
+      const BATCH_SIZE = 5
+      for (let i = 0; i < selected.length; i += BATCH_SIZE) {
+        const batch = selected.slice(i, i + BATCH_SIZE)
+        await Promise.all(batch.map((id) => deletePatient(id)))
+      }
+      setRows((prevRows) =>
+        prevRows.filter((row) => !selected.includes(row.id))
+      )
+
+      // Sincronización con el servidor
+      await getPatients()
+
+      // Limpiar selección
+      setSelected([])
+    } catch (err) {
+      setError(
+        `Error al eliminar ${selected.length} paciente(s). Intenta nuevamente.`
+      )
+      console.error('Error en handleDelete:', err)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -479,11 +404,26 @@ export default function EnhancedTable({ filter }) {
 
   return (
     <Box sx={{ width: '100%' }} className='dark:bg-gray-900 dark:text-gray-300'>
+      {error && (
+        <div className='bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4'>
+          <p>{error}</p>
+          <button
+            onClick={() => setError(null)}
+            className='text-red-500 underline'
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
       <Paper
         sx={{ width: '100%', mb: 2 }}
         className='dark:bg-gray-800 dark:text-gray-200 dark:shadow-md'
       >
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          onDelete={handleDelete}
+          numSelected={selected.length}
+          isDeleting={isDeleting}
+        />
         <TableContainer className='dark:bg-gray-800 dark:text-gray-300'>
           <Table
             sx={{

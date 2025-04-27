@@ -12,11 +12,13 @@ import {
 
 const FormPatient = ({ closeModal }) => {
   const { register, handleSubmit } = useForm()
-  const { createPatient } = usePatients()
+  const { createPatient, getPatients } = usePatients()
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
     createPatient(data)
+    getPatients()
+    closeModal()
   })
 
   return (
