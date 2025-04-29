@@ -4,6 +4,7 @@ import {
   getPatientsRequest,
   getPatientRequest,
   deletePatientsRequest,
+  updatePatientsRequest,
 } from '../api/patients'
 
 const PatientsContext = createContext()
@@ -19,6 +20,15 @@ export const usePatients = () => {
 export function PatientProvider({ children }) {
   const [patients, setPatients] = useState([])
   const [patient, setPatient] = useState({})
+
+  const updatePatients = async (patientData) => {
+    try {
+      const res = await updatePatientsRequest(patientData)
+      setPatient(res.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const deletePatient = async (id) => {
     try {
@@ -62,6 +72,7 @@ export function PatientProvider({ children }) {
         getPatients,
         getPatient,
         deletePatient,
+        updatePatients,
         setPatients,
       }}
     >
