@@ -26,10 +26,6 @@ const FormPatient = ({ closeModal, patientData, isEditMode = false }) => {
     closeModal()
   })
 
-  useEffect(() => {
-    console.log('Data del paciente: ', patientData)
-  }, [])
-
   return (
     <div className='w-full min-h-full dark:bg-background-dark dark:text-text-dark bg-background-light text-text-light flex justify-center items-center flex-col'>
       <h1 className='text-center text-3xl font-bold'>
