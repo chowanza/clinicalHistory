@@ -23,7 +23,7 @@ export function PatientProvider({ children }) {
 
   const updatePatients = async (patientData) => {
     try {
-      const res = await updatePatientsRequest(patientData)
+      const res = await updatePatientsRequest(patientData.id, patientData.data)
       setPatient(res.data)
     } catch (error) {
       console.error(error)

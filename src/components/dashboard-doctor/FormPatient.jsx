@@ -13,17 +13,21 @@ import { useEffect } from 'react'
 
 const FormPatient = ({ closeModal, patientData, isEditMode = false }) => {
   const { register, handleSubmit } = useForm()
-  const { createPatient, getPatients } = usePatients()
+  const { createPatient, getPatients, updatePatients } = usePatients()
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
-    createPatient(data)
+    if (isEditMode) {
+      updatePatients({ id: patientData._id, data })
+    } else {
+      createPatient(data)
+    }
     getPatients()
     closeModal()
   })
 
   useEffect(() => {
-    console.log(patientData)
+    console.log('Data del paciente: ', patientData)
   }, [])
 
   return (
