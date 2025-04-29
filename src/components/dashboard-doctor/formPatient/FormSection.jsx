@@ -3,6 +3,7 @@ const FormSection = ({
   sectionTitle,
   fields,
   gridColumns = 'grid-cols-6',
+  patientData = {},
 }) => {
   return (
     <section className={`grid ${gridColumns} gap-2`}>
@@ -23,6 +24,7 @@ const FormSection = ({
               {...register(field.name)}
               id={field.name}
               rows={field.rows || 3}
+              defaultValue={patientData?.[field.name] || ''}
               className='border-slate-400 bg-slate-50 border p-2 rounded-xl w-full dark:bg-slate-700 placeholder:text-red-500 resize-y'
             />
           ) : (
@@ -30,6 +32,7 @@ const FormSection = ({
               {...register(field.name)}
               type={field.type || 'text'}
               id={field.name}
+              defaultValue={patientData?.[field.name] || ''}
               className='border-slate-400 bg-slate-50 border p-2 rounded-xl w-full dark:bg-slate-700 placeholder:text-red-500'
             />
           )}

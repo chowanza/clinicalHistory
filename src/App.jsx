@@ -33,12 +33,7 @@ const App = () => {
               />
               <Route
                 path='dashboard-doctor/patients/:id'
-                element={
-                  <>
-                    <Header patient />
-                    <DashboardPatient />
-                  </>
-                }
+                element={<DashboardPatient />}
               />
             </Route>
             <Route path='*' element={<NotFound />} />
