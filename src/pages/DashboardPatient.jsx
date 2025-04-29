@@ -8,6 +8,8 @@ import { patientContactSections } from '../components/dashboard-patient/PatientC
 import Header from '../components/ui/Header'
 import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import PatientPDF from '../components/dashboard-patient/PatientPDF'
 
 const DashboardPatient = () => {
   const { id } = useParams()
@@ -88,15 +90,23 @@ const DashboardPatient = () => {
               <FaArrowRightFromBracket className='rotate-180' />
               Volver
             </Link>
-            <button
-              className='h-10 p-3 text-white font-semibold rounded-xl bg-[#FA0F00] flex items-center gap-2 border-slate-400 border cursor-pointer
-                    hover:scale-105 transition-transform duration-300 
-                    hover:shadow-lg hover:shadow-[#FA0F00]/50 
-                    hover:outline-2 hover:outline-white 
-                    hover:bg-opacity-80 hover:animate-pulse'
+            <PDFDownloadLink
+              document={<PatientPDF patient={patient} />}
+              fileName={`${patient.firstNames}-${patient.lastNames}.pdf`}
+              style={{ color: 'inherit', textDecoration: 'none' }}
             >
-              Download PDF
-            </button>
+              {({ loading }) => (
+                <button
+                  className='h-10 p-3 text-white font-semibold rounded-xl bg-[#FA0F00] flex items-center gap-2 border-slate-400 border cursor-pointer
+                  hover:scale-105 transition-transform duration-300 
+                  hover:shadow-lg hover:shadow-[#FA0F00]/50 
+                  hover:outline-2 hover:outline-white 
+                  hover:bg-opacity-80 hover:animate-pulse'
+                >
+                  {loading ? 'Generando...' : 'Descargar PDF'}
+                </button>
+              )}
+            </PDFDownloadLink>
           </div>
         </article>
       </main>

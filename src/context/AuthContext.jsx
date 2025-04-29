@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }) => {
   const signin = async (user) => {
     try {
       const res = await signinRequest(user)
-      console.log(res)
       setUser(res.data)
       setIsAuthenticated(true)
     } catch (error) {
@@ -68,7 +67,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     async function checkLogin() {
       const cookies = Cookies.get()
-      console.log(cookies)
       if (!cookies.token) {
         setIsAuthenticated(false)
         setLoading(false)
