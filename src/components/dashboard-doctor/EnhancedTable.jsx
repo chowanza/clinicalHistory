@@ -59,37 +59,37 @@ const headCells = [
     id: 'name',
     numeric: false,
     disablePadding: true,
-    label: 'Patient Name',
+    label: 'Nombre Paciente',
   },
   {
     id: 'dni',
     numeric: true,
     disablePadding: false,
-    label: 'DNI',
+    label: 'Teléfono',
   },
   {
     id: 'birthDate',
     numeric: true,
     disablePadding: false,
-    label: 'Birth Date',
+    label: 'Fecha Nacimiento',
   },
   {
     id: 'lastConsultation',
     numeric: true,
     disablePadding: false,
-    label: 'Last Consultation',
+    label: 'Ultima Consulta',
   },
   {
     id: 'diagnosis',
     numeric: true,
     disablePadding: false,
-    label: 'Diagnosis',
+    label: 'Diagnostico',
   },
   {
     id: 'actions',
     numeric: true,
     disablePadding: false,
-    label: 'Actions',
+    label: 'Acciones',
   },
 ]
 
@@ -239,7 +239,7 @@ function EnhancedTableToolbar(props) {
           component='div'
           className='dark:text-gray-200'
         >
-          Patient Information
+          Informacion de los Pacientes
         </Typography>
       )}
       {numSelected > 0 ? (

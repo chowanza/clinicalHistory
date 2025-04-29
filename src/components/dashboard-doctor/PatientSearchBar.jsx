@@ -4,7 +4,7 @@ const PatientSearchBar = ({ filter, setFilter }) => {
   return (
     <div className='bg-primary rounded-t-xl w-96 p-5 flex items-center justify-between'>
       <TextField
-        label='Filter by Name'
+        label='Filtrar por Nombre'
         variant='outlined'
         value={filter}
         onChange={(e) => setFilter(e.target.value)}

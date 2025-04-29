@@ -27,7 +27,7 @@ const SignUpForm = () => {
       <form className='flex flex-col gap-4' onSubmit={onSubmit}>
         <div className='flex gap-2 justify-center items-center'>
           <div className='flex flex-col gap-2 w-[calc(50%_-_0.25rem)]'>
-            <label htmlFor='first-name'>First Name:</label>
+            <label htmlFor='first-name'>Nombre:</label>
             <input
               className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
               type='text'
@@ -36,7 +36,7 @@ const SignUpForm = () => {
             />
           </div>
           <div className='flex flex-col gap-2 w-[calc(50%_-_0.25rem)]'>
-            <label htmlFor='last-name'>Last Name:</label>
+            <label htmlFor='last-name'>Apellido:</label>
             <input
               className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
               type='text'
@@ -46,21 +46,21 @@ const SignUpForm = () => {
           </div>
         </div>
         <div className='flex flex-col gap-2'>
-          <label htmlFor='email'>Email:</label>
+          <label htmlFor='email'>Correo:</label>
           <input
             className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='email'
             {...register('email', { required: true })}
             placeholder={errors.email && 'Email is required'}
           />
-          <label htmlFor='password'>Password:</label>
+          <label htmlFor='password'>Contraseña:</label>
           <input
             className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='password'
             {...register('password', { required: true })}
             placeholder={errors.password && 'Password is required'}
           />
-          <label htmlFor='confirm-password'>Confirm Password:</label>
+          <label htmlFor='confirm-password'>Confirmar Contraseña:</label>
           <input
             className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='password'
@@ -78,18 +78,18 @@ const SignUpForm = () => {
              hover:outline-2 hover:outline-white 
              hover:bg-opacity-80 hover:animate-pulse'
         >
-          Sign Up
+          Regístrate!
         </button>
 
         <div className='width-full text-center'>
           <span className='text-gray-600 dark:text-gray-400'>
-            Already have an account?{' '}
+            ¿Ya tienes una cuenta?{' '}
           </span>
           <Link
             to='/signin'
             className='font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'
           >
-            Sign In
+            Ingresa
           </Link>
         </div>
       </form>

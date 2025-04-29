@@ -16,10 +16,10 @@ const Switch = ({ isSignUp, setIsSignUp }) => {
   return (
     <div className='flex justify-around items-center bg-gradient-to-r from-primary-opacity border-slate-400 border to-secondary-opacity rounded-xl w-72 text-white font-semibold cursor-pointer relative text-center'>
       <span className='z-10 w-1/2 h-full p-2' onClick={handleSignUp}>
-        Sign Up
+        Regístrate
       </span>
       <span className='z-10 w-1/2 h-full p-2' onClick={handleSignIn}>
-        Sign In
+        Ingresa
       </span>
       <span
         className={`absolute w-1/2 h-full rounded-xl border-3 border-white left-0 bg-gradient-to-r from-primary to-secondary transition-transform duration-500 ease-in-out ${

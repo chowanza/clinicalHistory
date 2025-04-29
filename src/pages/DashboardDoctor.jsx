@@ -41,7 +41,7 @@ const DashboardDoctor = () => {
               onClick={openModal}
             >
               <FaPlus />
-              Add New Record
+              Agregar Nuevo Registro
             </button>
             <button
               className='p-3 text-white font-semibold rounded-xl bg-[#10793F] flex items-center gap-2 border-slate-400 border cursor-pointer
@@ -51,7 +51,7 @@ const DashboardDoctor = () => {
               hover:bg-opacity-80 hover:animate-pulse'
             >
               <FaFileExport />
-              Import From Excel
+              Importar desde Excel
             </button>
           </div>
         </div>
