@@ -1,8 +1,10 @@
 import { FaArrowRightFromBracket } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import ThemeSwitch from './ThemeSwitch'
+import { useAuth } from '../../context/AuthContext'
 
 const Header = ({ patient }) => {
+  const { logout } = useAuth()
   return (
     <header className='flex justify-between p-5 gap-5 w-full bg-background-light dark:bg-background-dark'>
       <h1 className='font-bold text-2xl text-text-light dark:text-text-dark'>
@@ -25,7 +27,7 @@ const Header = ({ patient }) => {
           <></>
         )}
         <Link
-          to='/login'
+          to='/signin'
           onClick={() => logout()}
           className='h-10 p-3 font-semibold rounded-xl flex items-center gap-2 text-secondary border-2 border-secondary cursor-pointer
                           hover:scale-105 transition-transform duration-300 
