@@ -21,7 +21,6 @@ export const personalInfoFields = [
   {
     name: 'actualAge',
     label: 'Edad Actual',
-    type: 'number',
     colSpan: 'col-span-3',
     dataValue: '{patient.actualAge}',
   },
