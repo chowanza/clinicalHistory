@@ -66,7 +66,7 @@ const PatientPDF = ({ patient = {} }) => {
               <Text>Nombres: {patient.firstNames}</Text>
               <Text>Apellidos: {patient.lastNames}</Text>
               <Text>Fecha Nacimiento: {patient.birthDate}</Text>
-              <Text>Edad: {patient.actualAge} años</Text>
+              <Text>Edad: {patient.actualAge}</Text>
             </View>
             <View style={styles.column}>
               <Text>Dirección: {patient.address}</Text>
@@ -117,9 +117,9 @@ const PatientPDF = ({ patient = {} }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Medidas</Text>
           <View style={styles.medicalData}>
-            <Text>Peso: {patient.weight} kg</Text>
-            <Text>Talla: {patient.size} cm</Text>
-            <Text>PC: {patient.pc} cm</Text>
+            <Text>Peso: {patient.weight}</Text>
+            <Text>Talla: {patient.size}</Text>
+            <Text>PC: {patient.pc}</Text>
             <Text>Percentil: {patient.percentil}</Text>
           </View>
         </View>

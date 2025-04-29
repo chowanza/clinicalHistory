@@ -21,6 +21,7 @@ const FormSection = ({
           </label>
           {field.isTextArea ? (
             <textarea
+              required
               {...register(field.name)}
               id={field.name}
               rows={field.rows || 3}
@@ -29,6 +30,7 @@ const FormSection = ({
             />
           ) : (
             <input
+              required
               {...register(field.name)}
               type={field.type || 'text'}
               id={field.name}
