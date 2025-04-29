@@ -10,7 +10,7 @@ const Header = ({ patientPage, toggleModal }) => {
   return (
     <header className='flex justify-between p-5 gap-5 w-full bg-background-light dark:bg-background-dark'>
       <h1 className='font-bold text-2xl text-text-light dark:text-text-dark'>
-        Medical Record Dashboard
+        Dashboard de Historias Clínicas
       </h1>
       <div className='flex items-center gap-5'>
         {patientPage ? (
@@ -51,7 +51,7 @@ const Header = ({ patientPage, toggleModal }) => {
                           hover:outline-2 hover:outline-white 
                           hover:bg-opacity-80 hover:animate-pulse'
         >
-          Log Out <FaArrowRightFromBracket />
+          Salir <FaArrowRightFromBracket />
         </Link>
         <ThemeSwitch />
       </div>

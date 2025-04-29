@@ -42,7 +42,7 @@ const Auth = () => {
         <div className='w-[55%] flex justify-center items-center flex-col pt-4'>
           <div className='flex flex-col gap-2'>
             <h1 className='text-center text-2xl text-primary dark:text-secondary font-bold'>
-              {isSignUp ? 'Create an Account' : 'Welcome Back! Sign In'}
+              {isSignUp ? 'Crea una cuenta' : 'Bienvenido Doc! Ingresa'}
             </h1>
             <Switch isSignUp={isSignUp} setIsSignUp={setIsSignUp} />
           </div>

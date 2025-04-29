@@ -26,14 +26,14 @@ const SignInForm = () => {
       ))}
       <form className='flex flex-col gap-4' onSubmit={onSubmit}>
         <div className='flex flex-col gap-2'>
-          <label htmlFor='email'>Email:</label>
+          <label htmlFor='email'>Correo:</label>
           <input
             className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='email'
             {...register('email', { required: true })}
             placeholder={errors.email && 'Email is required'}
           />
-          <label htmlFor='password'>Password:</label>
+          <label htmlFor='password'>Contraseña:</label>
           <input
             className='border-slate-400 bg-slate-50 border p-2 rounded-xl dark:bg-slate-700 placeholder:text-red-500'
             type='password'
@@ -42,7 +42,7 @@ const SignInForm = () => {
           />
         </div>
         <Link to='/signin' className='font-semibold text-secondary self-end'>
-          Forgot password?
+          Olvidaste tu contraseña?
         </Link>
         <button
           type='submit'
@@ -52,17 +52,17 @@ const SignInForm = () => {
              hover:outline-2 hover:outline-white 
              hover:bg-opacity-80 hover:animate-pulse'
         >
-          Sign In
+          Ingresa!
         </button>
         <div className='width-full text-center'>
           <span className='text-gray-600 dark:text-gray-400'>
-            Don't have an account?{' '}
+            ¿No tienes una cuenta?, {' '}
           </span>
           <Link
             to='/signup'
             className='font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'
           >
-            Sign Up
+            Regístrate
           </Link>
         </div>
       </form>
