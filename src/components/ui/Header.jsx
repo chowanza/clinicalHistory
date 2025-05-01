@@ -8,7 +8,7 @@ const Header = ({ patientPage, toggleModal }) => {
   const { logout } = useAuth()
 
   return (
-    <header className='flex justify-between p-5 gap-5 w-full bg-background-light dark:bg-background-dark'>
+    <header className='flex justify-between p-5 gap-5 w-full bg-background-light dark:bg-background-dark h-20'>
       <h1 className='font-bold text-2xl text-text-light dark:text-text-dark'>
         Dashboard de Historias Clínicas
       </h1>

@@ -1,6 +1,6 @@
-import FormSection from './formPatient/FormSection';
-import { useForm } from 'react-hook-form';
-import { usePatients } from '../../context/PatientsContext';
+import FormSection from './formPatient/FormSection'
+import { useForm } from 'react-hook-form'
+import { usePatients } from '../../context/PatientsContext'
 import {
   diagnosisFields,
   measurementsFields,
@@ -8,45 +8,47 @@ import {
   medicalHistoryFields,
   medicalInfoFields,
   personalInfoFields,
-} from './formPatient/formFieldsConfig';
-import { useEffect } from 'react';
-import { FaFileExcel, FaCheckCircle } from 'react-icons/fa';
+} from './formPatient/formFieldsConfig'
+import { useEffect } from 'react'
+import { FaFileExcel, FaCheckCircle } from 'react-icons/fa'
 
 const FormPatient = ({ closeModal, patientData = {}, isEditMode = false }) => {
   const { register, handleSubmit, reset, setValue } = useForm({
-    defaultValues: patientData
-  });
-  const { createPatient, getPatients, updatePatients } = usePatients();
+    defaultValues: patientData,
+  })
+  const { createPatient, getPatients, updatePatients } = usePatients()
 
   // Setear todos los valores del formulario cuando cambien los datos
   useEffect(() => {
     const setAllValues = () => {
       Object.entries(patientData).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          setValue(key, value);
+          setValue(key, value)
         }
-      });
-    };
-    setAllValues();
-  }, [patientData, setValue]);
+      })
+    }
+    setAllValues()
+  }, [patientData, setValue])
 
   const onSubmit = handleSubmit((data) => {
     // Limpieza de datos antes de enviar
     const cleanedData = Object.fromEntries(
-      Object.entries(data).filter(([_, value]) => value !== undefined && value !== '')
-    );
+      Object.entries(data).filter(
+        ([_, value]) => value !== undefined && value !== ''
+      )
+    )
 
     if (isEditMode) {
-      updatePatients({ id: patientData._id, data: cleanedData });
+      updatePatients({ id: patientData._id, data: cleanedData })
     } else {
-      createPatient(cleanedData);
+      createPatient(cleanedData)
     }
-    getPatients();
-    closeModal();
-  });
+    getPatients()
+    closeModal()
+  })
 
   // Verificar si hay datos importados
-  const hasImportedData = !isEditMode && Object.keys(patientData).length > 0;
+  const hasImportedData = !isEditMode && Object.keys(patientData).length > 0
 
   return (
     <div className='w-full min-h-full dark:bg-background-dark dark:text-text-dark bg-background-light text-text-light flex justify-center items-center flex-col'>
@@ -55,9 +57,10 @@ const FormPatient = ({ closeModal, patientData = {}, isEditMode = false }) => {
       </h1>
 
       {hasImportedData && (
-        <div className="w-2/3 bg-blue-100 text-blue-800 p-3 rounded-lg mb-4 flex items-center gap-2">
+        <div className='w-2/3 bg-blue-100 text-blue-800 p-3 rounded-lg mb-4 flex items-center gap-2'>
           <FaCheckCircle />
-          Datos cargados desde Excel. Revise y complete la información antes de guardar.
+          Datos cargados desde Excel. Revise y complete la información antes de
+          guardar.
         </div>
       )}
 
@@ -130,7 +133,7 @@ const FormPatient = ({ closeModal, patientData = {}, isEditMode = false }) => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default FormPatient;
+export default FormPatient

@@ -53,7 +53,7 @@ const DashboardPatient = () => {
           onClick={closeModal}
           className='p-3 text-white font-semibold rounded-xl bg-[#791010] flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#791010]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse absolute top-8 right-5'
         >
-          Close
+          Cerrar
         </button>
         <FormPatient patientData={patient} closeModal={closeModal} isEditMode />
       </Modal>
