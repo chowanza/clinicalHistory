@@ -2,7 +2,7 @@ import React from 'react'
 
 const VaccinationScheduleRow = ({ title }) => {
   const inputStyle =
-    'w-full px-1 text-center bg-transparent border-none outline-none focus:outline-none focus:ring-0 vaccination-schedule text-sm'
+    'w-full px-1 text-center bg-transparent border-none outline-none focus:outline-none focus:ring-0 input-date-color text-sm'
 
   const inputContainerStyle = 'border border-fuchsia-700 w-1/5 py-2'
 

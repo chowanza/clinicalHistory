@@ -26,7 +26,7 @@ const Header = ({ patientPage, openModal }) => {
                 hover:outline-2 hover:outline-white 
                 hover:bg-opacity-80 hover:animate-pulse gap-2'
             >
-              Tabla de Vacunación <FaArrowUpRightFromSquare />
+              Tarjeta de Vacunación <FaArrowUpRightFromSquare />
             </button>
             <Tooltip title='Editar datos del paciente'>
               <button

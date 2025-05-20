@@ -35,7 +35,7 @@ const FormSection = ({
               type={field.type || 'text'}
               id={field.name}
               defaultValue={patientData?.[field.name] || ''}
-              className='border-slate-400 bg-slate-50 border p-2 rounded-xl w-full dark:bg-slate-700 placeholder:text-red-500'
+              className='border-slate-400 bg-slate-50 border p-2 rounded-xl w-full dark:bg-slate-700 placeholder:text-red-500 input-date-color'
             />
           )}
         </div>

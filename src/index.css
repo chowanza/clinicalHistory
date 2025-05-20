@@ -51,7 +51,7 @@
   }
 }
 
-.vaccination-schedule::-webkit-inner-spin-button,
-.vaccination-schedule::-webkit-calendar-picker-indicator {
+.dark .input-date-color::-webkit-inner-spin-button,
+.dark .input-date-color::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
