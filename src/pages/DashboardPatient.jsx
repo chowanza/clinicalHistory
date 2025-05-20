@@ -1,16 +1,17 @@
-import PatientCard from '../components/dashboard-patient/PatientCard'
-import PatientInfoCard from '../components/dashboard-patient/PatientInfoCard'
 import { FaArrowRightFromBracket } from 'react-icons/fa6'
 import { Link, useParams } from 'react-router-dom'
 import { usePatients } from '../context/PatientsContext'
 import { useEffect, useState, useCallback } from 'react'
 import { patientContactSections } from '../components/dashboard-patient/PatientContactConfig'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import PatientCard from '../components/dashboard-patient/PatientCard'
+import PatientInfoCard from '../components/dashboard-patient/PatientInfoCard'
 import Header from '../components/ui/Header'
 import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
-import { PDFDownloadLink } from '@react-pdf/renderer'
 import PatientPDF from '../components/dashboard-patient/PatientPDF'
 import VaccinationSchedule from '../components/dashboard-patient/VaccinationSchedule'
+import Percentiles from '../components/dashboard-patient/Percentiles'
 
 const DashboardPatient = () => {
   const { id } = useParams()
@@ -107,6 +108,7 @@ const DashboardPatient = () => {
               />
             )
           })}
+          <Percentiles />
           <div className='w-full flex gap-4 items-center justify-end'>
             <Link
               to='/dashboard-doctor'
