@@ -10,16 +10,29 @@ import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import PatientPDF from '../components/dashboard-patient/PatientPDF'
+import VaccinationSchedule from '../components/dashboard-patient/VaccinationSchedule'
 
 const DashboardPatient = () => {
   const { id } = useParams()
   const { patient, getPatient } = usePatients()
   const [isLoading, setIsLoading] = useState(true)
 
-  const [isOpen, setIsOpen] = useState(false)
-  const openModal = useCallback(() => setIsOpen(true), [])
-  const closeModal = useCallback(() => setIsOpen(false), [])
-  const toggleModal = useCallback(() => setIsOpen((prev) => !prev), [])
+  const [modalState, setModalState] = useState({
+    form: false,
+    vaccinationSchedule: false,
+  })
+
+  const closeModals = useCallback(() => {
+    setModalState({ form: false, vaccinationSchedule: false })
+  }, [])
+
+  const openFormModal = useCallback(() => {
+    setModalState({ form: true, vaccinationSchedule: false })
+  }, [])
+
+  const openVaccinationSchedule = useCallback(() => {
+    setModalState({ form: false, vaccinationSchedule: true })
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,15 +60,31 @@ const DashboardPatient = () => {
 
   return (
     <>
-      <Header patientPage toggleModal={toggleModal} />
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Header
+        patientPage
+        openModal={{ openFormModal, openVaccinationSchedule }}
+      />
+      <Modal isOpen={modalState.form} onClose={closeModals}>
         <button
-          onClick={closeModal}
+          onClick={closeModals}
           className='p-3 text-white font-semibold rounded-xl bg-[#791010] flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#791010]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse absolute top-8 right-5'
         >
           Cerrar
         </button>
-        <FormPatient patientData={patient} closeModal={closeModal} isEditMode />
+        <FormPatient
+          patientData={patient}
+          closeModal={closeModals}
+          isEditMode
+        />
+      </Modal>
+      <Modal isOpen={modalState.vaccinationSchedule} onClose={closeModals}>
+        <button
+          onClick={closeModals}
+          className='p-3 text-white font-semibold rounded-xl bg-[#791010] flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#791010]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse absolute top-8 right-5'
+        >
+          Cerrar
+        </button>
+        <VaccinationSchedule />
       </Modal>
       <main className='w-full grid place-items-center bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark min-h-screen pt-2 pb-10'>
         <article className='w-full p-4 px-60 flex flex-col gap-6 relative'>

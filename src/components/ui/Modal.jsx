@@ -25,7 +25,7 @@ const Modal = ({ isOpen, onClose, children }) => {
           transition={{ duration: 0.1 }}
         >
           <motion.div
-            className='rounded-2xl shadow-2xl relative w-2/3 h-5/6 overflow-y-auto dark:bg-background-dark dark:text-text-dark bg-background-light text-text-light p-8 scrollbar-modal'
+            className='rounded-2xl shadow-2xl relative w-4/5 h-5/6 overflow-y-auto dark:bg-background-dark dark:text-text-dark bg-background-light text-text-light p-8 scrollbar-modal'
             variants={modalVariants}
             initial='hidden'
             animate='visible'

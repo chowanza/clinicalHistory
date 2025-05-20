@@ -50,3 +50,8 @@
     background: #1f2937;
   }
 }
+
+.vaccination-schedule::-webkit-inner-spin-button,
+.vaccination-schedule::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

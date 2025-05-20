@@ -23,7 +23,7 @@ const PatientCard = ({
             {patient.firstNames} {patient.lastNames}
           </h1>
           <p className='text-sm text-gray-500 flex gap-2 justify-start items-center'>
-            <span>{patient.actualAge} years old</span>
+            <span>{patient.actualAge} años</span>
           </p>
         </div>
         <span className='px-2 bg-green-500 text-white rounded-2xl'>Active</span>
