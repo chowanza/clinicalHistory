@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { calculateAge } from '../../utils/ageUtils'
 
 const PatientCard = ({
   patient = {
     firstNames: 'John',
     lastNames: 'Doe',
-    actualAge: 30,
+    birthDate: '2000-01-01',
   },
 }) => {
+  const [age, setAge] = useState(null)
+
+  useEffect(() => {
+    if (patient.birthDate) {
+      setAge(calculateAge(patient.birthDate))
+    }
+  }, [patient.birthDate])
+
   return (
     <section className='w-full p-7 bg-white dark:bg-slate-800 rounded-lg shadow-md flex gap-5'>
       <div className='w-28 h-28'>
@@ -23,7 +32,7 @@ const PatientCard = ({
             {patient.firstNames} {patient.lastNames}
           </h1>
           <p className='text-sm text-gray-500 flex gap-2 justify-start items-center'>
-            <span>{patient.actualAge} años</span>
+            <span>{age?.formattedAge || 'Edad no disponible'}</span>
           </p>
         </div>
         <span className='px-2 bg-green-500 text-white rounded-2xl'>Active</span>

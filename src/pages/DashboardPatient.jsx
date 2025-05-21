@@ -4,6 +4,7 @@ import { usePatients } from '../context/PatientsContext'
 import { useEffect, useState, useCallback } from 'react'
 import { patientContactSections } from '../components/dashboard-patient/PatientContactConfig'
 import { PDFDownloadLink } from '@react-pdf/renderer'
+import { calculateAge, calcularEdadPediatrica } from '../utils/ageUtils'
 import PatientCard from '../components/dashboard-patient/PatientCard'
 import PatientInfoCard from '../components/dashboard-patient/PatientInfoCard'
 import Header from '../components/ui/Header'
@@ -17,6 +18,13 @@ const DashboardPatient = () => {
   const { id } = useParams()
   const { patient, getPatient } = usePatients()
   const [isLoading, setIsLoading] = useState(true)
+  const [inputs, setInputs] = useState({
+    age: {},
+    head: '',
+    length: '',
+    sex: '',
+    weight: '',
+  })
 
   const [modalState, setModalState] = useState({
     form: false,
@@ -48,6 +56,19 @@ const DashboardPatient = () => {
     }
     fetchData()
   }, [id])
+
+  useEffect(() => {
+    if (patient) {
+      setInputs((prev) => ({
+        ...prev,
+        age: calcularEdadPediatrica(patient.birthDate),
+        head: patient.pc,
+        length: patient.size,
+        sex: 'male',
+        weight: patient.weight,
+      }))
+    }
+  }, [patient])
 
   if (isLoading) {
     return (
@@ -99,6 +120,29 @@ const DashboardPatient = () => {
               ),
             }))
 
+            if (section.title == 'Información Personal') {
+              processedSections[2].content = calculateAge(
+                processedSections[3].content
+              )?.formattedAge
+            }
+
+            if (section.title == 'Medidas') {
+              return (
+                <span
+                  key={index}
+                  className='flex flex-col gap-6 justify-center items-center'
+                >
+                  <PatientInfoCard
+                    key={index}
+                    title={section.title}
+                    titleIcon={section.titleIcon}
+                    sections={processedSections}
+                  />
+                  <Percentiles inputs={inputs} />
+                </span>
+              )
+            }
+
             return (
               <PatientInfoCard
                 key={index}
@@ -108,7 +152,6 @@ const DashboardPatient = () => {
               />
             )
           })}
-          <Percentiles />
           <div className='w-full flex gap-4 items-center justify-end'>
             <Link
               to='/dashboard-doctor'
