@@ -19,12 +19,6 @@ export const personalInfoFields = [
     dataValue: '{patient.birthDate}',
   },
   {
-    name: 'actualAge',
-    label: 'Edad Actual',
-    colSpan: 'col-span-3',
-    dataValue: '{patient.actualAge}',
-  },
-  {
     name: 'phone',
     label: 'Teléfono',
     colSpan: 'col-span-3',
@@ -127,12 +121,6 @@ export const measurementsFields = [
     label: 'Perímetro Cefálico (cm)',
     colSpan: 'col-span-3',
     dataValue: '{patient.pc}',
-  },
-  {
-    name: 'percentil',
-    label: 'Percentil',
-    colSpan: 'col-span-3',
-    dataValue: '{patient.percentil}',
   },
 ]
 

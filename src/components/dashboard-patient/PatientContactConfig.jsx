@@ -136,12 +136,6 @@ export const patientContactSections = [
         content: '{pc} cm',
         colSpan: 1,
       },
-      {
-        title: 'Percentil',
-        icon: <FaChartLine />,
-        content: '{percentil}',
-        colSpan: 1,
-      },
     ],
   },
   {
