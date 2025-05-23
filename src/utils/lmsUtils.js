@@ -57,9 +57,15 @@ export const calculateAllPercentiles = (datasets, inputs) => {
   }
 
   // Peso para la talla
-  if (length && weight && datasets.weightLength[sex][Math.round(length)]) {
+  if (
+    length &&
+    weight &&
+    datasets.weightLength[sex][String((Math.round(length * 2) / 2).toFixed(1))]
+  ) {
     const z = calculateZScore(
-      datasets.weightLength[sex][Math.round(length)],
+      datasets.weightLength[sex][
+        String((Math.round(length * 2) / 2).toFixed(1))
+      ],
       parseFloat(weight)
     )
     results.weightLength = { z, percentile: zScoreToPercentile(z) }

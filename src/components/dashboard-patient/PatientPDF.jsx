@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   Document,
   Page,
@@ -6,18 +7,63 @@ import {
   StyleSheet,
   PDFDownloadLink,
 } from '@react-pdf/renderer'
+import { calcularEdadPediatrica } from '../../utils/ageUtils'
+import { calculatePercentiles } from './Percentiles'
 
-const PatientPDF = ({ patient = {} }) => {
+const PatientPDF = ({ patient }) => {
+  const [inputs, setInputs] = useState({
+    age: {},
+    head: '',
+    length: '',
+    sex: '',
+    weight: '',
+  })
+
+  const [percentiles, setPercentiles] = useState({
+    weight: { z: '', percentile: '' },
+    length: { z: '', percentile: '' },
+    head: { z: '', percentile: '' },
+    weightLength: { z: '', percentile: '' },
+  })
+
+  useEffect(() => {
+    if (patient) {
+      setInputs((prev) => ({
+        ...prev,
+        age: calcularEdadPediatrica(patient.birthDate),
+        head: patient.pc,
+        length: patient.size,
+        sex: 'male',
+        weight: patient.weight,
+      }))
+    }
+  }, [patient])
+
+  useEffect(() => {
+    if (inputs.head != '') {
+      setPercentiles((prev) => ({
+        ...prev,
+        ...calculatePercentiles(inputs),
+      }))
+      console.log(percentiles)
+    }
+  }, [inputs])
+
   const styles = StyleSheet.create({
-    page: { padding: 40, fontFamily: 'Helvetica', fontSize: 12 },
+    page: {
+      padding: 40,
+      paddingVertical: 30,
+      fontFamily: 'Helvetica',
+      fontSize: 12,
+    },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       borderBottom: '1px solid #000',
-      paddingBottom: 15,
-      marginBottom: 20,
+      paddingBottom: 10,
+      marginBottom: 10,
     },
-    section: { marginBottom: 15 },
+    section: { marginBottom: 8 },
     sectionTitle: {
       fontSize: 14,
       fontWeight: 'bold',
@@ -120,11 +166,35 @@ const PatientPDF = ({ patient = {} }) => {
             <Text>Peso: {patient.weight}</Text>
             <Text>Talla: {patient.size}</Text>
             <Text>PC: {patient.pc}</Text>
-            <Text>Percentil: {patient.percentil}</Text>
           </View>
         </View>
 
-        {/* 5. DIAGNÓSTICO */}
+        {/* 5. PERCENTILES */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Percentiles</Text>
+          <View style={styles.twoColumns}>
+            <View style={styles.column}>
+              <Text>Peso para la edad: {percentiles.weight.percentile}%</Text>
+            </View>
+            <View style={styles.column}>
+              <Text>Talla para la edad: {percentiles.length.percentile}%</Text>
+            </View>
+          </View>
+          <View style={styles.twoColumns}>
+            <View style={styles.column}>
+              <Text>
+                Peso para la talla: {percentiles.weightLength.percentile}%
+              </Text>
+            </View>
+            <View style={styles.column}>
+              <Text>
+                Perimetro Cefalico para la edad: {percentiles.head.percentile}%
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* 6. DIAGNÓSTICO */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Diagnóstico</Text>
           <Text>Diagnóstico: {patient.diagnostic}</Text>
@@ -132,7 +202,7 @@ const PatientPDF = ({ patient = {} }) => {
           <Text>Exámenes Solicitados: {patient.exams}</Text>
         </View>
 
-        {/* 6. INFORMACIÓN MÉDICA */}
+        {/* 7. INFORMACIÓN MÉDICA */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Información Médica</Text>
           <View style={styles.twoColumns}>

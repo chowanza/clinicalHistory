@@ -12,7 +12,7 @@ import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
 import PatientPDF from '../components/dashboard-patient/PatientPDF'
 import VaccinationSchedule from '../components/dashboard-patient/VaccinationSchedule'
-import Percentiles from '../components/dashboard-patient/Percentiles'
+import { Percentiles } from '../components/dashboard-patient/Percentiles'
 
 const DashboardPatient = () => {
   const { id } = useParams()
@@ -68,6 +68,7 @@ const DashboardPatient = () => {
         weight: patient.weight,
       }))
     }
+    console.log(patient)
   }, [patient])
 
   if (isLoading) {

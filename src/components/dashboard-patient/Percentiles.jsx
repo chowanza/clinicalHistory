@@ -17,7 +17,40 @@ const datasets = {
   head: headData,
 }
 
-const Percentiles = ({ inputs }) => {
+export const calculatePercentiles = (inputs) => {
+  const results = calculateAllPercentiles(datasets, inputs)
+
+  // Formatear el Z-Score para mostrar 2 decimales
+  const formatZScore = (z) => {
+    return z !== null && z !== undefined ? z.toFixed(2) : 'N/A'
+  }
+
+  // Formatear el percentil para mostrar 1 decimal
+  const formatPercentile = (p) => {
+    return p !== null && p !== undefined ? p.toFixed(1) : 'N/A'
+  }
+
+  return {
+    weight: {
+      z: formatZScore(results.weight.z),
+      percentile: formatPercentile(results.weight.percentile),
+    },
+    length: {
+      z: formatZScore(results.length.z),
+      percentile: formatPercentile(results.length.percentile),
+    },
+    head: {
+      z: formatZScore(results.head.z),
+      percentile: formatPercentile(results.head.percentile),
+    },
+    weightLength: {
+      z: formatZScore(results.weightLength.z),
+      percentile: formatPercentile(results.weightLength.percentile),
+    },
+  }
+}
+
+export const Percentiles = ({ inputs }) => {
   // Calcular los percentiles usando los inputs recibidos
   const results = calculateAllPercentiles(datasets, inputs)
 
