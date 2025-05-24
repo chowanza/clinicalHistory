@@ -68,18 +68,7 @@ const DashboardPatient = () => {
         weight: patient.weight,
       }))
     }
-    console.log(patient)
   }, [patient])
-
-  if (isLoading) {
-    return (
-      <main className='w-full grid place-items-center bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark min-h-screen py-10'>
-        <div className='text-xl font-medium'>
-          Cargando información del paciente...
-        </div>
-      </main>
-    )
-  }
 
   return (
     <>
@@ -111,7 +100,7 @@ const DashboardPatient = () => {
       </Modal>
       <main className='w-full grid place-items-center bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark min-h-screen pt-2 pb-10'>
         <article className='w-full p-4 px-60 flex flex-col gap-6 relative'>
-          <PatientCard patient={patient} />
+          <PatientCard isLoading={isLoading} patient={patient} />
           {patientContactSections.map((section, index) => {
             const processedSections = section.sections.map((item) => ({
               ...item,
@@ -138,8 +127,9 @@ const DashboardPatient = () => {
                     title={section.title}
                     titleIcon={section.titleIcon}
                     sections={processedSections}
+                    isLoading={isLoading}
                   />
-                  <Percentiles inputs={inputs} />
+                  {isLoading ? '' : <Percentiles inputs={inputs} />}
                 </span>
               )
             }
@@ -150,6 +140,7 @@ const DashboardPatient = () => {
                 title={section.title}
                 titleIcon={section.titleIcon}
                 sections={processedSections}
+                isLoading={isLoading}
               />
             )
           })}
@@ -165,23 +156,36 @@ const DashboardPatient = () => {
               <FaArrowRightFromBracket className='rotate-180' />
               Volver
             </Link>
-            <PDFDownloadLink
-              document={<PatientPDF patient={patient} />}
-              fileName={`${patient.firstNames}-${patient.lastNames}.pdf`}
-              style={{ color: 'inherit', textDecoration: 'none' }}
-            >
-              {({ loading }) => (
-                <button
-                  className='h-10 p-3 text-white font-semibold rounded-xl bg-[#FA0F00] flex items-center gap-2 border-slate-400 border cursor-pointer
+            {isLoading ? (
+              <button
+                className='h-10 p-3 text-white font-semibold rounded-xl bg-[#FA0F00] flex items-center gap-2 border-slate-400 border cursor-pointer
                   hover:scale-105 transition-transform duration-300 
                   hover:shadow-lg hover:shadow-[#FA0F00]/50 
                   hover:outline-2 hover:outline-white 
                   hover:bg-opacity-80 hover:animate-pulse'
-                >
-                  {loading ? 'Generando...' : 'Descargar PDF'}
-                </button>
-              )}
-            </PDFDownloadLink>
+                onClick={openVaccinationSchedule}
+              >
+                Descargar PDF
+              </button>
+            ) : (
+              <PDFDownloadLink
+                document={<PatientPDF patient={patient} />}
+                fileName={`${patient.firstNames}-${patient.lastNames}.pdf`}
+                style={{ color: 'inherit', textDecoration: 'none' }}
+              >
+                {({ loading }) => (
+                  <button
+                    className='h-10 p-3 text-white font-semibold rounded-xl bg-[#FA0F00] flex items-center gap-2 border-slate-400 border cursor-pointer
+                  hover:scale-105 transition-transform duration-300 
+                  hover:shadow-lg hover:shadow-[#FA0F00]/50 
+                  hover:outline-2 hover:outline-white 
+                  hover:bg-opacity-80 hover:animate-pulse'
+                  >
+                    {loading ? 'Generando...' : 'Descargar PDF'}
+                  </button>
+                )}
+              </PDFDownloadLink>
+            )}
           </div>
         </article>
       </main>

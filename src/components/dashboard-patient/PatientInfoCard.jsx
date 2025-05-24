@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FaPhone, FaEnvelope, FaUserShield } from 'react-icons/fa6'
+import Skeleton from '@mui/material/Skeleton'
 
 const PatientContact = ({
   title = 'Contact Information',
@@ -25,7 +26,80 @@ const PatientContact = ({
       colSpan: 2,
     },
   ],
+  isLoading = false,
 }) => {
+  if (isLoading) {
+    return (
+      <section className='w-full py-3 px-7 bg-white dark:bg-slate-800 rounded-lg shadow-md flex gap-5 flex-col'>
+        {/* Skeleton para el título */}
+        <div className='border-b border-gray-300 p-4'>
+          <Skeleton
+            variant='text'
+            width={200}
+            height={32}
+            className='dark:bg-slate-700'
+          />
+        </div>
+
+        <div className='grid grid-cols-2 gap-4'>
+          {/* Skeleton para teléfono */}
+          <div className='p-4 border-b border-gray-300'>
+            <Skeleton
+              variant='text'
+              width={100}
+              height={24}
+              className='dark:bg-slate-700 mb-2'
+            />
+            <Skeleton
+              variant='text'
+              width={150}
+              height={28}
+              className='dark:bg-slate-700'
+            />
+          </div>
+
+          {/* Skeleton para email */}
+          <div className='p-4 border-b border-gray-300'>
+            <Skeleton
+              variant='text'
+              width={100}
+              height={24}
+              className='dark:bg-slate-700 mb-2'
+            />
+            <Skeleton
+              variant='text'
+              width={180}
+              height={28}
+              className='dark:bg-slate-700'
+            />
+          </div>
+
+          {/* Skeleton para contacto de emergencia */}
+          <div className='p-4 col-span-2'>
+            <Skeleton
+              variant='text'
+              width={150}
+              height={24}
+              className='dark:bg-slate-700 mb-2'
+            />
+            <Skeleton
+              variant='text'
+              width={250}
+              height={28}
+              className='dark:bg-slate-700 mb-1'
+            />
+            <Skeleton
+              variant='text'
+              width={150}
+              height={28}
+              className='dark:bg-slate-700'
+            />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className='w-full py-3 px-7 bg-white dark:bg-slate-800 rounded-lg shadow-md flex gap-5 flex-col'>
       <h2 className='flex justify-start items-center gap-1 text-secondary border-b border-gray-300 p-4 font-semibold text-xl'>
@@ -62,6 +136,20 @@ const PatientContact = ({
       </div>
     </section>
   )
+}
+
+PatientContact.propTypes = {
+  title: PropTypes.string,
+  titleIcon: PropTypes.node,
+  sections: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      icon: PropTypes.node,
+      content: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+      colSpan: PropTypes.number,
+    })
+  ),
+  isLoading: PropTypes.bool,
 }
 
 export default PatientContact

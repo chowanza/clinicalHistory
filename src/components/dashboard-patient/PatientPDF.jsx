@@ -45,7 +45,6 @@ const PatientPDF = ({ patient }) => {
         ...prev,
         ...calculatePercentiles(inputs),
       }))
-      console.log(percentiles)
     }
   }, [inputs])
 

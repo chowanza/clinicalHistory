@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { calculateAge } from '../../utils/ageUtils'
+import Skeleton from '@mui/material/Skeleton'
 
 const PatientCard = ({
   patient = {
@@ -7,6 +8,7 @@ const PatientCard = ({
     lastNames: 'Doe',
     birthDate: '2000-01-01',
   },
+  isLoading = false,
 }) => {
   const [age, setAge] = useState(null)
 
@@ -15,6 +17,48 @@ const PatientCard = ({
       setAge(calculateAge(patient.birthDate))
     }
   }, [patient.birthDate])
+
+  if (isLoading) {
+    return (
+      <section className='w-full p-7 bg-white dark:bg-slate-800 rounded-lg shadow-md flex gap-5'>
+        {/* Skeleton para el avatar */}
+        <div className='w-28 h-28'>
+          <Skeleton
+            variant='circular'
+            width={112}
+            height={112}
+            className='dark:bg-slate-700'
+          />
+        </div>
+
+        <div className='flex justify-between items-center flex-1'>
+          <div className='flex flex-col justify-center gap-3 items-start h-full w-full'>
+            {/* Skeleton para el nombre */}
+            <Skeleton
+              variant='text'
+              width='75%'
+              height={32}
+              className='dark:bg-slate-700'
+            />
+            {/* Skeleton para la edad */}
+            <Skeleton
+              variant='text'
+              width='40%'
+              height={24}
+              className='dark:bg-slate-700'
+            />
+          </div>
+          {/* Skeleton para el estado */}
+          <Skeleton
+            variant='rounded'
+            width={64}
+            height={24}
+            className='dark:bg-slate-700'
+          />
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className='w-full p-7 bg-white dark:bg-slate-800 rounded-lg shadow-md flex gap-5'>
