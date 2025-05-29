@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { patientContactSections } from '../components/dashboard-patient/PatientContactConfig'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { calculateAge, calcularEdadPediatrica } from '../utils/ageUtils'
+import { Percentiles } from '../components/dashboard-patient/Percentiles'
 import PatientCard from '../components/dashboard-patient/PatientCard'
 import PatientInfoCard from '../components/dashboard-patient/PatientInfoCard'
 import Header from '../components/ui/Header'
@@ -12,7 +13,7 @@ import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
 import PatientPDF from '../components/dashboard-patient/PatientPDF'
 import VaccinationSchedule from '../components/dashboard-patient/VaccinationSchedule'
-import { Percentiles } from '../components/dashboard-patient/Percentiles'
+import MedicalCalendar from '../components/MedicalCalendar/MedicalCalendar'
 
 const DashboardPatient = () => {
   const { id } = useParams()
@@ -29,18 +30,39 @@ const DashboardPatient = () => {
   const [modalState, setModalState] = useState({
     form: false,
     vaccinationSchedule: false,
+    medicalCalendar: false,
   })
 
   const closeModals = useCallback(() => {
-    setModalState({ form: false, vaccinationSchedule: false })
+    setModalState({
+      form: false,
+      vaccinationSchedule: false,
+      medicalCalendar: false,
+    })
   }, [])
 
   const openFormModal = useCallback(() => {
-    setModalState({ form: true, vaccinationSchedule: false })
+    setModalState({
+      form: true,
+      vaccinationSchedule: false,
+      medicalCalendar: false,
+    })
   }, [])
 
   const openVaccinationSchedule = useCallback(() => {
-    setModalState({ form: false, vaccinationSchedule: true })
+    setModalState({
+      form: false,
+      vaccinationSchedule: true,
+      medicalCalendar: false,
+    })
+  }, [])
+
+  const openMedicalCalendar = useCallback(() => {
+    setModalState({
+      form: false,
+      vaccinationSchedule: false,
+      medicalCalendar: true,
+    })
   }, [])
 
   useEffect(() => {
@@ -74,7 +96,11 @@ const DashboardPatient = () => {
     <>
       <Header
         patientPage
-        openModal={{ openFormModal, openVaccinationSchedule }}
+        openModal={{
+          openFormModal,
+          openVaccinationSchedule,
+          openMedicalCalendar,
+        }}
       />
       <Modal isOpen={modalState.form} onClose={closeModals}>
         <button
@@ -97,6 +123,19 @@ const DashboardPatient = () => {
           Cerrar
         </button>
         <VaccinationSchedule />
+      </Modal>
+      <Modal
+        isOpen={modalState.medicalCalendar}
+        onClose={closeModals}
+        size='large'
+      >
+        <button
+          onClick={closeModals}
+          className='p-3 text-white font-semibold rounded-xl bg-[#791010] flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#791010]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse absolute top-6 right-0'
+        >
+          Cerrar
+        </button>
+        <MedicalCalendar />
       </Modal>
       <main className='w-full grid place-items-center bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark min-h-screen pt-2 pb-10'>
         <article className='w-full p-4 px-60 flex flex-col gap-6 relative'>

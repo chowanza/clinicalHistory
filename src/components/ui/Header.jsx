@@ -1,6 +1,7 @@
 import {
   FaArrowRightFromBracket,
   FaArrowUpRightFromSquare,
+  FaFileMedical,
 } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import ThemeSwitch from './ThemeSwitch'
@@ -18,6 +19,16 @@ const Header = ({ patientPage, openModal }) => {
       <div className='flex items-center gap-5'>
         {patientPage ? (
           <>
+            <button
+              onClick={openModal.openMedicalCalendar}
+              className='h-10 p-3 text-white font-semibold rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center border-slate-400 border cursor-pointer
+                hover:scale-105 transition-transform duration-300 
+                hover:shadow-lg hover:shadow-secondary/50 
+                hover:outline-2 hover:outline-white 
+                hover:bg-opacity-80 hover:animate-pulse gap-2'
+            >
+              Récipes Médicos <FaFileMedical />
+            </button>
             <button
               onClick={openModal.openVaccinationSchedule}
               className='h-10 p-3 text-white font-semibold rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center border-slate-400 border cursor-pointer
