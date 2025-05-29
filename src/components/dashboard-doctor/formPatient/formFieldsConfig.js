@@ -153,14 +153,6 @@ export const diagnosisFields = [
 
 export const medicalInfoFields = [
   {
-    name: 'vacunationSchema',
-    label: 'Esquema de Vacunación',
-    isTextArea: true,
-    colSpan: 'col-span-full',
-    rows: '2',
-    dataValue: '{patient.vacunationSchema}',
-  },
-  {
     name: 'medicalReference',
     label: 'Referencia Médica',
     isTextArea: true,

@@ -14,7 +14,6 @@ import {
   FaWeight,
   FaRulerVertical,
   FaSkull,
-  FaChartLine,
   FaDiagnoses,
   FaStethoscope,
   FaPills,
@@ -166,12 +165,6 @@ export const patientContactSections = [
     title: 'Información Médica',
     titleIcon: <FaClinicMedical />,
     sections: [
-      {
-        title: 'Esquema de Vacunación',
-        icon: <FaSyringe />,
-        content: '{vacunationSchema}',
-        colSpan: 2,
-      },
       {
         title: 'Referencia Médica',
         icon: <FaHospitalUser />,
