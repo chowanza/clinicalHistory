@@ -1,6 +1,7 @@
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import RecipePDF from './RecipePDF'
 import moment from 'moment'
+import { usePatients } from '../../context/PatientsContext'
 
 const CalendarModal = ({
   showModal,
@@ -15,6 +16,7 @@ const CalendarModal = ({
   hasRecipe,
 }) => {
   if (!showModal) return null
+  const { patient } = usePatients()
 
   return (
     <div className='fixed inset-0 bg-slate-600/60 flex items-center justify-center z-50'>
@@ -97,6 +99,7 @@ const CalendarModal = ({
                 document={
                   <RecipePDF
                     data={currentRecipe || 'No hay receta para esta fecha'}
+                    patient={patient}
                   />
                 }
                 fileName={`Recipe.pdf`}
