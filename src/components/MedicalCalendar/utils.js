@@ -1,7 +1,9 @@
-import moment from 'moment'
-
 export const normalizeDate = (date) => {
-  return moment(date).format('YYYY-MM-DD')
+  const d = new Date(date)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 export const convertRecipesToEvents = (recipes) => {
@@ -9,9 +11,10 @@ export const convertRecipesToEvents = (recipes) => {
     start: recipe.date,
     end: recipe.date,
     title:
-      recipe.content.split('\n')[0].substring(0, 20) +
-      (recipe.content.length > 20 ? '...' : ''),
+      recipe.description.split('\n')[0].substring(0, 20) +
+      (recipe.description.length > 20 ? '...' : ''),
     allDay: true,
+    id: recipe._id, // Incluir el ID en los eventos
   }))
 }
 

@@ -9,7 +9,9 @@ const CalendarModal = ({
   handleEdit,
   handleSave,
   handleCancel,
+  handleDelete,
   setCurrentRecipe,
+  hasRecipe,
 }) => {
   if (!showModal) return null
 
@@ -29,19 +31,21 @@ const CalendarModal = ({
               placeholder='Ingrese los detalles de la receta...'
               autoFocus
             />
-            <div className='flex justify-end space-x-3'>
-              <button
-                onClick={handleCancel}
-                className='px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300'
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSave}
-                className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
-              >
-                Guardar
-              </button>
+            <div className='flex justify-between'>
+              <div className='flex space-x-3'>
+                <button
+                  onClick={handleCancel}
+                  className='px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300'
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSave}
+                  className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
+                >
+                  Guardar
+                </button>
+              </div>
             </div>
           </>
         ) : (
@@ -61,6 +65,12 @@ const CalendarModal = ({
                 className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
               >
                 Editar
+              </button>
+              <button
+                onClick={handleDelete}
+                className='px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700'
+              >
+                Eliminar
               </button>
             </div>
           </>

@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import moment from 'moment'
-import { Calendar } from 'react-big-calendar'
-import { momentLocalizer } from 'react-big-calendar'
 import CalendarControls from './CalendarControls'
 import CalendarModal from './CalendarModal'
+import Sidebar from './Sidebar'
+import 'react-big-calendar/lib/css/react-big-calendar.css'
+import './style.css'
+import { usePatients } from '../../context/PatientsContext'
+import { Calendar } from 'react-big-calendar'
+import { momentLocalizer } from 'react-big-calendar'
+import {
+  getRecipesRequest,
+  createRecipesRequest,
+  updateRecipesRequest,
+  deleteRecipesRequest,
+} from '../../api/recipeCalendar'
 import {
   normalizeDate,
   convertRecipesToEvents,
   calendarMessages,
   calendarFormats,
 } from './utils'
-import 'react-big-calendar/lib/css/react-big-calendar.css'
-import Sidebar from './Sidebar'
-import './style.css'
 
 moment.locale('es', {
   months:
@@ -31,59 +38,130 @@ const MedicalCalendar = () => {
   const [recipes, setRecipes] = useState({})
   const [showModal, setShowModal] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
-  const [currentRecipe, setCurrentRecipe] = useState('')
+  const [currentRecipe, setCurrentRecipe] = useState({
+    id: null,
+    content: '',
+  })
   const [isEditing, setIsEditing] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [highlightedEvent, setHighlightedEvent] = useState(null)
   const [showSidebar, setShowSidebar] = useState(true)
 
-  const highlightEvent = (event) => {
-    const dateStr = normalizeDate(event.start)
-    setHighlightedEvent(event)
-    setCurrentDate(event.start)
+  const { patient } = usePatients()
 
-    setSelectedDate(event.start)
-    setCurrentRecipe(recipes[dateStr]?.content || '')
+  const highlightEvent = (recipe) => {
+    setHighlightedEvent({
+      start: recipe.date,
+      end: recipe.date,
+      title: recipe.description.split('\n')[0],
+      allDay: true,
+    })
+    setCurrentDate(recipe.date)
+
+    setSelectedDate(recipe.date)
+    setCurrentRecipe({
+      id: recipe._id,
+      content: recipe.description,
+    })
     setShowModal(true)
     setIsEditing(false)
 
     setTimeout(() => setHighlightedEvent(null), 2000)
   }
 
-  // Datos de ejemplo
-  const initialRecipes = {
-    '2025-05-20': {
-      date: new Date(2025, 4, 20),
-      content: 'Paracetamol 500mg cada 8 horas\nIbuprofeno 400mg cada 12 horas',
-    },
-    '2025-05-22': {
-      date: new Date(2025, 4, 22),
-      content: 'Amoxicilina 500mg cada 12 horas\nReposo por 3 días',
-    },
-    '2025-05-16': {
-      date: new Date(2025, 4, 16),
-      content: 'Omeprazol 20mg antes del desayuno',
-    },
-    '2025-05-10': {
-      date: new Date(2025, 4, 10),
-      content: 'Loratadina 10mg cada 24 horas\nVitamina C 1g diario',
-    },
-  }
+  // Función para cargar recetas
+  const fetchRecipes = useCallback(async () => {
+    try {
+      const response = await getRecipesRequest(patient._id)
+      if (response.data) {
+        const apiRecipes = response.data
+        const normalizedRecipes = {}
+
+        apiRecipes.forEach((recipe) => {
+          const dateParts = recipe.date.split('T')[0].split('-')
+          const pureDate = new Date(
+            parseInt(dateParts[0]),
+            parseInt(dateParts[1]) - 1,
+            parseInt(dateParts[2])
+          )
+
+          const dateStr = normalizeDate(pureDate)
+          normalizedRecipes[dateStr] = {
+            _id: recipe._id, // Guardar el ID
+            date: pureDate,
+            description: recipe.description,
+          }
+        })
+
+        setRecipes(normalizedRecipes)
+      }
+    } catch (error) {
+      console.error('Error fetching recipe data:', error)
+    }
+  }, [patient._id])
 
   useEffect(() => {
-    const normalizedRecipes = {}
-    Object.entries(initialRecipes).forEach(([key, value]) => {
-      normalizedRecipes[normalizeDate(value.date)] = value
-    })
-    setRecipes(normalizedRecipes)
-  }, [])
+    if (patient?._id) {
+      fetchRecipes()
+    }
+  }, [patient, fetchRecipes])
+
+  // Función para crear receta
+  const createRecipeInAPI = useCallback(
+    async (dateStr, description) => {
+      try {
+        const response = await createRecipesRequest(patient._id, {
+          date: dateStr,
+          description,
+        })
+        return response.data._id // Devolver el ID creado
+      } catch (error) {
+        console.error('Error creating recipe:', error)
+        return null
+      }
+    },
+    [patient._id]
+  )
+
+  // Función para actualizar receta
+  const updateRecipeInAPI = useCallback(
+    async (id, data) => {
+      try {
+        await updateRecipesRequest(patient._id, {
+          recipeId: id,
+          date: data.date,
+          description: data.description,
+        })
+      } catch (error) {
+        console.error('Error updating recipe:', error)
+      }
+    },
+    [patient._id]
+  )
+
+  // Función para eliminar receta
+  const deleteRecipeFromAPI = useCallback(
+    async (id) => {
+      try {
+        await deleteRecipesRequest(patient._id, id)
+      } catch (error) {
+        console.error('Error deleting recipe:', error)
+      }
+    },
+    [patient._id]
+  )
 
   const handleSelectSlot = (slotInfo) => {
     const dateStr = normalizeDate(slotInfo.start)
     setSelectedDate(slotInfo.start)
-    setCurrentRecipe(recipes[dateStr]?.content || '')
 
-    if (recipes[dateStr]) {
+    const existingRecipe = recipes[dateStr]
+    setCurrentRecipe({
+      id: existingRecipe?._id || null,
+      content: existingRecipe?.description || '',
+    })
+
+    if (existingRecipe) {
       setShowModal(true)
       setIsEditing(false)
     } else {
@@ -96,20 +174,46 @@ const MedicalCalendar = () => {
     setIsEditing(true)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const dateStr = normalizeDate(selectedDate)
+    const content = currentRecipe.content.trim()
 
-    if (currentRecipe.trim()) {
-      setRecipes((prev) => ({
-        ...prev,
-        [dateStr]: {
-          date: selectedDate,
-          content: currentRecipe,
-        },
-      }))
+    if (content) {
+      if (currentRecipe.id) {
+        // Actualizar receta existente
+        await updateRecipeInAPI(currentRecipe.id, {
+          description: content,
+          date: dateStr,
+        })
+      } else {
+        // Crear nueva receta
+        const newId = await createRecipeInAPI(dateStr, content)
+        if (newId) {
+          setRecipes((prev) => ({
+            ...prev,
+            [dateStr]: {
+              _id: newId,
+              date: selectedDate,
+              description: content,
+            },
+          }))
+        }
+      }
     } else {
-      const { [dateStr]: _, ...rest } = recipes
-      setRecipes(rest)
+      // Eliminar si el contenido está vacío
+      handleDelete()
+    }
+
+    // Recargar datos después de cualquier operación
+    fetchRecipes()
+    setShowModal(false)
+    setIsEditing(false)
+  }
+
+  const handleDelete = async () => {
+    if (currentRecipe.id) {
+      await deleteRecipeFromAPI(currentRecipe.id)
+      fetchRecipes()
     }
 
     setShowModal(false)
@@ -146,6 +250,7 @@ const MedicalCalendar = () => {
           navigateYear={navigateYear}
           goToToday={goToToday}
           onToggleSidebar={() => setShowSidebar(!showSidebar)}
+          showSidebar={showSidebar}
         />
 
         <div className='bg-white rounded-lg shadow-md overflow-hidden'>
@@ -184,12 +289,16 @@ const MedicalCalendar = () => {
         <CalendarModal
           showModal={showModal}
           selectedDate={selectedDate}
-          currentRecipe={currentRecipe}
+          currentRecipe={currentRecipe.content}
           isEditing={isEditing}
           handleEdit={handleEdit}
           handleSave={handleSave}
           handleCancel={handleCancel}
-          setCurrentRecipe={setCurrentRecipe}
+          handleDelete={handleDelete}
+          setCurrentRecipe={(content) =>
+            setCurrentRecipe((prev) => ({ ...prev, content }))
+          }
+          hasRecipe={!!currentRecipe.id}
         />
       </div>
     </div>
