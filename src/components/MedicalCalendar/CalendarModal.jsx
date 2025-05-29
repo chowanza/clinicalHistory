@@ -1,4 +1,5 @@
-import React from 'react'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import RecipePDF from './RecipePDF'
 import moment from 'moment'
 
 const CalendarModal = ({
@@ -17,7 +18,7 @@ const CalendarModal = ({
 
   return (
     <div className='fixed inset-0 bg-slate-600/60 flex items-center justify-center z-50'>
-      <div className='bg-white rounded-lg p-6 w-full max-w-md'>
+      <div className='bg-white rounded-lg p-6 w-full max-w-lg'>
         <h2 className='text-xl font-bold mb-4 text-gray-800'>
           {moment(selectedDate).format('dddd D [de] MMMM [de] YYYY')}
         </h2>
@@ -35,13 +36,21 @@ const CalendarModal = ({
               <div className='flex space-x-3'>
                 <button
                   onClick={handleCancel}
-                  className='px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300'
+                  className='h-10 p-3 text-gray-800 font-semibold rounded-xl bg-gray-200 flex items-center gap-2 border-slate-400 border cursor-pointer
+                                hover:scale-105 transition-transform duration-300 
+                                hover:shadow-lg hover:shadow-gray-200/50 
+                                hover:outline-2 hover:outline-white 
+                                hover:bg-opacity-80 hover:animate-pulse'
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleSave}
-                  className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
+                  className='h-10 p-3 text-white font-semibold rounded-xl bg-blue-600 flex items-center gap-2 border-slate-400 border cursor-pointer
+                                hover:scale-105 transition-transform duration-300 
+                                hover:shadow-lg hover:shadow-blue-600/50 
+                                hover:outline-2 hover:outline-white 
+                                hover:bg-opacity-80 hover:animate-pulse'
                 >
                   Guardar
                 </button>
@@ -56,22 +65,53 @@ const CalendarModal = ({
             <div className='flex justify-end space-x-3'>
               <button
                 onClick={handleCancel}
-                className='px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300'
+                className='h-10 p-3 text-gray-800 font-semibold rounded-xl bg-gray-200 flex items-center gap-2 border-slate-400 border cursor-pointer
+                                hover:scale-105 transition-transform duration-300 
+                                hover:shadow-lg hover:shadow-gray-200/50 
+                                hover:outline-2 hover:outline-white 
+                                hover:bg-opacity-80 hover:animate-pulse'
               >
                 Cerrar
               </button>
               <button
                 onClick={handleEdit}
-                className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
+                className='h-10 p-3 text-white font-semibold rounded-xl bg-blue-600 flex items-center gap-2 border-slate-400 border cursor-pointer
+                                hover:scale-105 transition-transform duration-300 
+                                hover:shadow-lg hover:shadow-blue-600/50 
+                                hover:outline-2 hover:outline-white 
+                                hover:bg-opacity-80 hover:animate-pulse'
               >
                 Editar
               </button>
               <button
                 onClick={handleDelete}
-                className='px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700'
+                className='h-10 p-3 text-white font-semibold rounded-xl bg-red-700 flex items-center gap-2 border-slate-400 border cursor-pointer
+                                hover:scale-105 transition-transform duration-300 
+                                hover:shadow-lg hover:shadow-red-700/50 
+                                hover:outline-2 hover:outline-white 
+                                hover:bg-opacity-80 hover:animate-pulse'
               >
                 Eliminar
               </button>
+              <PDFDownloadLink
+                document={
+                  <RecipePDF
+                    data={currentRecipe || 'No hay receta para esta fecha'}
+                  />
+                }
+                fileName={`Recipe.pdf`}
+                style={{ color: 'inherit', textDecoration: 'none' }}
+              >
+                <button
+                  className='h-10 p-3 text-white font-semibold rounded-xl bg-[#FA0F00] flex items-center gap-2 border-slate-400 border cursor-pointer
+                                hover:scale-105 transition-transform duration-300 
+                                hover:shadow-lg hover:shadow-[#FA0F00]/50 
+                                hover:outline-2 hover:outline-white 
+                                hover:bg-opacity-80 hover:animate-pulse'
+                >
+                  Descargar PDF
+                </button>
+              </PDFDownloadLink>
             </div>
           </>
         )}
