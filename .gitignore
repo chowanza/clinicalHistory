@@ -1,0 +1,212 @@
+# --- Archivos del sistema ---
+.DS_Store
+*.swp
+._*
+Thumbs.db
+desktop.ini
+
+# --- Entornos de desarrollo e IDEs ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- Dependencias ---
+node_modules/
+bower_components/
+jspm_packages/
+.pnp
+.pnp.js
+
+# --- Testing ---
+coverage/
+.nyc_output/
+
+# --- Logs ---
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# --- Entornos virtuales y entornos de ejecución ---
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.venv/
+venv/
+ENV/
+env/
+
+# --- Backend (general) ---
+dist/
+build/
+out/
+*.exe
+*.out
+*.pid
+*.seed
+*.pid.lock
+
+# --- Node.js ---
+# Dependencias y builds
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Producción
+/build
+/dist
+
+# Misceláneos
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Java ---
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+
+# --- Bases de datos ---
+*.db
+*.sqlite
+*.sql
+*.dump
+*.bak
+*.db-journal
+*.db-*
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Frontend ---
+# Dependencias
+/.sass-cache
+/connect.lock
+/typings
+
+# Cache de módulos
+/.pnp
+.pnp.js
+
+# Entorno de desarrollo
+/.env.local
+/.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Build
+/dist
+/build
+/out
+.next/
+.nuxt/
+
+# Cache
+.cache/
+
+# Paquetes
+*.tgz
+
+# Misceláneos
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Sistemas de construcción ---
+.eslintcache
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- React/Vue/Angular ---
+# Configuración local
+.eslintcache
+
+# Dependencias
+/node_modules
+
+# Producción
+/build
+/dist
+
+# Misceláneos
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Sistemas operativos específicos ---
+# Linux
+*~
+
+# Windows
+[Tt]humbs.db
+Desktop.ini
+
+# Mac
+.DS_Store
