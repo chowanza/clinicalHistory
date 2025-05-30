@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://chowanza.github.io/clinicalHistory",
+  "homepage": "https://showycone.github.io/clinicalHistory",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
