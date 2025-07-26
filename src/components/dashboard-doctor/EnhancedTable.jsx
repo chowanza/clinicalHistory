@@ -293,13 +293,18 @@ export default function EnhancedTable({ filter }) {
     if (patients.length === 0) return
 
     const formattedRows = patients.map((patient) => {
+      // Obtener el diagnóstico de la última consulta
+      const lastConsultation = patient.consultations && patient.consultations.length > 0 
+        ? patient.consultations[patient.consultations.length - 1] 
+        : null;
+      
       return createData(
         patient._id,
         `${patient.firstNames} ${patient.lastNames}`,
         patient.phone || 'N/A',
         patient.birthDate ? formatDate(patient.birthDate) : 'N/A',
-        patient.date ? formatDate(patient.date) : 'N/A',
-        patient.diagnostic || 'No diagnosis'
+        patient.lastConsultationDate ? formatDate(patient.lastConsultationDate) : 'N/A',
+        lastConsultation ? lastConsultation.diagnostic || 'No diagnosis' : 'No diagnosis'
       )
     })
 
@@ -425,142 +430,150 @@ export default function EnhancedTable({ filter }) {
           numSelected={selected.length}
           isDeleting={isDeleting}
         />
-        <TableContainer className='dark:bg-gray-800 dark:text-gray-300'>
-          <Table
-            sx={{
-              minWidth: 750,
-              '.MuiTableCell-root': {
-                color: 'inherit',
-              },
-              '.MuiTableRow-root': {
-                '&.Mui-selected': {
-                  backgroundColor: 'rgba(25, 118, 210, 0.08)',
+        <div className="overflow-x-auto">
+          <TableContainer className='dark:bg-gray-800 dark:text-gray-300'>
+            <Table
+              sx={{
+                minWidth: 600,
+                '.MuiTableCell-root': {
+                  color: 'inherit',
                 },
-                '&.Mui-selected:hover': {
-                  backgroundColor: 'rgba(25, 118, 210, 0.12)',
+                '.MuiTableRow-root': {
+                  '&.Mui-selected': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                  },
+                  '&.Mui-selected:hover': {
+                    backgroundColor: 'rgba(25, 118, 210, 0.12)',
+                  },
                 },
-              },
-            }}
-            aria-labelledby='tableTitle'
-            size={dense ? 'small' : 'medium'}
-            className='dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700'
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody className='dark:bg-gray-800 dark:text-gray-300'>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = selected.includes(row.id)
-                const labelId = `enhanced-table-checkbox-${index}`
+              }}
+              aria-labelledby='tableTitle'
+              size={dense ? 'small' : 'medium'}
+              className='dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700'
+            >
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody className='dark:bg-gray-800 dark:text-gray-300'>
+                {visibleRows.map((row, index) => {
+                  const isItemSelected = selected.includes(row.id)
+                  const labelId = `enhanced-table-checkbox-${index}`
 
-                return (
+                  return (
+                    <TableRow
+                      hover
+                      onClick={(event) => handleClick(event, row.id)}
+                      role='checkbox'
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                      sx={{ cursor: 'pointer' }}
+                      className={`dark:hover:bg-gray-700 dark:border-gray-700 ${
+                        isItemSelected
+                          ? 'dark:bg-gray-700 dark:text-gray-200'
+                          : 'dark:bg-gray-800 dark:text-gray-300'
+                      }`}
+                    >
+                      <TableCell
+                        padding='checkbox'
+                        className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                      >
+                        <Checkbox
+                          color='primary'
+                          checked={isItemSelected}
+                          inputProps={{
+                            'aria-labelledby': labelId,
+                          }}
+                          className='dark:text-blue-400'
+                          sx={{
+                            color: 'inherit',
+                            '&.Mui-checked': {
+                              color: 'inherit',
+                            },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        scope='row'
+                        padding='none'
+                        className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                      >
+                        <div className="max-w-[150px] truncate" title={row.name}>
+                          {row.name}
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align='right'
+                        className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                      >
+                        <div className="max-w-[100px] truncate" title={row.dni}>
+                          {row.dni}
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align='right'
+                        className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                      >
+                        {row.birthDate}
+                      </TableCell>
+                      <TableCell
+                        align='right'
+                        className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                      >
+                        {row.lastConsultation}
+                      </TableCell>
+                      <TableCell
+                        align='right'
+                        className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
+                      >
+                        <div className="max-w-[120px] truncate" title={row.diagnosis}>
+                          {row.diagnosis}
+                        </div>
+                      </TableCell>
+                      <TableCell align='right'>
+                        <Tooltip title='Abrir ficha'>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigate(`/dashboard-doctor/patients/${row.id}`)
+                            }}
+                            size='small'
+                            variant='outlined'
+                            className='flex justify-center items-center dark:border-primary dark:text-primary'
+                            endIcon={<FaArrowRight size={14} className='' />}
+                          >
+                            Ver
+                          </Button>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+                {emptyRows > 0 && (
                   <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role='checkbox'
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                    className={`dark:hover:bg-gray-700 dark:border-gray-700 ${
-                      isItemSelected
-                        ? 'dark:bg-gray-700 dark:text-gray-200'
-                        : 'dark:bg-gray-800 dark:text-gray-300'
-                    }`}
+                    style={{
+                      height: (dense ? 33 : 53) * emptyRows,
+                    }}
+                    className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
                   >
                     <TableCell
-                      padding='checkbox'
-                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
-                    >
-                      <Checkbox
-                        color='primary'
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                        className='dark:text-blue-400'
-                        sx={{
-                          color: 'inherit',
-                          '&.Mui-checked': {
-                            color: 'inherit',
-                          },
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      component='th'
-                      id={labelId}
-                      scope='row'
-                      padding='none'
-                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
-                    >
-                      {row.name}
-                    </TableCell>
-                    <TableCell
-                      align='right'
-                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
-                    >
-                      {row.dni}
-                    </TableCell>
-                    <TableCell
-                      align='right'
-                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
-                    >
-                      {row.birthDate}
-                    </TableCell>
-                    <TableCell
-                      align='right'
-                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
-                    >
-                      {row.lastConsultation}
-                    </TableCell>
-                    <TableCell
-                      align='right'
-                      className='dark:bg-transparent dark:text-gray-300 dark:border-gray-700'
-                    >
-                      {row.diagnosis}
-                    </TableCell>
-                    <TableCell align='right'>
-                      <Tooltip title='Abrir ficha'>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            navigate(`/dashboard-doctor/patients/${row.id}`)
-                          }}
-                          size='small'
-                          variant='outlined'
-                          className='flex justify-center items-center dark:border-primary dark:text-primary'
-                          endIcon={<FaArrowRight size={14} className='' />}
-                        >
-                          Ver
-                        </Button>
-                      </Tooltip>
-                    </TableCell>
+                      colSpan={6}
+                      className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
+                    />
                   </TableRow>
-                )
-              })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                  className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
-                >
-                  <TableCell
-                    colSpan={6}
-                    className='dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
-                  />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'

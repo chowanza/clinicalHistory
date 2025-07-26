@@ -8,7 +8,6 @@ import {
   PDFDownloadLink,
 } from '@react-pdf/renderer'
 import { calcularEdadPediatrica } from '../../utils/ageUtils'
-import { calculatePercentiles } from './Percentiles'
 
 const PatientPDF = ({ patient }) => {
   const [inputs, setInputs] = useState({
@@ -17,13 +16,6 @@ const PatientPDF = ({ patient }) => {
     length: '',
     sex: '',
     weight: '',
-  })
-
-  const [percentiles, setPercentiles] = useState({
-    weight: { z: '', percentile: '' },
-    length: { z: '', percentile: '' },
-    head: { z: '', percentile: '' },
-    weightLength: { z: '', percentile: '' },
   })
 
   useEffect(() => {
@@ -38,15 +30,6 @@ const PatientPDF = ({ patient }) => {
       }))
     }
   }, [patient])
-
-  useEffect(() => {
-    if (inputs.head != '') {
-      setPercentiles((prev) => ({
-        ...prev,
-        ...calculatePercentiles(inputs),
-      }))
-    }
-  }, [inputs])
 
   const styles = StyleSheet.create({
     page: {
@@ -110,13 +93,12 @@ const PatientPDF = ({ patient }) => {
             <View style={styles.column}>
               <Text>Nombres: {patient.firstNames}</Text>
               <Text>Apellidos: {patient.lastNames}</Text>
-              <Text>Fecha Nacimiento: {patient.birthDate}</Text>
-              <Text>Edad: {patient.actualAge}</Text>
+              <Text>Fecha de Nacimiento: {patient.birthDate}</Text>
             </View>
             <View style={styles.column}>
-              <Text>Dirección: {patient.address}</Text>
               <Text>Teléfono: {patient.phone}</Text>
               <Text>Email: {patient.email}</Text>
+              <Text>Dirección: {patient.address}</Text>
             </View>
           </View>
         </View>
@@ -126,12 +108,11 @@ const PatientPDF = ({ patient }) => {
           <Text style={styles.sectionTitle}>Información Familiar</Text>
           <View style={styles.twoColumns}>
             <View style={styles.column}>
-              <Text>Padre: {patient.dadName}</Text>
-              <Text>Madre: {patient.momName}</Text>
-              <Text>Obstetra: {patient.obstetrician}</Text>
+              <Text>Nombre del Padre: {patient.dadName}</Text>
+              <Text>Nombre de la Madre: {patient.momName}</Text>
             </View>
             <View style={styles.column}>
-              <Text>Historia Familiar: {patient.familiar}</Text>
+              <Text>Obstetra/Ginecólogo: {patient.obstetrician}</Text>
             </View>
           </View>
         </View>
@@ -162,38 +143,14 @@ const PatientPDF = ({ patient }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Medidas</Text>
           <View style={styles.medicalData}>
-            <Text>Peso: {patient.weight}</Text>
-            <Text>Talla: {patient.size}</Text>
-            <Text>PC: {patient.pc}</Text>
+            <Text>Peso: {patient.weight} kg</Text>
+            <Text>Talla: {patient.size} cm</Text>
+            <Text>PC: {patient.pc} cm</Text>
+            <Text>Circ. Abdominal: {patient.abdominalCircumference} cm</Text>
           </View>
         </View>
 
-        {/* 5. PERCENTILES */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Percentiles</Text>
-          <View style={styles.twoColumns}>
-            <View style={styles.column}>
-              <Text>Peso para la edad: {percentiles.weight.percentile}%</Text>
-            </View>
-            <View style={styles.column}>
-              <Text>Talla para la edad: {percentiles.length.percentile}%</Text>
-            </View>
-          </View>
-          <View style={styles.twoColumns}>
-            <View style={styles.column}>
-              <Text>
-                Peso para la talla: {percentiles.weightLength.percentile}%
-              </Text>
-            </View>
-            <View style={styles.column}>
-              <Text>
-                Perimetro Cefalico para la edad: {percentiles.head.percentile}%
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* 6. DIAGNÓSTICO */}
+        {/* 5. DIAGNÓSTICO */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Diagnóstico</Text>
           <Text>Diagnóstico: {patient.diagnostic}</Text>
@@ -201,7 +158,7 @@ const PatientPDF = ({ patient }) => {
           <Text>Exámenes Solicitados: {patient.exams}</Text>
         </View>
 
-        {/* 7. INFORMACIÓN MÉDICA */}
+        {/* 6. INFORMACIÓN MÉDICA */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Información Médica</Text>
           <View style={styles.twoColumns}>
@@ -217,9 +174,10 @@ const PatientPDF = ({ patient }) => {
 
         {/* Firma */}
         <View style={styles.signature}>
-          <Text>
-            Dr. {patient.user?.firstName} {patient.user?.lastName}
-          </Text>
+          <Text>Dra. Eunice Brito G.</Text>
+          <Text>Pediatra - Neonatólogo</Text>
+          <Text>M.P.P.S: 53988 / CM 4.699</Text>
+          <Text>C.I.:V-8.918.808</Text>
         </View>
       </Page>
     </Document>

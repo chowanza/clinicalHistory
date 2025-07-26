@@ -1,9 +1,20 @@
 import axios from './axios'
 
-const API = 'http://localhost:4000/api'
+const API_URL = 'http://localhost:4000/api'
 
-export const signupRequest = (user) => axios.post('/register', user)
+const signupRequest = (user) => {
+  console.log('Signup URL:', API_URL + '/register')
+  return axios.post('/register', user)
+}
 
-export const signinRequest = (user) => axios.post('/login', user)
+const signinRequest = (user) => {
+  console.log('Signin URL:', API_URL + '/login')
+  return axios.post('/login', user)
+}
 
-export const verifyTokenRequest = () => axios.get('/verify')
+const verifyTokenRequest = () => {
+  console.log('Verify URL:', API_URL + '/verify')
+  return axios.get('/verify')
+}
+
+export { signupRequest, signinRequest, verifyTokenRequest }

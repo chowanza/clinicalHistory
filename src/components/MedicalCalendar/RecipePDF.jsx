@@ -33,25 +33,55 @@ const RecipePDF = ({ data, patient }) => {
       textAlign: 'center',
       alignSelf: 'flex-end',
     },
+    patientInfo: {
+      marginBottom: 20,
+      padding: 10,
+      backgroundColor: '#f5f5f5',
+    },
+    date: {
+      fontSize: 10,
+      color: '#666',
+      marginBottom: 10,
+    }
   })
+
+  // Asegurar que los datos sean válidos
+  const recipeContent = typeof data === 'string' ? data : 'No hay receta para esta fecha'
+  const patientName = patient?.firstNames && patient?.lastNames 
+    ? `${patient.firstNames} ${patient.lastNames}` 
+    : 'Paciente'
+  const doctorName = patient?.user?.firstName && patient?.user?.lastName
+    ? `Dr. ${patient.user.firstName} ${patient.user.lastName}`
+    : 'Dr. Médico'
+
   return (
-    <>
-      <Document>
-        <Page style={styles.page}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Récipe Médico</Text>
-          </View>
-          <View style={styles.content}>
-            <Text style={styles.text}>{data}</Text>
-          </View>
-          <View style={styles.signature}>
-            <Text>
-              Dr. {patient.user?.firstName} {patient.user?.lastName}
-            </Text>
-          </View>
-        </Page>
-      </Document>
-    </>
+    <Document>
+      <Page style={styles.page}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Récipe Médico</Text>
+        </View>
+        
+        <View style={styles.patientInfo}>
+          <Text style={styles.date}>
+            Fecha: {new Date().toLocaleDateString('es-ES')}
+          </Text>
+          <Text style={styles.text}>
+            Paciente: {patientName}
+          </Text>
+        </View>
+        
+        <View style={styles.content}>
+          <Text style={styles.text}>{recipeContent}</Text>
+        </View>
+        
+        <View style={styles.signature}>
+          <Text>Dra. Eunice Brito G.</Text>
+          <Text>Pediatra - Neonatólogo</Text>
+          <Text>M.P.P.S: 53988 / CM 4.699</Text>
+          <Text>C.I.:V-8.918.808</Text>
+        </View>
+      </Page>
+    </Document>
   )
 }
 

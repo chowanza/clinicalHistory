@@ -50,16 +50,45 @@ export function PatientProvider({ children }) {
   }
 
   const createPatient = async (patientData) => {
-    const res = await createPatientsRequest(patientData)
-    console.log(res)
+    try {
+      console.log('=== CREATING PATIENT ===');
+      console.log('Patient data to send:', patientData);
+      console.log('Patient data type:', typeof patientData);
+      console.log('Patient data keys:', Object.keys(patientData));
+      
+      const res = await createPatientsRequest(patientData)
+      console.log('Response:', res)
+      return res.data // Retornar el paciente creado
+    } catch (error) {
+      console.error('Error creating patient:', error)
+      console.error('Error response:', error.response)
+      console.error('Error response data:', error.response?.data)
+      
+      // Manejar errores específicos
+      if (error.message.includes('Unexpected token')) {
+        throw new Error('El servidor no está respondiendo correctamente. Verifique que el backend esté ejecutándose en http://localhost:4000')
+      } else if (error.response?.status === 400) {
+        const errorMessage = error.response?.data?.message || error.response?.data || 'Error de validación en los datos'
+        throw new Error(errorMessage)
+      } else {
+        throw error // Propaga el error para que el formulario lo muestre
+      }
+    }
   }
 
   const getPatient = async (id) => {
     try {
+      console.log('=== GET PATIENT DEBUG ===')
+      console.log('Fetching patient with ID:', id)
       const res = await getPatientRequest(id)
+      console.log('Patient response:', res)
+      console.log('Patient data:', res.data)
       setPatient(res.data)
+      console.log('Patient state updated')
     } catch (error) {
-      console.error(error)
+      console.error('Error fetching patient:', error)
+      console.error('Error response:', error.response)
+      console.error('Error message:', error.message)
     }
   }
 

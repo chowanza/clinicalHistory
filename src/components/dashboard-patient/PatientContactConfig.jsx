@@ -100,6 +100,12 @@ export const patientContactSections = [
         colSpan: 2,
       },
       {
+        title: 'Historia Familiar',
+        icon: <FaUsers />,
+        content: '{familiar}',
+        colSpan: 2,
+      },
+      {
         title: 'Motivo de Consulta',
         icon: <FaUserEdit />,
         content: '{consultMotive}',
@@ -133,6 +139,12 @@ export const patientContactSections = [
         title: 'Perímetro Cefálico',
         icon: <FaSkull />,
         content: '{pc} cm',
+        colSpan: 1,
+      },
+      {
+        title: 'Circunferencia Abdominal',
+        icon: <FaRulerCombined />,
+        content: '{abdominalCircumference} cm',
         colSpan: 1,
       },
     ],

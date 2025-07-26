@@ -22,27 +22,44 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (user) => {
     try {
+      setErrors([]) // Limpiar errores anteriores
       const res = await signupRequest(user)
       setUser(res.data)
       setIsAuthenticated(true)
     } catch (error) {
-      console.log(error.response)
-      setErrors(error.response.data)
+      console.error('Error en signup:', error)
+      if (error.response && error.response.data) {
+        if (Array.isArray(error.response.data)) {
+          setErrors(error.response.data)
+        } else if (error.response.data.message) {
+          setErrors([error.response.data.message])
+        } else {
+          setErrors(['Error en el registro'])
+        }
+      } else {
+        setErrors(['Error de conexión'])
+      }
     }
   }
 
   const signin = async (user) => {
     try {
+      setErrors([]) // Limpiar errores anteriores
       const res = await signinRequest(user)
       setUser(res.data)
       setIsAuthenticated(true)
     } catch (error) {
-      if (Array.isArray(error.response.data)) {
-        setErrors(error.response.data)
-      } else if (error.response.data.message) {
-        setErrors([error.response.data.message])
+      console.error('Error en signin:', error)
+      if (error.response && error.response.data) {
+        if (Array.isArray(error.response.data)) {
+          setErrors(error.response.data)
+        } else if (error.response.data.message) {
+          setErrors([error.response.data.message])
+        } else {
+          setErrors(['Error en el inicio de sesión'])
+        }
       } else {
-        setErrors(['An unknown error occurred'])
+        setErrors(['Error de conexión'])
       }
     }
   }
@@ -52,13 +69,14 @@ export const AuthProvider = ({ children }) => {
     setUser(null)
     setPatients([])
     setIsAuthenticated(false)
+    setErrors([])
   }
 
   useEffect(() => {
     if (errors.length > 0) {
       const timer = setTimeout(() => {
         setErrors([])
-      }, 3000)
+      }, 5000) // Aumentado a 5 segundos
       return () => clearTimeout(timer)
     }
   }, [errors])
@@ -73,7 +91,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const res = await verifyTokenRequest(cookies.token)
+        const res = await verifyTokenRequest()
         if (!res.data) {
           setIsAuthenticated(false)
           setLoading(false)
@@ -83,6 +101,7 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data)
         setLoading(false)
       } catch (error) {
+        console.error('Error verificando token:', error)
         setIsAuthenticated(false)
         setUser(null)
         setLoading(false)

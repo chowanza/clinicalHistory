@@ -85,6 +85,9 @@ export const medicalHistoryFields = [
     rows: '3',
     dataValue: '{patient.familiar}',
   },
+]
+
+export const consultationFields = [
   {
     name: 'consultMotive',
     label: 'Motivo de Consulta',
@@ -105,22 +108,51 @@ export const medicalHistoryFields = [
 
 export const measurementsFields = [
   {
+    name: 'consultationDate',
+    label: 'Fecha de Consulta',
+    type: 'datetime-local',
+    colSpan: 'col-span-3',
+    dataValue: '{patient.consultationDate}',
+  },
+  {
     name: 'weight',
-    label: 'Peso (kg)',
+    label: 'Peso',
+    type: 'number',
+    min: 0,
+    step: 'any',
+    unit: 'kg',
     colSpan: 'col-span-3',
     dataValue: '{patient.weight}',
   },
   {
     name: 'size',
-    label: 'Talla (cm)',
+    label: 'Talla',
+    type: 'number',
+    min: 0,
+    step: 'any',
+    unit: 'cm',
     colSpan: 'col-span-3',
     dataValue: '{patient.size}',
   },
   {
     name: 'pc',
-    label: 'Perímetro Cefálico (cm)',
+    label: 'Perímetro Cefálico',
+    type: 'number',
+    min: 0,
+    step: 'any',
+    unit: 'cm',
     colSpan: 'col-span-3',
     dataValue: '{patient.pc}',
+  },
+  {
+    name: 'abdominalCircumference',
+    label: 'Circunferencia Abdominal',
+    type: 'number',
+    min: 0,
+    step: 'any',
+    unit: 'cm',
+    colSpan: 'col-span-3',
+    dataValue: '{patient.abdominalCircumference}',
   },
 ]
 

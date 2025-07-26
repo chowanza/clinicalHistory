@@ -65,18 +65,20 @@ const DashboardDoctor = () => {
           <PatientSearchBar filter={filter} setFilter={setFilter} />
           <div className='flex gap-4 w-full md:w-auto'>
             <button
-              className='p-3 text-white font-semibold rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-secondary/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse flex-1 md:flex-none'
+              className='p-3 text-white font-semibold rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-secondary/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse flex-1 md:flex-none text-xs sm:text-sm'
               onClick={openFormModal}
             >
               <FaPlus />
-              <span className='whitespace-nowrap'>Agregar Nuevo Registro</span>
+              <span className='hidden sm:inline whitespace-nowrap'>Agregar Nuevo Registro</span>
+              <span className='sm:hidden'>Agregar</span>
             </button>
             <button
-              className='p-3 text-white font-semibold rounded-xl bg-[#10793F] flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#10793F]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse flex-1 md:flex-none'
+              className='p-3 text-white font-semibold rounded-xl bg-[#10793F] flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#10793F]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse flex-1 md:flex-none text-xs sm:text-sm'
               onClick={openImportModal}
             >
               <FaFileExport />
-              <span className='whitespace-nowrap'>Importar desde Excel</span>
+              <span className='hidden sm:inline whitespace-nowrap'>Importar desde Excel</span>
+              <span className='sm:hidden'>Importar</span>
             </button>
           </div>
         </div>

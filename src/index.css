@@ -55,3 +55,46 @@
 .dark .input-date-color::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
+
+/* Mejoras para móviles */
+@media (max-width: 640px) {
+  /* Asegurar que los inputs no se desborden en móviles */
+  input, textarea, select {
+    font-size: 16px !important; /* Evita zoom en iOS */
+  }
+  
+  /* Mejorar la legibilidad en pantallas pequeñas */
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  
+  /* Ajustar espaciado en móviles */
+  .p-2 {
+    padding: 0.5rem;
+  }
+  
+  /* Mejorar botones en móviles */
+  button {
+    min-height: 44px; /* Tamaño mínimo recomendado para touch */
+  }
+  
+  /* Ajustar modales en móviles */
+  .modal-content {
+    margin: 0.5rem;
+    border-radius: 0.75rem;
+  }
+}
+
+/* Mejoras para tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Ajustar tamaños de fuente para tablets */
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  /* Mejorar espaciado en tablets */
+  .gap-3 {
+    gap: 0.75rem;
+  }
+}

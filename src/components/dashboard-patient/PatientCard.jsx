@@ -18,6 +18,17 @@ const PatientCard = ({
     }
   }, [patient.birthDate])
 
+  // Función para obtener las iniciales correctas
+  const getInitials = (firstNames, lastNames) => {
+    const firstName = firstNames?.split(' ')[0] || ''
+    const lastName = lastNames?.split(' ')[0] || ''
+    
+    const firstInitial = firstName.charAt(0).toUpperCase()
+    const lastInitial = lastName.charAt(0).toUpperCase()
+    
+    return `${firstInitial}${lastInitial}`
+  }
+
   if (isLoading) {
     return (
       <section className='w-full p-7 bg-white dark:bg-slate-800 rounded-lg shadow-md flex gap-5'>
@@ -65,8 +76,7 @@ const PatientCard = ({
       <div className='w-28 h-28'>
         <div className='w-full h-full bg-blue-100 border-[3px] border-blue-500 rounded-full flex items-center justify-center'>
           <span className='text-4xl text-blue-500 font-bold'>
-            {patient.firstNames.charAt(0).toUpperCase()}
-            {patient.lastNames.charAt(0).toUpperCase()}
+            {getInitials(patient.firstNames, patient.lastNames)}
           </span>
         </div>
       </div>

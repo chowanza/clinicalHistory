@@ -1,13 +1,14 @@
 import { FaArrowRightFromBracket } from 'react-icons/fa6'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { usePatients } from '../context/PatientsContext'
 import { useEffect, useState, useCallback } from 'react'
 import { patientContactSections } from '../components/dashboard-patient/PatientContactConfig'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { calculateAge, calcularEdadPediatrica } from '../utils/ageUtils'
-import { Percentiles } from '../components/dashboard-patient/Percentiles'
 import PatientCard from '../components/dashboard-patient/PatientCard'
 import PatientInfoCard from '../components/dashboard-patient/PatientInfoCard'
+import ConsultationsSummary from '../components/dashboard-patient/ConsultationsSummary'
+import AttachmentsGallery from '../components/dashboard-patient/AttachmentsGallery'
 import Header from '../components/ui/Header'
 import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
@@ -16,9 +17,11 @@ import VaccinationSchedule from '../components/dashboard-patient/VaccinationSche
 import MedicalCalendar from '../components/MedicalCalendar/MedicalCalendar'
 
 const DashboardPatient = () => {
-  const { id } = useParams()
+  const { id, consultationId } = useParams()
+  const navigate = useNavigate()
   const { patient, getPatient } = usePatients()
   const [isLoading, setIsLoading] = useState(true)
+  const [consultationData, setConsultationData] = useState(null)
   const [inputs, setInputs] = useState({
     age: {},
     head: '',
@@ -71,26 +74,51 @@ const DashboardPatient = () => {
         setIsLoading(true)
         try {
           await getPatient(id)
+          
+          // Si hay consultationId, obtener los datos de esa consulta específica
+          if (consultationId) {
+            const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations`, {
+              credentials: 'include'
+            })
+            if (response.ok) {
+              const consultations = await response.json()
+              const consultation = consultations.find(c => c._id === consultationId)
+              if (consultation) {
+                setConsultationData(consultation)
+              }
+            }
+          }
         } finally {
           setIsLoading(false)
         }
       }
     }
     fetchData()
-  }, [id])
+  }, [id, consultationId])
 
   useEffect(() => {
     if (patient) {
+      // Si tenemos datos de consulta específica, usar esos datos
+      const dataToUse = consultationData || patient
+      
       setInputs((prev) => ({
         ...prev,
         age: calcularEdadPediatrica(patient.birthDate),
-        head: patient.pc,
-        length: patient.size,
+        head: dataToUse.pc,
+        length: dataToUse.size,
         sex: 'male',
-        weight: patient.weight,
+        weight: dataToUse.weight,
       }))
     }
-  }, [patient])
+  }, [patient, consultationData])
+
+  // Función para obtener el título de la página
+  const getPageTitle = () => {
+    if (consultationId && consultationData) {
+      return `Consulta - ${consultationData.consultMotive}`
+    }
+    return 'Historia Clínica del Paciente'
+  }
 
   return (
     <>
@@ -138,14 +166,42 @@ const DashboardPatient = () => {
         <MedicalCalendar />
       </Modal>
       <main className='w-full grid place-items-center bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark min-h-screen pt-2 pb-10'>
-        <article className='w-full p-4 px-60 flex flex-col gap-6 relative'>
+        <article className='w-full p-4 max-w-6xl mx-auto flex flex-col gap-6 relative'>
+          {/* Título de la página */}
+          {consultationId && consultationData && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+              <h1 className="text-xl font-bold text-blue-800 dark:text-blue-200">
+                {getPageTitle()}
+              </h1>
+              <p className="text-sm text-blue-600 dark:text-blue-300">
+                Fecha: {new Date(consultationData.consultationDate).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+          
           <PatientCard isLoading={isLoading} patient={patient} />
+          
+          {/* Solo mostrar ConsultationsSummary si no estamos viendo una consulta específica */}
+          {!consultationId && (
+            <ConsultationsSummary 
+              patientId={id} 
+              onConsultationUpdate={(consultations) => {
+                // Actualizar el estado local si es necesario
+                console.log('Consultations updated:', consultations)
+              }}
+            />
+          )}
+          
           {patientContactSections.map((section, index) => {
             const processedSections = section.sections.map((item) => ({
               ...item,
               content: item.content.replace(
                 /\{(.*?)\}/g,
-                (match, field) => patient[field] || ''
+                (match, field) => {
+                  // Si tenemos datos de consulta específica, usar esos datos
+                  const dataToUse = consultationData || patient
+                  return dataToUse[field] || ''
+                }
               ),
             }))
 
@@ -155,21 +211,16 @@ const DashboardPatient = () => {
               )?.formattedAge
             }
 
+            // Eliminar la sección de percentiles
             if (section.title == 'Medidas') {
               return (
-                <span
+                <PatientInfoCard
                   key={index}
-                  className='flex flex-col gap-6 justify-center items-center'
-                >
-                  <PatientInfoCard
-                    key={index}
-                    title={section.title}
-                    titleIcon={section.titleIcon}
-                    sections={processedSections}
-                    isLoading={isLoading}
-                  />
-                  {isLoading ? '' : <Percentiles inputs={inputs} />}
-                </span>
+                  title={section.title}
+                  titleIcon={section.titleIcon}
+                  sections={processedSections}
+                  isLoading={isLoading}
+                />
               )
             }
 
@@ -183,9 +234,25 @@ const DashboardPatient = () => {
               />
             )
           })}
-          <div className='w-full flex gap-4 items-center justify-end'>
+          
+          {/* Sección de Anexos */}
+          {consultationData && consultationData.attachments && consultationData.attachments.length > 0 && (
+            <AttachmentsGallery 
+              attachments={consultationData.attachments}
+              title="Anexos de la Consulta"
+            />
+          )}
+          
+          {/* Anexos del paciente (si no estamos viendo una consulta específica) */}
+          {!consultationId && patient && patient.attachments && patient.attachments.length > 0 && (
+            <AttachmentsGallery 
+              attachments={patient.attachments}
+              title="Anexos del Paciente"
+            />
+          )}
+          <div className='w-full flex flex-col sm:flex-row gap-4 items-center justify-end'>
             <Link
-              to='/dashboard-doctor'
+              to={consultationId ? `/dashboard-doctor/patients/${id}` : '/dashboard-doctor'}
               className='h-10 p-3 font-semibold rounded-xl flex items-center gap-2 text-[#FA0F00] border-2 border-[#FA0F00] cursor-pointer
                     hover:scale-105 transition-transform duration-300 
                     hover:shadow-lg hover:shadow-[#FA0F00]/50 
@@ -193,7 +260,7 @@ const DashboardPatient = () => {
                     hover:bg-opacity-80 hover:animate-pulse'
             >
               <FaArrowRightFromBracket className='rotate-180' />
-              Volver
+              {consultationId ? 'Volver a Consultas' : 'Volver'}
             </Link>
             {isLoading ? (
               <button
