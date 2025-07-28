@@ -48,10 +48,10 @@ const ResetPasswordForm = () => {
       const result = await response.json()
 
       if (response.ok) {
-        setMessage(result.message)
+        setMessage(`✅ ${result.message}\n\n🔄 Redirigiendo al inicio de sesión en 3 segundos...`)
         setTimeout(() => {
           navigate('/signin')
-        }, 2000)
+        }, 3000)
       } else {
         setError(result.message || 'Error al restablecer la contraseña')
       }
@@ -67,21 +67,37 @@ const ResetPasswordForm = () => {
       <div className='w-full mx-auto p-4 sm:p-6 flex flex-col gap-4 sm:gap-5'>
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-red-600 mb-2">
-            Token Inválido
+            🔗 Enlace Inválido
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             El enlace de recuperación de contraseña es inválido o ha expirado.
+            <br />
+            <span className="text-xs text-gray-500">
+              ⏰ Los enlaces expiran después de 10 minutos por seguridad.
+            </span>
           </p>
-          <button
-            onClick={() => navigate('/signin')}
-            className='font-semibold bg-gradient-to-r from-primary to-secondary p-2 sm:p-3 rounded-xl text-white border-slate-400 border cursor-pointer
-               hover:scale-105 transition-transform duration-300 
-               hover:shadow-lg hover:shadow-secondary/50 
-               hover:outline-2 hover:outline-white 
-               hover:bg-opacity-80 hover:animate-pulse text-sm sm:text-base'
-          >
-            Volver al inicio de sesión
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate('/forgot-password')}
+              className='font-semibold bg-gradient-to-r from-blue-500 to-blue-600 p-2 sm:p-3 rounded-xl text-white border-slate-400 border cursor-pointer
+                 hover:scale-105 transition-transform duration-300 
+                 hover:shadow-lg hover:shadow-blue-500/50 
+                 hover:outline-2 hover:outline-white 
+                 hover:bg-opacity-80 hover:animate-pulse text-sm sm:text-base mr-2'
+            >
+              🔄 Solicitar nuevo enlace
+            </button>
+            <button
+              onClick={() => navigate('/signin')}
+              className='font-semibold bg-gradient-to-r from-primary to-secondary p-2 sm:p-3 rounded-xl text-white border-slate-400 border cursor-pointer
+                 hover:scale-105 transition-transform duration-300 
+                 hover:shadow-lg hover:shadow-secondary/50 
+                 hover:outline-2 hover:outline-white 
+                 hover:bg-opacity-80 hover:animate-pulse text-sm sm:text-base'
+            >
+              Volver al inicio de sesión
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -91,11 +107,16 @@ const ResetPasswordForm = () => {
     <div className='w-full mx-auto p-4 sm:p-6 flex flex-col gap-4 sm:gap-5'>
       <div className="text-center mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2">
-          Restablecer Contraseña
+          🔑 Restablecer Contraseña
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Ingresa tu nueva contraseña
+          Ingresa tu nueva contraseña. Asegúrate de que sea segura y fácil de recordar.
         </p>
+        <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <p className="text-xs text-blue-600 dark:text-blue-400">
+            ⏰ Este enlace expirará en 10 minutos por seguridad
+          </p>
+        </div>
       </div>
 
       {message && (

@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FaEnvelope, FaArrowLeft } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
+import { FaEnvelope, FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa'
 
 const ForgotPasswordForm = ({ onBackToSignIn }) => {
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState('')
   
   const {
     register,
@@ -17,6 +21,8 @@ const ForgotPasswordForm = ({ onBackToSignIn }) => {
     setIsLoading(true)
     setMessage('')
     setError('')
+    setShowPreview(false)
+    setPreviewUrl('')
     
     try {
       const response = await fetch('http://localhost:4000/api/auth/forgot-password', {
@@ -30,11 +36,21 @@ const ForgotPasswordForm = ({ onBackToSignIn }) => {
       const result = await response.json()
 
       if (response.ok) {
-        setMessage(result.message)
-        // En un entorno real, aquí mostrarías un mensaje de éxito
-        // Por ahora, mostramos el token para pruebas
-        if (result.resetToken) {
-          setMessage(`${result.message}\n\nToken para pruebas: ${result.resetToken}`)
+        if (result.emailSent) {
+          setMessage(`${result.message}\n\n✅ Email enviado exitosamente.\n\n📧 Revisa tu bandeja de entrada y sigue el enlace para restablecer tu contraseña.`)
+          if (result.previewUrl) {
+            setPreviewUrl(result.previewUrl)
+            setShowPreview(true)
+          }
+          
+          // Mostrar información adicional sobre el proceso
+          setTimeout(() => {
+            setMessage(prev => prev + '\n\n⏰ El enlace expirará en 10 minutos por seguridad.')
+          }, 2000)
+          
+        } else {
+          // Fallback para desarrollo
+          setMessage(`${result.message}\n\n🔑 Token para desarrollo: ${result.resetToken}\n\n📝 Copia este token y ve a la página de reset de contraseña.`)
         }
       } else {
         setError(result.message || 'Error al procesar la solicitud')
@@ -44,6 +60,10 @@ const ForgotPasswordForm = ({ onBackToSignIn }) => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleBackToSignIn = () => {
+    navigate('/signin')
   }
 
   return (
@@ -68,6 +88,20 @@ const ForgotPasswordForm = ({ onBackToSignIn }) => {
       {error && (
         <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl text-sm'>
           {error}
+        </div>
+      )}
+
+      {showPreview && previewUrl && (
+        <div className='bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-xl text-sm'>
+          <p className="font-semibold mb-2">📧 Vista previa del email:</p>
+          <a 
+            href={previewUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            Ver email enviado
+          </a>
         </div>
       )}
 
@@ -106,7 +140,7 @@ const ForgotPasswordForm = ({ onBackToSignIn }) => {
 
         <button
           type='button'
-          onClick={onBackToSignIn}
+          onClick={handleBackToSignIn}
           className='flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white transition-colors text-sm sm:text-base'
         >
           <FaArrowLeft />

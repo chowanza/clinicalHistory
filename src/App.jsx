@@ -4,6 +4,8 @@ import AuthContainer from './pages/Auth'
 import NotFound from './pages/NotFound'
 import SignInForm from './components/auth/SignInForm'
 import SignUpForm from './components/auth/SignUpForm'
+import ForgotPasswordForm from './components/auth/ForgotPasswordForm'
+import ResetPasswordForm from './components/auth/ResetPasswordForm'
 import DashboardDoctor from './pages/DashboardDoctor'
 import DashboardPatient from './pages/DashboardPatient'
 import ConsultationsPage from './pages/ConsultationsPage'
@@ -26,8 +28,8 @@ const App = () => {
               <Route path='/' element={<AuthContainer />}>
                 <Route index path='signin' element={<SignInForm />} />
                 <Route path='signup' element={<SignUpForm />} />
-                <Route path='forgot-password' element={<SignInForm />} />
-                <Route path='reset-password' element={<SignInForm />} />
+                <Route path='forgot-password' element={<ForgotPasswordForm />} />
+                <Route path='reset-password' element={<ResetPasswordForm />} />
               </Route>
               <Route element={<ProtectedRoute />}>
                 <Route

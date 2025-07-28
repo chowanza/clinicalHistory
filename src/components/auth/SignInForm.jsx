@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useAuth } from '../../context/AuthContext'
 
 const SignInForm = ({ onForgotPassword }) => {
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -13,6 +14,10 @@ const SignInForm = ({ onForgotPassword }) => {
   const onSubmit = handleSubmit((data) => {
     signin(data)
   })
+
+  const handleForgotPassword = () => {
+    navigate('/forgot-password')
+  }
 
   return (
     <div className='w-full mx-auto p-4 sm:p-6 flex flex-col gap-4 sm:gap-5'>
@@ -43,7 +48,7 @@ const SignInForm = ({ onForgotPassword }) => {
         </div>
         <button
           type='button'
-          onClick={onForgotPassword}
+          onClick={handleForgotPassword}
           className='font-semibold text-secondary self-end text-xs sm:text-sm hover:underline'
         >
           Olvidaste tu contraseña?

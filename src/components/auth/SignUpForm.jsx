@@ -25,6 +25,15 @@ const SignUpForm = () => {
         </div>
       ))}
       <form className='flex flex-col gap-3 sm:gap-4' onSubmit={onSubmit}>
+        <div className='flex flex-col gap-2'>
+          <label htmlFor='username' className='text-sm sm:text-base'>Nombre de Usuario:</label>
+          <input
+            className='border-slate-400 bg-slate-50 border p-2 sm:p-3 rounded-xl dark:bg-slate-700 placeholder:text-red-500 text-sm sm:text-base'
+            type='text'
+            {...register('username', { required: true })}
+            placeholder={errors.username && 'Username is required'}
+          />
+        </div>
         <div className='flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center items-center'>
           <div className='flex flex-col gap-2 w-full sm:w-[calc(50%_-_0.25rem)]'>
             <label htmlFor='first-name' className='text-sm sm:text-base'>Nombre:</label>
