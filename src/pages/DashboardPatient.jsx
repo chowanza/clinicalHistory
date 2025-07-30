@@ -236,10 +236,102 @@ const DashboardPatient = () => {
           })}
           
           {/* Sección de Anexos */}
-          {consultationData && consultationData.attachments && consultationData.attachments.length > 0 && (
+          {consultationData && (
             <AttachmentsGallery 
-              attachments={consultationData.attachments}
+              key={`attachments-${consultationData._id}-${(consultationData.attachments || []).length}`}
+              attachments={consultationData.attachments || []}
               title="Anexos de la Consulta"
+              patientId={id}
+              consultationId={consultationId}
+              onAttachmentDeleted={async (filename) => {
+                console.log('=== ON ATTACHMENT DELETED (DashboardPatient) ===');
+                console.log('Filename to delete:', filename);
+                console.log('Patient ID:', id);
+                console.log('Consultation ID:', consultationId);
+                
+                // Simplemente recargar los datos de la consulta, igual que se hace con las consultas
+                try {
+                  console.log('Fetching updated consultation from server...');
+                  const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+                    credentials: 'include'
+                  });
+                  
+                  console.log('Response status:', response.status);
+                  
+                  if (response.ok) {
+                    const updatedConsultation = await response.json();
+                    console.log('Got updated consultation from server:', updatedConsultation);
+                    console.log('Updated consultation attachments count:', updatedConsultation.attachments?.length || 0);
+                    setConsultationData(updatedConsultation);
+                    console.log('Consultation data updated in state');
+                  } else {
+                    console.error('Failed to get updated consultation from server');
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                  }
+                } catch (error) {
+                  console.error('Error fetching updated consultation:', error);
+                }
+              }}
+              onAttachmentsAdded={async (newAttachments) => {
+                try {
+                  // Preparar los datos de la consulta con los nuevos anexos
+                  const currentAttachments = consultationData.attachments || [];
+                  const allAttachments = [...currentAttachments, ...newAttachments];
+                  
+                  console.log('Current attachments count:', currentAttachments.length);
+                  console.log('New attachments count:', newAttachments.length);
+                  console.log('Total attachments count:', allAttachments.length);
+                  
+                                      // Convertir los anexos al formato esperado por el backend
+                    const formattedAttachments = allAttachments.map(attachment => ({
+                      name: attachment.originalName || attachment.filename,
+                      type: attachment.mimeType,
+                      size: attachment.size,
+                      data: attachment.url // El backend espera 'data' en lugar de 'url'
+                    }));
+                    
+                    // Actualizar la consulta en el servidor con los nuevos anexos
+                    const updateData = {
+                      ...consultationData,
+                      attachments: formattedAttachments
+                    };
+                  
+                  console.log('Sending update to server:', updateData);
+                  
+                  const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                  });
+                  
+                  if (response.ok) {
+                    const updatedConsultation = await response.json();
+                    console.log('Consultation updated successfully:', updatedConsultation);
+                    setConsultationData(updatedConsultation);
+                  } else {
+                    console.error('Failed to update consultation on server');
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('Server error:', errorData);
+                    
+                    // Fallback: actualizar localmente
+                    setConsultationData(prev => ({
+                      ...prev,
+                      attachments: [...(prev.attachments || []), ...newAttachments]
+                    }));
+                  }
+                } catch (error) {
+                  console.error('Error updating consultation:', error);
+                  // Fallback: actualizar localmente
+                  setConsultationData(prev => ({
+                    ...prev,
+                    attachments: [...(prev.attachments || []), ...newAttachments]
+                  }));
+                }
+              }}
             />
           )}
           
@@ -248,6 +340,21 @@ const DashboardPatient = () => {
             <AttachmentsGallery 
               attachments={patient.attachments}
               title="Anexos del Paciente"
+              patientId={id}
+              onAttachmentDeleted={(filename) => {
+                // Actualizar el paciente localmente
+                setPatient(prev => ({
+                  ...prev,
+                  attachments: prev.attachments.filter(att => att.filename !== filename)
+                }))
+              }}
+              onAttachmentsAdded={(newAttachments) => {
+                // Actualizar el paciente localmente con los nuevos anexos
+                setPatient(prev => ({
+                  ...prev,
+                  attachments: [...(prev.attachments || []), ...newAttachments]
+                }))
+              }}
             />
           )}
           <div className='w-full flex flex-col sm:flex-row gap-4 items-center justify-end'>

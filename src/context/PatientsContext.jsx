@@ -21,12 +21,19 @@ export function PatientProvider({ children }) {
   const [patients, setPatients] = useState([])
   const [patient, setPatient] = useState({})
 
-  const updatePatients = async (patientData) => {
+  const updatePatients = async (id, patientData) => {
     try {
-      const res = await updatePatientsRequest(patientData.id, patientData.data)
+      console.log('=== UPDATE PATIENTS CONTEXT ===');
+      console.log('ID received:', id);
+      console.log('Patient data received:', patientData);
+      
+      const res = await updatePatientsRequest(id, patientData)
+      console.log('Update response:', res);
       setPatient(res.data)
     } catch (error) {
-      console.error(error)
+      console.error('Error in updatePatients:', error)
+      console.error('Error response:', error.response)
+      throw error; // Re-throw para que el formulario pueda manejar el error
     }
   }
 

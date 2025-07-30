@@ -155,7 +155,7 @@ const ConsultationsSummary = ({ patientId, onConsultationUpdate }) => {
           Cerrar
         </button>
         <FormPatient
-          patientData={null}
+          patientData={{ _id: patientId }}
           consultationData={editingConsultation}
           closeModal={() => setShowFormModal(false)}
           onSubmit={handleFormSubmit}

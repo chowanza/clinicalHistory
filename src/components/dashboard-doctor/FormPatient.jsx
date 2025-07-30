@@ -11,7 +11,7 @@ import {
   personalInfoFields,
 } from './formPatient/formFieldsConfig'
 import { useEffect, useState } from 'react'
-import { FaFileExcel, FaCheckCircle, FaUpload, FaTrash, FaEye } from 'react-icons/fa'
+import { FaFileExcel, FaCheckCircle, FaUpload, FaTrash, FaEye, FaFilePdf, FaFileWord, FaFileAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 const FormPatient = ({ 
@@ -24,12 +24,21 @@ const FormPatient = ({
   onSubmit = null,
   editMode = null
 }) => {
+  console.log('=== FORM PATIENT MOUNTED ===')
+  console.log('patientData prop:', patientData)
+  console.log('consultationData prop:', consultationData)
+  console.log('isConsultationMode prop:', isConsultationMode)
+  console.log('isNewConsultation prop:', isNewConsultation)
+  
   const { register, handleSubmit, reset, setValue, watch } = useForm({
     defaultValues: isConsultationMode ? consultationData : patientData,
   })
   const { createPatient, getPatients, updatePatients } = usePatients()
   const navigate = useNavigate()
   const [formError, setFormError] = useState('')
+  const [attachments, setAttachments] = useState([])
+  const [uploading, setUploading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Setear todos los valores del formulario cuando cambien los datos
   useEffect(() => {
@@ -66,22 +75,153 @@ const FormPatient = ({
         }
       })
       
+      // Cargar anexos existentes solo si estamos editando una consulta existente
+      if (isConsultationMode && consultationData && consultationData._id && dataToSet.attachments) {
+        // Limpiar archivos octet-stream antes de cargar
+        const cleanedAttachments = cleanOctetStreamFiles(dataToSet.attachments);
+        console.log('Setting cleaned attachments for editing:', cleanedAttachments);
+        setAttachments(cleanedAttachments);
+      } else if (isConsultationMode) {
+        // Limpiar attachments para nuevas consultas
+        console.log('Setting empty attachments for new consultation');
+        setAttachments([])
+      }
+      
       console.log('=== END FORM DATA DEBUG ===')
     }
     setAllValues()
   }, [patientData, consultationData, setValue, isConsultationMode])
 
-  // Eliminar: const handleFileUpload = (event) => {
-  // Eliminar:   const files = Array.from(event.target.files)
-  // Eliminar:   setAttachments(prev => [...prev, ...files])
-  // Eliminar: }
+  // Función para limpiar archivos octet-stream
+  const cleanOctetStreamFiles = (attachments) => {
+    if (!attachments || !Array.isArray(attachments)) return [];
+    
+    console.log('=== CLEANING OCTET-STREAM FILES ===');
+    console.log('Original attachments:', attachments);
+    
+    const cleanedAttachments = attachments.filter(attachment => {
+      // Obtener el tipo MIME del archivo
+      const mimeType = attachment.type || attachment.mimeType || '';
+      const hasValidData = attachment.data && attachment.data.length > 0;
+      const hasValidUrl = attachment.url && attachment.url.length > 0;
+      
+      console.log('Checking attachment:', {
+        name: attachment.name || attachment.originalName,
+        mimeType,
+        hasValidData,
+        hasValidUrl,
+        dataLength: attachment.data ? attachment.data.length : 0,
+        urlLength: attachment.url ? attachment.url.length : 0
+      });
+      
+      // Excluir archivos octet-stream sin datos válidos
+      if (mimeType === 'application/octet-stream') {
+        if (!hasValidData && !hasValidUrl) {
+          console.log('Removing octet-stream file without valid data:', attachment.name || attachment.originalName);
+          return false;
+        }
+        // También excluir si los datos están vacíos o son muy pequeños
+        if (attachment.data && attachment.data.length < 100) {
+          console.log('Removing octet-stream file with insufficient data:', attachment.name || attachment.originalName);
+          return false;
+        }
+      }
+      
+      return true;
+    });
+    
+    console.log('Cleaned attachments:', cleanedAttachments);
+    console.log('Removed', attachments.length - cleanedAttachments.length, 'octet-stream files');
+    
+    return cleanedAttachments;
+  };
 
-  // Eliminar: const removeAttachment = (index) => {
-  // Eliminar:   setAttachments(prev => prev.filter((_, i) => i !== index))
-  // Eliminar: }
+  // Función para convertir archivo a base64
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = error => reject(error)
+    })
+  }
+
+  // Manejar selección de archivos
+  const handleFileChange = async (event) => {
+    const files = Array.from(event.target.files).filter(file => 
+      file.size > 0 && file.name && file.name.trim() !== ''
+    );
+    
+    if (files.length === 0) {
+      console.log('No se seleccionaron archivos válidos');
+      return;
+    }
+    
+    setUploading(true);
+    
+    try {
+      const base64Files = await Promise.all(
+        files.map(async (file) => {
+          const base64 = await fileToBase64(file);
+          return {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            data: base64
+          };
+        })
+      );
+      
+      setAttachments(prev => [...prev, ...base64Files]);
+    } catch (error) {
+      console.error('Error converting files to base64:', error);
+      setFormError('Error al procesar los archivos');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  // Eliminar anexo
+  const removeAttachment = (index) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index))
+  }
+
+  // Obtener icono según tipo de archivo
+  const getFileIcon = (mimeType, url) => {
+    if (!mimeType) {
+      return <FaFileAlt className="w-8 h-8 text-gray-600" />
+    }
+    
+    if (mimeType.startsWith('image/')) {
+      return <img src={url} alt="Imagen" className="w-8 h-8 object-cover rounded" />
+    } else if (mimeType.includes('pdf')) {
+      return <FaFilePdf className="w-8 h-8 text-red-600" />
+    } else if (mimeType.includes('word') || mimeType.includes('document')) {
+      return <FaFileWord className="w-8 h-8 text-blue-600" />
+    } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+      return <FaFileExcel className="w-8 h-8 text-green-600" />
+    } else {
+      return <FaFileAlt className="w-8 h-8 text-gray-600" />
+    }
+  }
 
   const handleFormSubmit = handleSubmit(async (data) => {
-    setFormError('')
+    if (isSubmitting) {
+      console.log('Form already submitting, ignoring duplicate submit');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setFormError('');
+    console.log('=== FORM SUBMIT DEBUG ===');
+    console.log('patientData:', patientData);
+    console.log('consultationData:', consultationData);
+    console.log('isConsultationMode:', isConsultationMode);
+    console.log('isEditMode:', isEditMode);
+    
+    // Agregar un delay más largo para evitar duplicaciones rápidas
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     if (isConsultationMode) {
       // Validar solo los campos realmente requeridos para consulta
       const requiredConsultFields = [
@@ -101,101 +241,138 @@ const FormPatient = ({
         setFormError('El teléfono debe tener al menos 6 dígitos numéricos.')
         return
       }
+      
       // Validación frontend para email
-      if (!/^\S+@\S+\.\S+$/.test(data.email)) {
-        setFormError('El email no es válido.')
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(data.email)) {
+        setFormError('El email debe tener un formato válido.')
         return
-      }
-      // Validación frontend para fecha de nacimiento (YYYY-MM-DD)
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(data.birthDate)) {
-        setFormError('La fecha de nacimiento debe tener formato YYYY-MM-DD.')
-        return
-      }
-      // (Quitar validación de mayor que cero en modo paciente)
-      // Validación frontend para campos de texto requeridos no vacíos
-      const requiredTextFields = isEditMode ? [
-        // Solo campos de información personal y familiar para edición
-        'firstNames','lastNames','phone','email','address','dadName','momName','obstetrician','neonatal','personal','familiar'
-      ] : [
-        // Solo campos del paciente para nuevo paciente (la consulta es opcional)
-        'firstNames','lastNames','phone','email','address','dadName','momName','obstetrician','neonatal','personal','familiar'
-      ];
-      for (const field of requiredTextFields) {
-        if (!data[field] || typeof data[field] !== 'string' || data[field].trim() === '') {
-          setFormError(`El campo ${field} es requerido y no puede estar vacío.`)
-          return
-        }
       }
     }
-    console.log('=== FORM SUBMIT DEBUG ===')
-    console.log('Form data received:', data)
-    console.log('Form submission started')
 
-    // Siempre enviar JSON puro para datos normales (paciente o consulta)
-    const dataToSend = { ...data };
-    console.log('Initial dataToSend:', dataToSend);
-    
-    // Si estamos en modo consulta y es una edición (no nueva consulta), preservar el consultationNumber
-    if (isConsultationMode && consultationData && consultationData._id && consultationData.consultationNumber) {
-      dataToSend.consultationNumber = consultationData.consultationNumber;
-      console.log('Preserving consultationNumber for edit:', consultationData.consultationNumber);
-    }
-    
-    // Convertir todos los valores a string
-    Object.keys(dataToSend).forEach(key => {
-      if (dataToSend[key] !== undefined && dataToSend[key] !== null) {
-        dataToSend[key] = String(dataToSend[key]);
+    try {
+      // Agregar anexos a los datos si estamos en modo consulta
+      if (isConsultationMode) {
+        // Solo agregar attachments si hay nuevos y válidos
+        if (attachments.length > 0) {
+          // Filtrar attachments válidos (con datos) y limpiar octet-stream
+          const validAttachments = attachments.filter(att => 
+            att.data && att.data.length > 0 && att.name && att.name.trim() !== ''
+          );
+          
+          // Limpiar archivos octet-stream
+          const cleanedAttachments = cleanOctetStreamFiles(validAttachments);
+          
+          if (cleanedAttachments.length > 0) {
+            data.attachments = cleanedAttachments;
+          }
+        } else if (consultationData && consultationData._id && consultationData.attachments) {
+          // Solo mantener attachments existentes si estamos editando una consulta
+          // Limpiar archivos octet-stream de los attachments existentes
+          const cleanedExistingAttachments = cleanOctetStreamFiles(consultationData.attachments);
+          data.attachments = cleanedExistingAttachments;
+        }
       }
-    });
-    
-    console.log('Final dataToSend after string conversion:', dataToSend);
-    console.log('Required fields check:');
-    const requiredFields = ['firstNames','lastNames','dadName','momName','obstetrician','address','phone','email','neonatal','personal','familiar'];
-    requiredFields.forEach(field => {
-      console.log(`${field}:`, dataToSend[field], 'exists:', !!dataToSend[field]);
-    });
-    if (isConsultationMode) {
-      if (onSubmit) {
-        try {
-          console.log('Calling onSubmit with dataToSend:', dataToSend)
-          await onSubmit(dataToSend)
-          console.log('onSubmit completed successfully')
-        } catch (error) {
-          setFormError(error?.response?.data?.message || 'Error al guardar la consulta')
-          console.error('Error in onSubmit:', error)
+
+      const dataToSend = { ...data };
+      console.log('Initial dataToSend:', dataToSend);
+      
+      // Si estamos en modo consulta y es una edición (no nueva consulta), preservar el consultationNumber
+      if (isConsultationMode && consultationData && consultationData._id && consultationData.consultationNumber) {
+        dataToSend.consultationNumber = consultationData.consultationNumber;
+        console.log('Preserving consultationNumber for edit:', consultationData.consultationNumber);
+      }
+      
+      // Convertir todos los valores a string, excepto attachments
+      Object.keys(dataToSend).forEach(key => {
+        if (dataToSend[key] !== undefined && dataToSend[key] !== null && key !== 'attachments') {
+          dataToSend[key] = String(dataToSend[key]);
+        }
+      });
+
+      console.log('Final dataToSend:', dataToSend);
+
+      if (isConsultationMode) {
+        // Lógica para consultas
+        const isNewConsultation = !consultationData || !consultationData._id;
+        
+        // Verificar que tenemos el ID del paciente
+        console.log('Checking patientData:', patientData);
+        console.log('patientData type:', typeof patientData);
+        console.log('patientData keys:', patientData ? Object.keys(patientData) : 'null');
+        
+        if (!patientData) {
+          console.error('patientData is null or undefined');
+          setFormError('Error: No se pudo identificar al paciente. Por favor, recarga la página.');
+          return;
+        }
+        
+        if (!patientData._id) {
+          console.error('patientData._id is missing:', patientData);
+          setFormError('Error: ID del paciente no válido. Por favor, recarga la página.');
+          return;
+        }
+        
+        const url = isNewConsultation 
+          ? `http://localhost:4000/api/tasks/${patientData._id}/consultations`
+          : `http://localhost:4000/api/tasks/${patientData._id}/consultations/${consultationData._id}`;
+        
+        const method = isNewConsultation ? 'POST' : 'PUT';
+        
+        console.log('Consultation URL:', url);
+        console.log('Consultation method:', method);
+        
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(dataToSend)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Consultation saved successfully:', result);
+          if (onSubmit) onSubmit(result);
+          closeModal();
+        } else {
+          const errorData = await response.json();
+          console.error('Error response:', errorData);
+          setFormError(`Error al guardar la consulta: ${errorData.message || 'Error desconocido'}`);
         }
       } else {
-        setFormError('onSubmit is not defined')
-      }
-    } else {
-      // Lógica para paciente
-      if (isEditMode) {
-        try {
-          await updatePatients(dataToSend)
-          console.log('Patient updated successfully')
-          closeModal()
-          getPatients()
-        } catch (error) {
-          setFormError(error?.response?.data?.message || 'Error al actualizar el paciente')
-          console.error('Error updating patient:', error)
+        // Lógica para pacientes
+        if (isEditMode) {
+          console.log('=== EDIT MODE DEBUG ===');
+          console.log('patientData:', patientData);
+          console.log('patientData._id:', patientData?._id);
+          console.log('dataToSend:', dataToSend);
+          
+          if (!patientData || !patientData._id) {
+            console.error('Missing patient data or ID for editing');
+            setFormError('Error: No se pudo identificar al paciente para editar.');
+            return;
+          }
+          
+          console.log('Calling updatePatients with ID:', patientData._id);
+          await updatePatients(patientData._id, dataToSend);
+        } else {
+          await createPatient(dataToSend);
         }
-      } else {
-        try {
-          await createPatient(dataToSend)
-          console.log('Patient created successfully')
-          closeModal()
-          getPatients()
-        } catch (error) {
-          setFormError(error?.response?.data?.message || 'Error al crear el paciente')
-          console.error('Error creating patient:', error)
-        }
+        await getPatients();
+        closeModal();
       }
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      setFormError(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
     console.log('=== END FORM SUBMIT DEBUG ===')
-  })
+  });
 
-  // Verificar si hay datos importados
-  const hasImportedData = !isEditMode && patientData && Object.keys(patientData).length > 0
+  const hasImportedData = patientData && Object.keys(patientData).length > 0 && !isConsultationMode;
 
   const getTitle = () => {
     if (isConsultationMode) {
@@ -251,6 +428,7 @@ const FormPatient = ({
             {formError}
           </div>
         )}
+        
         {/* === PERFIL DEL PACIENTE === */}
         {!isConsultationMode && (
           <div className="border-l-4 border-blue-500 pl-2 sm:pl-4 mb-4 sm:mb-6">
@@ -385,6 +563,93 @@ const FormPatient = ({
               setValue={setValue}
               watch={watch}
             />
+
+            {/* === ANEXOS === */}
+            {/* Mostrar anexos para todas las consultas */}
+            {isConsultationMode && (
+              <div className="border-l-4 border-purple-500 pl-2 sm:pl-4">
+                <h2 className="text-base sm:text-lg font-semibold text-purple-600 dark:text-purple-400 mb-3 sm:mb-4">
+                  📎 ANEXOS
+                </h2>
+                
+                <div className="space-y-4">
+                  {/* Subir archivos */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Agregar Anexos
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        disabled={uploading}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 disabled:opacity-50"
+                        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                      />
+                      {uploading && (
+                        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded">
+                          <div className="flex items-center gap-2 text-purple-600">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                            <span className="text-sm">Procesando archivos...</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Formatos permitidos: imágenes, PDF, Word, Excel
+                    </p>
+                  </div>
+
+                  {/* Lista de anexos */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Anexos ({attachments.length})
+                    </h3>
+                    
+                    {attachments.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {attachments.map((attachment, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg"
+                          >
+                            <div className="flex-shrink-0">
+                              {getFileIcon(attachment.type || attachment.mimeType, attachment.data || attachment.url)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {attachment.name || attachment.originalName}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {attachment.size ? (attachment.size / 1024 / 1024).toFixed(2) + ' MB' : 'Tamaño desconocido'}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeAttachment(index)}
+                              className="flex-shrink-0 p-1 text-red-600 hover:text-red-800"
+                            >
+                              <FaTrash className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 bg-gray-50 dark:bg-slate-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-slate-600">
+                        <FaFileAlt className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-2" />
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          No hay anexos agregados aún
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Selecciona archivos arriba para agregar anexos
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -392,15 +657,24 @@ const FormPatient = ({
           <button
             type='button'
             onClick={closeModal}
-            className='p-2 sm:p-3 text-white font-semibold rounded-xl bg-[#791010] flex items-center justify-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#791010]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse text-sm sm:text-base'
+            disabled={isSubmitting}
+            className='p-2 sm:p-3 text-white font-semibold rounded-xl bg-[#791010] flex items-center justify-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#791010]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed'
           >
             Cancelar
           </button>
           <button
             type='submit'
-            className='p-2 sm:p-3 text-white font-semibold rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-secondary/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse text-sm sm:text-base'
+            disabled={isSubmitting}
+            className='p-2 sm:p-3 text-white font-semibold rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-secondary/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            {getSubmitButtonText()}
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Guardando...
+              </>
+            ) : (
+              getSubmitButtonText()
+            )}
           </button>
         </div>
       </form>

@@ -5,6 +5,7 @@ import { usePatients } from '../context/PatientsContext'
 import Header from '../components/ui/Header'
 import Modal from '../components/ui/Modal'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
+import AttachmentsGallery from '../components/dashboard-patient/AttachmentsGallery'
 import { PDFDownloadLink, Document, Page, Text, View } from '@react-pdf/renderer'
 import moment from 'moment'
 
@@ -16,11 +17,14 @@ const ConsultationDetail = () => {
   const [consultation, setConsultation] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showNewConsultationModal, setShowNewConsultationModal] = useState(false)
+  const [attachmentsKey, setAttachmentsKey] = useState(0)
 
   const fetchConsultation = useCallback(async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+      // Add cache-busting parameter to ensure fresh data
+      const timestamp = Date.now()
+      const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}?_t=${timestamp}`, {
         credentials: 'include'
       })
       
@@ -62,6 +66,17 @@ const ConsultationDetail = () => {
       fetchConsultation()
     }
   }, [fetchConsultation])
+
+  // Monitorear cambios en la consulta
+  useEffect(() => {
+    if (consultation) {
+      console.log('Consultation state changed:', {
+        id: consultation._id,
+        attachmentsCount: consultation.attachments?.length || 0,
+        attachments: consultation.attachments
+      });
+    }
+  }, [consultation]);
 
   const handleEditConsultation = async (formData) => {
     try {
@@ -191,7 +206,7 @@ const ConsultationDetail = () => {
           Cerrar
         </button>
         <FormPatient
-          patientData={null}
+          patientData={{ _id: id }}
           consultationData={consultation}
           closeModal={() => setShowEditModal(false)}
           onSubmit={handleEditConsultation}
@@ -208,7 +223,7 @@ const ConsultationDetail = () => {
           Cerrar
         </button>
         <FormPatient
-          patientData={null}
+          patientData={{ _id: id }}
           consultationData={consultation}
           closeModal={() => setShowNewConsultationModal(false)}
           onSubmit={handleNewConsultation}
@@ -583,7 +598,106 @@ const ConsultationDetail = () => {
             </div>
 
             {/* Anexos */}
-            {/* (Eliminado: sección de archivos adjuntos) */}
+            {consultation && (
+              <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                  Anexos
+                </h3>
+                <AttachmentsGallery 
+                  key={`attachments-${consultation._id}-${(consultation.attachments || []).length}-${attachmentsKey}`}
+                  attachments={consultation.attachments || []} 
+                  title="Anexos de la Consulta"
+                  patientId={id}
+                  consultationId={consultationId}
+                onAttachmentDeleted={async (filename) => {
+                  console.log('=== ON ATTACHMENT DELETED (ConsultationDetail) ===');
+                  console.log('Filename to delete:', filename);
+                  
+                  // Simplemente recargar los datos de la consulta desde el servidor
+                  try {
+                    console.log('Fetching updated consultation from server...');
+                    await fetchConsultation();
+                    console.log('Consultation data refreshed successfully');
+                  } catch (error) {
+                    console.error('Error refreshing consultation data:', error);
+                  }
+                }}
+                onAttachmentsAdded={async (newAttachments) => {
+                  console.log('=== ON ATTACHMENTS ADDED ===');
+                  console.log('New attachments received:', newAttachments);
+                  console.log('Current consultation:', consultation);
+                  
+                  try {
+                    // Preparar los datos de la consulta con los nuevos anexos
+                    const currentAttachments = consultation.attachments || [];
+                    const allAttachments = [...currentAttachments, ...newAttachments];
+                    
+                    console.log('Current attachments count:', currentAttachments.length);
+                    console.log('New attachments count:', newAttachments.length);
+                    console.log('Total attachments count:', allAttachments.length);
+                    
+                    // Convertir los anexos al formato esperado por el backend
+                    const formattedAttachments = allAttachments.map(attachment => ({
+                      name: attachment.originalName || attachment.filename,
+                      type: attachment.mimeType,
+                      size: attachment.size,
+                      data: attachment.url // El backend espera 'data' en lugar de 'url'
+                    }));
+                    
+                    // Actualizar la consulta en el servidor con los nuevos anexos
+                    const updateData = {
+                      ...consultation,
+                      attachments: formattedAttachments
+                    };
+                    
+                    console.log('Sending update to server:', updateData);
+                    
+                    const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+                      method: 'PUT',
+                      credentials: 'include',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(updateData)
+                    });
+                    
+                    if (response.ok) {
+                      const updatedConsultation = await response.json();
+                      console.log('Consultation updated successfully:', updatedConsultation);
+                      
+                      setConsultation(updatedConsultation);
+                      
+                      // Disparar evento personalizado para notificar el cambio
+                      window.dispatchEvent(new CustomEvent('consultationAttachmentsChanged', {
+                        detail: {
+                          consultationId: consultationId,
+                          patientId: id,
+                          attachments: updatedConsultation.attachments
+                        }
+                      }));
+                    } else {
+                      console.error('Failed to update consultation on server');
+                      const errorData = await response.json().catch(() => ({}));
+                      console.error('Server error:', errorData);
+                      
+                      // Fallback: actualizar localmente
+                      setConsultation(prev => ({
+                        ...prev,
+                        attachments: [...(prev.attachments || []), ...newAttachments]
+                      }));
+                    }
+                  } catch (error) {
+                    console.error('Error updating consultation:', error);
+                    // Fallback: actualizar localmente
+                    setConsultation(prev => ({
+                      ...prev,
+                      attachments: [...(prev.attachments || []), ...newAttachments]
+                    }));
+                  }
+                }}
+              />
+            </div>
+            )}
           </div>
         </div>
       </main>

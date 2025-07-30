@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FaPlus, FaTrash, FaEye, FaCalendarAlt, FaEdit, FaUser, FaSyringe, FaCalendar, FaFileAlt, FaArrowLeft, FaUserEdit } from 'react-icons/fa'
+import { FaPlus, FaTrash, FaEye, FaCalendarAlt, FaEdit, FaUser, FaSyringe, FaCalendar, FaFileAlt, FaArrowLeft, FaUserEdit, FaSort } from 'react-icons/fa'
 import moment from 'moment'
 import Header from '../components/ui/Header'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
@@ -46,6 +46,14 @@ const PatientProfile = () => {
   })
 
   const [editingConsultation, setEditingConsultation] = useState(null)
+  
+  // Estados para filtros y ordenamiento de consultas
+  const [sortOrder, setSortOrder] = useState('desc') // 'asc' o 'desc'
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filteredConsultations, setFilteredConsultations] = useState([])
+  
+  // Estado para prevenir duplicaciones
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,6 +89,31 @@ const PatientProfile = () => {
     console.log('Consultations state:', consultations)
     console.log('Is loading:', isLoading)
   }, [patient, consultations, isLoading])
+
+  // Filtrar y ordenar consultas cuando cambien los datos
+  useEffect(() => {
+    let filtered = [...consultations]
+    
+    // Filtrar por término de búsqueda
+    if (searchTerm) {
+      filtered = filtered.filter(consultation => 
+        consultation.consultMotive?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        consultation.diagnostic?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        consultation.consultationNumber?.toString().includes(searchTerm) ||
+        moment(consultation.consultationDate).format('DD/MM/YYYY').includes(searchTerm)
+      )
+    }
+    
+    // Ordenar por fecha de creación (más recientes primero por defecto)
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.consultationDate)
+      const dateB = new Date(b.consultationDate)
+      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB
+    })
+    
+    setFilteredConsultations(filtered)
+    console.log('Filtered consultations:', filtered.length);
+  }, [consultations, searchTerm, sortOrder])
 
   // Abrir modal cuando editingConsultation se establezca
   useEffect(() => {
@@ -149,6 +182,12 @@ const PatientProfile = () => {
   }
 
   const handleNewConsultation = () => {
+    // Prevenir múltiples clics
+    if (isSubmitting) {
+      console.log('Already submitting, ignoring new consultation request');
+      return;
+    }
+    
     console.log('handleNewConsultation called, consultations:', consultations);
     
     // Si hay consultas, copiar los datos de la consulta más reciente
@@ -231,6 +270,27 @@ const PatientProfile = () => {
   }
 
   const handleConsultationSubmit = async (formData) => {
+    // Prevenir duplicaciones
+    if (isSubmitting) {
+      console.log('Form already submitting, ignoring duplicate submit');
+      return;
+    }
+    
+    // Agregar un delay adicional para evitar envíos rápidos
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    setIsSubmitting(true);
+    
+    // Función para actualizar consultas después de cambios
+    const updateConsultationsAfterChange = async () => {
+      try {
+        await fetchConsultations();
+        console.log('Consultations updated after change');
+      } catch (error) {
+        console.error('Error updating consultations after change:', error);
+      }
+    };
+    
     try {
       console.log('=== CONSULTATION SUBMIT DEBUG ===')
       console.log('Received formData:', formData)
@@ -267,7 +327,7 @@ const PatientProfile = () => {
       if (response.ok) {
         const result = await response.json()
         console.log('Consultation saved successfully:', result)
-        await fetchConsultations()
+        await updateConsultationsAfterChange()
         setModalState(prev => ({ ...prev, consultationForm: false }))
         setEditingConsultation(null)
       } else {
@@ -279,6 +339,8 @@ const PatientProfile = () => {
     } catch (error) {
       console.error('Error saving consultation:', error)
       alert('Error al guardar la consulta')
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -304,6 +366,69 @@ const PatientProfile = () => {
     // Implementar logout
     navigate('/auth')
   }
+
+  // Función para actualizar automáticamente el contador de anexos
+  const updateAttachmentCount = (consultationId, newCount) => {
+    setFilteredConsultations(prev => 
+      prev.map(consultation => 
+        consultation._id === consultationId 
+          ? { ...consultation, attachments: consultation.attachments.slice(0, newCount) }
+          : consultation
+      )
+    );
+  };
+
+  // Función para actualizar anexos de una consulta específica
+  const updateConsultationAttachments = (consultationId, newAttachments) => {
+    setConsultations(prev => 
+      prev.map(consultation => 
+        consultation._id === consultationId 
+          ? { ...consultation, attachments: newAttachments }
+          : consultation
+      )
+    );
+    setFilteredConsultations(prev => 
+      prev.map(consultation => 
+        consultation._id === consultationId 
+          ? { ...consultation, attachments: newAttachments }
+          : consultation
+      )
+    );
+  };
+
+  // Función para actualizar consultas después de cambios
+  const updateConsultationsAfterChange = async () => {
+    try {
+      await fetchConsultations();
+      console.log('Consultations updated after change');
+    } catch (error) {
+      console.error('Error updating consultations after change:', error);
+    }
+  };
+
+  // Función para manejar cambios en anexos desde el detalle de consulta
+  const handleAttachmentChange = (consultationId, newAttachments) => {
+    updateConsultationAttachments(consultationId, newAttachments);
+  };
+
+  // Escuchar eventos de cambios en anexos
+  useEffect(() => {
+    const handleConsultationAttachmentsChanged = (event) => {
+      const { consultationId, patientId, attachments } = event.detail;
+      
+      // Solo actualizar si es el paciente actual
+      if (patientId === id) {
+        console.log('Updating consultation attachments from event:', consultationId, attachments);
+        updateConsultationAttachments(consultationId, attachments);
+      }
+    };
+
+    window.addEventListener('consultationAttachmentsChanged', handleConsultationAttachmentsChanged);
+
+    return () => {
+      window.removeEventListener('consultationAttachmentsChanged', handleConsultationAttachmentsChanged);
+    };
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -351,7 +476,7 @@ const PatientProfile = () => {
             Editar Información Personal y Familiar
           </h2>
           <FormPatient
-            patientData={patient}
+            patientData={{ ...patient, _id: id }}
             closeModal={closeModals}
             isEditMode
             editMode={null}
@@ -368,7 +493,7 @@ const PatientProfile = () => {
         </button>
 
         <FormPatient
-          patientData={null}
+          patientData={{ _id: id }}
           consultationData={editingConsultation}
           closeModal={closeModals}
           onSubmit={handleConsultationSubmit}
@@ -600,12 +725,43 @@ const PatientProfile = () => {
               </h2>
               <button
                 onClick={handleNewConsultation}
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center"
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FaPlus />
-                Nueva Consulta
+                {isSubmitting ? 'Guardando...' : 'Nueva Consulta'}
               </button>
             </div>
+            
+            {/* Filtros y controles */}
+            {consultations.length > 0 && (
+              <div className="mb-4 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Búsqueda */}
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Buscar por motivo, diagnóstico, número o fecha..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:text-white text-sm"
+                    />
+                  </div>
+                  
+                  {/* Ordenamiento */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Ordenar:</span>
+                    <button
+                      onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+                      className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm"
+                    >
+                      {sortOrder === 'desc' ? 'Más recientes' : 'Más antiguas'}
+                      <FaSort className="text-xs" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {consultations.length === 0 ? (
               <div className="text-center py-6 sm:py-8">
@@ -621,8 +777,9 @@ const PatientProfile = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid gap-3 sm:gap-4">
-                {consultations.map((consultation, index) => (
+              <div className="max-h-96 overflow-y-auto pr-2">
+                <div className="grid gap-3 sm:gap-4">
+                  {filteredConsultations.map((consultation, index) => (
                   <div
                     key={consultation._id}
                     className="border border-gray-200 dark:border-slate-700 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow"
@@ -651,7 +808,10 @@ const PatientProfile = () => {
                         </div>
                         
                         {/* Archivos adjuntos */}
-                        {/* (Eliminado: visualización de archivos adjuntos) */}
+                        <div className="mt-2 flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400">
+                          <FaEye />
+                          {consultation.attachments ? consultation.attachments.length : 0} anexo{(consultation.attachments ? consultation.attachments.length : 0) !== 1 ? 's' : ''}
+                        </div>
                       </div>
                       <div className="flex gap-1 sm:gap-2 flex-shrink-0">
                         <button
@@ -679,6 +839,7 @@ const PatientProfile = () => {
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
             )}
           </div>

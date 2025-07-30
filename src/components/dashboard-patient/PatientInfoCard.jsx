@@ -4,7 +4,6 @@ import { FaPhone, FaEnvelope, FaUserShield, FaTrash, FaFilePdf, FaFileWord, FaFi
 import Skeleton from '@mui/material/Skeleton'
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
-import PatientAttachmentsForm from './PatientAttachmentsForm';
 
 const PatientContact = ({
   title = 'Contact Information',
@@ -32,27 +31,6 @@ const PatientContact = ({
   isLoading = false,
 }) => {
   const { id } = useParams();
-  const [deleting, setDeleting] = useState(null);
-  const handleDelete = async (file) => {
-    if (!window.confirm('¿Seguro que deseas eliminar este archivo?')) return;
-    setDeleting(file.filename);
-    try {
-      const res = await fetch(`/api/tasks/${id}/attachments/${file.filename}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      if (res.ok) {
-        if (patient.attachments) {
-          patient.attachments = patient.attachments.filter(att => att.filename !== file.filename);
-        }
-        setDeleting(null);
-        // Forzar re-render si es necesario
-      }
-    } catch (error) {
-      setDeleting(null);
-      alert('Error eliminando archivo');
-    }
-  };
 
   if (isLoading) {
     return (
@@ -147,12 +125,6 @@ const PatientContact = ({
           </div>
         ))}
       </div>
-      {/* Mostrar archivos adjuntos del paciente */}
-      {patient._id && (
-        <div className='mt-4 sm:mt-6'>
-          <PatientAttachmentsForm patientId={patient._id} onUpload={() => { /* refrescar datos si es necesario */ }} />
-        </div>
-      )}
     </section>
   )
 }
