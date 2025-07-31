@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FaPlus, FaTrash, FaEye, FaCalendarAlt, FaEdit, FaUser, FaSyringe, FaCalendar, FaFileAlt, FaArrowLeft, FaUserEdit, FaSort } from 'react-icons/fa'
+import {
+  FaPlus,
+  FaTrash,
+  FaEye,
+  FaCalendarAlt,
+  FaEdit,
+  FaUser,
+  FaSyringe,
+  FaCalendar,
+  FaFileAlt,
+  FaArrowLeft,
+  FaUserEdit,
+  FaSort,
+} from 'react-icons/fa'
 import moment from 'moment'
 import Header from '../components/ui/Header'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
@@ -12,18 +25,22 @@ import { usePatients } from '../context/PatientsContext'
 // Función para calcular la edad en años, meses y días
 const calculateAge = (birthDate) => {
   if (!birthDate) return null
-  
+
   const birth = moment(birthDate)
   const now = moment()
-  
+
   const years = now.diff(birth, 'years')
   const months = now.diff(birth, 'months') % 12
   const days = now.diff(birth, 'days') % 30
-  
+
   if (years > 0) {
-    return `${years} año${years > 1 ? 's' : ''} ${months > 0 ? `${months} mes${months > 1 ? 'es' : ''}` : ''}`
+    return `${years} año${years > 1 ? 's' : ''} ${
+      months > 0 ? `${months} mes${months > 1 ? 'es' : ''}` : ''
+    }`
   } else if (months > 0) {
-    return `${months} mes${months > 1 ? 'es' : ''} ${days > 0 ? `${days} día${days > 1 ? 's' : ''}` : ''}`
+    return `${months} mes${months > 1 ? 'es' : ''} ${
+      days > 0 ? `${days} día${days > 1 ? 's' : ''}` : ''
+    }`
   } else {
     return `${days} día${days > 1 ? 's' : ''}`
   }
@@ -36,7 +53,6 @@ const PatientProfile = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [consultations, setConsultations] = useState([])
 
-
   const [modalState, setModalState] = useState({
     form: false,
     vaccinationSchedule: false,
@@ -46,12 +62,12 @@ const PatientProfile = () => {
   })
 
   const [editingConsultation, setEditingConsultation] = useState(null)
-  
+
   // Estados para filtros y ordenamiento de consultas
   const [sortOrder, setSortOrder] = useState('desc') // 'asc' o 'desc'
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredConsultations, setFilteredConsultations] = useState([])
-  
+
   // Estado para prevenir duplicaciones
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -93,49 +109,65 @@ const PatientProfile = () => {
   // Filtrar y ordenar consultas cuando cambien los datos
   useEffect(() => {
     let filtered = [...consultations]
-    
+
     // Filtrar por término de búsqueda
     if (searchTerm) {
-      filtered = filtered.filter(consultation => 
-        consultation.consultMotive?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        consultation.diagnostic?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        consultation.consultationNumber?.toString().includes(searchTerm) ||
-        moment(consultation.consultationDate).format('DD/MM/YYYY').includes(searchTerm)
+      filtered = filtered.filter(
+        (consultation) =>
+          consultation.consultMotive
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          consultation.diagnostic
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          consultation.consultationNumber?.toString().includes(searchTerm) ||
+          moment(consultation.consultationDate)
+            .format('DD/MM/YYYY')
+            .includes(searchTerm)
       )
     }
-    
+
     // Ordenar por fecha de creación (más recientes primero por defecto)
     filtered.sort((a, b) => {
       const dateA = new Date(a.consultationDate)
       const dateB = new Date(b.consultationDate)
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB
     })
-    
+
     setFilteredConsultations(filtered)
-    console.log('Filtered consultations:', filtered.length);
+    console.log('Filtered consultations:', filtered.length)
   }, [consultations, searchTerm, sortOrder])
 
   // Abrir modal cuando editingConsultation se establezca
   useEffect(() => {
     if (editingConsultation && !modalState.consultationForm) {
-      console.log('Opening consultation form modal with data:', editingConsultation)
+      console.log(
+        'Opening consultation form modal with data:',
+        editingConsultation
+      )
       // Verificar que editingConsultation tenga datos válidos y no esté vacío
-      if (editingConsultation.consultationDate && Object.keys(editingConsultation).length > 1) {
-        setModalState(prev => ({ ...prev, consultationForm: true }))
+      if (
+        editingConsultation.consultationDate &&
+        Object.keys(editingConsultation).length > 1
+      ) {
+        setModalState((prev) => ({ ...prev, consultationForm: true }))
       }
     }
   }, [editingConsultation])
 
   const fetchConsultations = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations`, {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `http://localhost:4000/api/tasks/${id}/consultations`,
+        {
+          credentials: 'include',
+        }
+      )
       if (response.ok) {
         const data = await response.json()
         // Ordenar por fecha de consulta (más reciente primero)
-        const sortedConsultations = data.sort((a, b) => 
-          new Date(b.consultationDate) - new Date(a.consultationDate)
+        const sortedConsultations = data.sort(
+          (a, b) => new Date(b.consultationDate) - new Date(a.consultationDate)
         )
         setConsultations(sortedConsultations)
       }
@@ -184,30 +216,30 @@ const PatientProfile = () => {
   const handleNewConsultation = () => {
     // Prevenir múltiples clics
     if (isSubmitting) {
-      console.log('Already submitting, ignoring new consultation request');
-      return;
+      console.log('Already submitting, ignoring new consultation request')
+      return
     }
-    
-    console.log('handleNewConsultation called, consultations:', consultations);
-    
+
+    console.log('handleNewConsultation called, consultations:', consultations)
+
     // Si hay consultas, copiar los datos de la consulta más reciente
     if (consultations.length > 0) {
-      const lastConsultation = consultations[0]; // La primera del array es la más reciente
-      console.log('Last consultation data:', lastConsultation);
-      
+      const lastConsultation = consultations[0] // La primera del array es la más reciente
+      console.log('Last consultation data:', lastConsultation)
+
       const consultationCopy = {
         ...lastConsultation,
         consultationDate: new Date().toISOString().slice(0, 16),
         consultationNumber: undefined, // Remover el número de consulta para que se genere automáticamente
         // Mantener los campos médicos de la consulta anterior para que se prellenen
-        _id: undefined
-      };
-      console.log('Consultation copy for pre-fill:', consultationCopy);
-      
+        _id: undefined,
+      }
+      console.log('Consultation copy for pre-fill:', consultationCopy)
+
       // Solo establecer editingConsultation, el useEffect abrirá el modal
-      setEditingConsultation(consultationCopy);
+      setEditingConsultation(consultationCopy)
     } else {
-      console.log('No consultations found, creating empty consultation');
+      console.log('No consultations found, creating empty consultation')
       // Crear una consulta vacía para nueva consulta
       const emptyConsultation = {
         consultationDate: new Date().toISOString().slice(0, 16),
@@ -223,44 +255,57 @@ const PatientProfile = () => {
         medicalReference: '',
         medicalInformShared: '',
         medicalTrip: '',
-        _id: undefined
-      };
-      
+        _id: undefined,
+      }
+
       // Solo establecer editingConsultation, el useEffect abrirá el modal
-      setEditingConsultation(emptyConsultation);
+      setEditingConsultation(emptyConsultation)
     }
   }
 
   const handleEditConsultation = (consultation) => {
     setEditingConsultation(consultation)
-    setModalState(prev => ({ ...prev, consultationForm: true }))
+    setModalState((prev) => ({ ...prev, consultationForm: true }))
   }
 
   const handleDeleteConsultation = async (consultation) => {
     if (!consultation) {
-      console.error('No consultation provided to handleDeleteConsultation');
-      alert('Error: No se proporcionó información de la consulta para eliminar.');
-      return;
-    }
-
-    if (!consultation._id) {
-      console.error('Consultation without _id for deletion:', consultation);
-      console.error('Patient:', patient?.firstNames, patient?.lastNames);
-      alert(`Error: No se pudo identificar la consulta para eliminar.\n\nPaciente: ${patient?.firstNames} ${patient?.lastNames}\n\nPor favor, contacte al administrador.`);
+      console.error('No consultation provided to handleDeleteConsultation')
+      alert(
+        'Error: No se proporcionó información de la consulta para eliminar.'
+      )
       return
     }
 
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta consulta?')) {
+    if (!consultation._id) {
+      console.error('Consultation without _id for deletion:', consultation)
+      console.error('Patient:', patient?.firstNames, patient?.lastNames)
+      alert(
+        `Error: No se pudo identificar la consulta para eliminar.\n\nPaciente: ${patient?.firstNames} ${patient?.lastNames}\n\nPor favor, contacte al administrador.`
+      )
+      return
+    }
+
+    if (
+      window.confirm('¿Estás seguro de que quieres eliminar esta consulta?')
+    ) {
       try {
-        const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultation._id}`, {
-          method: 'DELETE',
-          credentials: 'include'
-        })
+        const response = await fetch(
+          `http://localhost:4000/api/tasks/${id}/consultations/${consultation._id}`,
+          {
+            method: 'DELETE',
+            credentials: 'include',
+          }
+        )
         if (response.ok) {
           await fetchConsultations()
         } else {
-          const errorData = await response.json().catch(() => ({}));
-          alert(`Error al eliminar la consulta: ${errorData.message || 'Error desconocido'}`)
+          const errorData = await response.json().catch(() => ({}))
+          alert(
+            `Error al eliminar la consulta: ${
+              errorData.message || 'Error desconocido'
+            }`
+          )
         }
       } catch (error) {
         console.error('Error deleting consultation:', error)
@@ -272,94 +317,111 @@ const PatientProfile = () => {
   const handleConsultationSubmit = async (formData) => {
     // Prevenir duplicaciones
     if (isSubmitting) {
-      console.log('Form already submitting, ignoring duplicate submit');
-      return;
+      console.log('Form already submitting, ignoring duplicate submit')
+      return
     }
-    
+
     // Agregar un delay adicional para evitar envíos rápidos
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    setIsSubmitting(true);
-    
+    await new Promise((resolve) => setTimeout(resolve, 200))
+
+    setIsSubmitting(true)
+
     // Función para actualizar consultas después de cambios
     const updateConsultationsAfterChange = async () => {
       try {
-        await fetchConsultations();
-        console.log('Consultations updated after change');
+        await fetchConsultations()
+        console.log('Consultations updated after change')
       } catch (error) {
-        console.error('Error updating consultations after change:', error);
+        console.error('Error updating consultations after change:', error)
       }
-    };
-    
+    }
+
     try {
       console.log('=== CONSULTATION SUBMIT DEBUG ===')
       console.log('Received formData:', formData)
       console.log('formData type:', typeof formData)
       console.log('formData instanceof FormData:', formData instanceof FormData)
-      
-      const isNewConsultation = !editingConsultation || !editingConsultation._id;
-      
-      const url = isNewConsultation 
+
+      const isNewConsultation = !editingConsultation || !editingConsultation._id
+
+      const url = isNewConsultation
         ? `http://localhost:4000/api/tasks/${id}/consultations`
         : `http://localhost:4000/api/tasks/${id}/consultations/${editingConsultation._id}`
-      
+
       const method = isNewConsultation ? 'POST' : 'PUT'
-      
-      console.log('Submitting consultation:', { isNewConsultation, url, method, formData })
-      
+
+      console.log('Submitting consultation:', {
+        isNewConsultation,
+        url,
+        method,
+        formData,
+      })
+
       // Si formData es FormData (con archivos), enviar directamente
       // Si es un objeto normal, convertirlo a JSON
-      const body = formData instanceof FormData ? formData : JSON.stringify(formData)
-      const headers = formData instanceof FormData ? {} : { 'Content-Type': 'application/json' }
-      
+      const body =
+        formData instanceof FormData ? formData : JSON.stringify(formData)
+      const headers =
+        formData instanceof FormData
+          ? {}
+          : { 'Content-Type': 'application/json' }
+
       console.log('Request body:', body)
       console.log('Request headers:', headers)
-      
+
       const response = await fetch(url, {
         method,
         credentials: 'include',
         headers,
-        body
+        body,
       })
 
       console.log('Response status:', response.status)
-      
+
       if (response.ok) {
         const result = await response.json()
         console.log('Consultation saved successfully:', result)
         await updateConsultationsAfterChange()
-        setModalState(prev => ({ ...prev, consultationForm: false }))
+        setModalState((prev) => ({ ...prev, consultationForm: false }))
         setEditingConsultation(null)
       } else {
         const errorData = await response.json()
         console.error('Error response:', errorData)
-        alert(`Error al guardar la consulta: ${errorData.message || 'Error desconocido'}`)
+        alert(
+          `Error al guardar la consulta: ${
+            errorData.message || 'Error desconocido'
+          }`
+        )
       }
       console.log('=== END CONSULTATION SUBMIT DEBUG ===')
     } catch (error) {
       console.error('Error saving consultation:', error)
       alert('Error al guardar la consulta')
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
   }
 
   const handleViewConsultation = (consultation) => {
     if (!consultation) {
-      console.error('No consultation provided to handleViewConsultation');
-      alert('Error: No se proporcionó información de la consulta.');
-      return;
+      console.error('No consultation provided to handleViewConsultation')
+      alert('Error: No se proporcionó información de la consulta.')
+      return
     }
 
     if (!consultation._id) {
-      console.error('Consultation without _id:', consultation);
-      console.error('Patient:', patient?.firstNames, patient?.lastNames);
-      console.error('All consultations:', consultations);
-      alert(`Error: La consulta no tiene un identificador válido.\n\nPaciente: ${patient?.firstNames} ${patient?.lastNames}\n\nPor favor, contacte al administrador.`);
+      console.error('Consultation without _id:', consultation)
+      console.error('Patient:', patient?.firstNames, patient?.lastNames)
+      console.error('All consultations:', consultations)
+      alert(
+        `Error: La consulta no tiene un identificador válido.\n\nPaciente: ${patient?.firstNames} ${patient?.lastNames}\n\nPor favor, contacte al administrador.`
+      )
       return
     }
-    
-    navigate(`/dashboard-doctor/patients/${id}/consultation/${consultation._id}`)
+
+    navigate(
+      `/dashboard-doctor/patients/${id}/consultation/${consultation._id}`
+    )
   }
 
   const handleLogout = () => {
@@ -369,88 +431,101 @@ const PatientProfile = () => {
 
   // Función para actualizar automáticamente el contador de anexos
   const updateAttachmentCount = (consultationId, newCount) => {
-    setFilteredConsultations(prev => 
-      prev.map(consultation => 
-        consultation._id === consultationId 
-          ? { ...consultation, attachments: consultation.attachments.slice(0, newCount) }
+    setFilteredConsultations((prev) =>
+      prev.map((consultation) =>
+        consultation._id === consultationId
+          ? {
+              ...consultation,
+              attachments: consultation.attachments.slice(0, newCount),
+            }
           : consultation
       )
-    );
-  };
+    )
+  }
 
   // Función para actualizar anexos de una consulta específica
   const updateConsultationAttachments = (consultationId, newAttachments) => {
-    setConsultations(prev => 
-      prev.map(consultation => 
-        consultation._id === consultationId 
+    setConsultations((prev) =>
+      prev.map((consultation) =>
+        consultation._id === consultationId
           ? { ...consultation, attachments: newAttachments }
           : consultation
       )
-    );
-    setFilteredConsultations(prev => 
-      prev.map(consultation => 
-        consultation._id === consultationId 
+    )
+    setFilteredConsultations((prev) =>
+      prev.map((consultation) =>
+        consultation._id === consultationId
           ? { ...consultation, attachments: newAttachments }
           : consultation
       )
-    );
-  };
+    )
+  }
 
   // Función para actualizar consultas después de cambios
   const updateConsultationsAfterChange = async () => {
     try {
-      await fetchConsultations();
-      console.log('Consultations updated after change');
+      await fetchConsultations()
+      console.log('Consultations updated after change')
     } catch (error) {
-      console.error('Error updating consultations after change:', error);
+      console.error('Error updating consultations after change:', error)
     }
-  };
+  }
 
   // Función para manejar cambios en anexos desde el detalle de consulta
   const handleAttachmentChange = (consultationId, newAttachments) => {
-    updateConsultationAttachments(consultationId, newAttachments);
-  };
+    updateConsultationAttachments(consultationId, newAttachments)
+  }
 
   // Escuchar eventos de cambios en anexos
   useEffect(() => {
     const handleConsultationAttachmentsChanged = (event) => {
-      const { consultationId, patientId, attachments } = event.detail;
-      
+      const { consultationId, patientId, attachments } = event.detail
+
       // Solo actualizar si es el paciente actual
       if (patientId === id) {
-        console.log('Updating consultation attachments from event:', consultationId, attachments);
-        updateConsultationAttachments(consultationId, attachments);
+        console.log(
+          'Updating consultation attachments from event:',
+          consultationId,
+          attachments
+        )
+        updateConsultationAttachments(consultationId, attachments)
       }
-    };
+    }
 
-    window.addEventListener('consultationAttachmentsChanged', handleConsultationAttachmentsChanged);
+    window.addEventListener(
+      'consultationAttachmentsChanged',
+      handleConsultationAttachmentsChanged
+    )
 
     return () => {
-      window.removeEventListener('consultationAttachmentsChanged', handleConsultationAttachmentsChanged);
-    };
-  }, [id]);
+      window.removeEventListener(
+        'consultationAttachmentsChanged',
+        handleConsultationAttachmentsChanged
+      )
+    }
+  }, [id])
 
   if (isLoading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className='w-full h-screen flex items-center justify-center'>
+        <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-primary'></div>
       </div>
     )
   }
 
   if (!patient) {
     return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+      <div className='w-full h-screen flex items-center justify-center'>
+        <div className='text-center'>
+          <h2 className='text-2xl font-bold text-gray-800 dark:text-white mb-4'>
             Paciente no encontrado
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className='text-gray-600 dark:text-gray-400 mb-4'>
             El paciente que buscas no existe o no tienes permisos para verlo.
           </p>
           <button
             onClick={() => navigate('/dashboard-doctor')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
           >
             Volver al Dashboard
           </button>
@@ -462,7 +537,7 @@ const PatientProfile = () => {
   return (
     <>
       <Header />
-      
+
       {/* Modales */}
       <Modal isOpen={modalState.editPersonal} onClose={closeModals}>
         <button
@@ -471,8 +546,8 @@ const PatientProfile = () => {
         >
           Cerrar
         </button>
-        <div className="p-6 max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+        <div className='p-6 max-w-4xl mx-auto'>
+          <h2 className='text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center'>
             Editar Información Personal y Familiar
           </h2>
           <FormPatient
@@ -512,7 +587,11 @@ const PatientProfile = () => {
         <VaccinationSchedule />
       </Modal>
 
-      <Modal isOpen={modalState.medicalCalendar} onClose={closeModals} size='large'>
+      <Modal
+        isOpen={modalState.medicalCalendar}
+        onClose={closeModals}
+        size='large'
+      >
         <button
           onClick={closeModals}
           className='p-3 text-white font-semibold rounded-xl bg-[#791010] flex items-center gap-2 border-slate-400 border cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg hover:shadow-[#791010]/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse absolute top-6 right-0'
@@ -522,323 +601,446 @@ const PatientProfile = () => {
         <MedicalCalendar />
       </Modal>
 
-
-
-      <main className='w-full min-h-screen bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark pt-2 pb-10'>
-        <div className="w-full max-w-6xl mx-auto p-6">
+      <main className='w-full min-h-screen bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark pt-2 pb-30'>
+        <div className='w-full max-w-6xl mx-auto p-6'>
           {/* Header con navegación */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 mb-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+          <div className='rounded-2xl sticky top-0 z-50 bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 backdrop-blur-lg border-b border-gray-200 dark:border-slate-700 shadow-2xl p-4 sm:p-6 mb-8'>
+            <div className='flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6'>
+              {/* Sección izquierda: Info del paciente */}
+              <div className='flex items-center gap-4 sm:gap-6 flex-1 min-w-0'>
+                {/* Botón de navegación mejorado */}
                 <button
                   onClick={() => navigate('/dashboard-doctor')}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white transition-colors text-sm"
+                  className='group flex items-center gap-2 px-4 py-2.5 text-gray-600 dark:text-gray-400 hover:text-white bg-transparent hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-700 border border-gray-300 dark:border-slate-600 hover:border-transparent rounded-xl transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-lg transform hover:scale-105'
                 >
-                  <FaArrowLeft />
-                  <span className="hidden sm:inline">Volver al Dashboard</span>
+                  <FaArrowLeft className='transition-transform duration-300 group-hover:-translate-x-1' />
+                  <span className='hidden sm:inline'>Dashboard</span>
                 </button>
-                <div className="flex items-center gap-3 sm:gap-4">
-                  {/* Avatar con iniciales */}
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-purple-600 to-purple-700 rounded-full flex items-center justify-center text-white text-lg sm:text-xl font-bold shadow-lg">
-                    {patient?.firstNames?.charAt(0)?.toUpperCase()}{patient?.lastNames?.charAt(0)?.toUpperCase()}
+
+                {/* Avatar y información del paciente mejorados */}
+                <div className='flex items-center gap-4 flex-1 min-w-0'>
+                  {/* Avatar con efecto de brillo */}
+                  <div className='relative'>
+                    <div className='w-14 h-14 sm:w-18 sm:h-18 bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center text-white text-lg sm:text-2xl font-bold shadow-2xl ring-4 ring-white/20 dark:ring-slate-700/50 transform hover:scale-110 transition-all duration-300'>
+                      {patient?.firstNames?.charAt(0)?.toUpperCase()}
+                      {patient?.lastNames?.charAt(0)?.toUpperCase()}
+                    </div>
+                    {/* Indicador de estado online */}
+                    <div className='absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800 shadow-lg'></div>
                   </div>
-                  <div>
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">
+
+                  {/* Información del paciente */}
+                  <div className='flex-1 min-w-0'>
+                    <h1 className='text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent leading-tight'>
                       {patient?.firstNames} {patient?.lastNames}
                     </h1>
+                    <div className='flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 mt-1'>
+                      <span className='text-sm text-gray-600 dark:text-gray-400 font-medium'>
+                        {patient?.birthDate
+                          ? calculateAge(patient.birthDate)
+                          : 'Edad no disponible'}
+                      </span>
+                      <span className='hidden sm:block w-1 h-1 bg-gray-400 rounded-full'></span>
+                      <span className='text-sm text-gray-600 dark:text-gray-400'>
+                        ID: #{id?.slice(-6)?.toUpperCase()}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Navegación superior */}
-              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+
+              {/* Sección derecha: Botones de acción mejorados */}
+              <div className='flex flex-wrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end'>
                 <button
                   onClick={openFormModal}
-                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 text-xs sm:text-sm shadow-lg hover:shadow-xl"
-                  title="Editar Información Personal y Familiar"
+                  className='group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-emerald-500/20 hover:border-emerald-400/30'
+                  title='Editar Información Personal y Familiar'
                 >
-                  <FaUserEdit />
-                  <span className="hidden sm:inline">Editar</span>
+                  <FaUserEdit className='transition-transform duration-300 group-hover:rotate-12' />
+                  <span className='hidden sm:inline'>Editar Perfil</span>
                 </button>
+
                 <button
                   onClick={openMedicalCalendar}
-                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-300 text-xs sm:text-sm shadow-lg hover:shadow-xl"
-                  title="Recipe"
+                  className='group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-indigo-500/20 hover:border-indigo-400/30'
+                  title='Gestión de Recetas Médicas'
                 >
-                  <FaCalendarAlt />
-                  <span className="hidden sm:inline">Recipe</span>
+                  <FaCalendarAlt className='transition-transform duration-300 group-hover:scale-110' />
+                  <span className='hidden sm:inline'>Recetas</span>
                 </button>
+
                 <button
                   onClick={openVaccinationSchedule}
-                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-300 text-xs sm:text-sm shadow-lg hover:shadow-xl"
-                  title="Tarjeta de Vacunación"
+                  className='group flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-600 to-pink-700 hover:from-rose-700 hover:to-pink-800 text-white rounded-xl font-semibold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-rose-500/20 hover:border-rose-400/30'
+                  title='Calendario de Vacunación'
                 >
-                  <FaSyringe />
-                  <span className="hidden sm:inline">Vacunación</span>
+                  <FaSyringe className='transition-transform duration-300 group-hover:rotate-12' />
+                  <span className='hidden sm:inline'>Vacunas</span>
                 </button>
               </div>
             </div>
+
+            {/* Barra de progreso decorativa */}
+            <div className='mt-4 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full opacity-20'></div>
           </div>
 
           {/* Información Personal */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
-                Información Personal
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className='bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-xl border border-blue-100 dark:border-slate-600 p-6 sm:p-8 mb-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'>
+            <div className='flex items-center mb-6'>
+              <div className='flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg mr-4'>
+                <FaUser className='text-white text-xl' />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <h2 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent'>
+                  Información Personal
+                </h2>
+                <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+                  Datos personales del paciente
+                </p>
+              </div>
+            </div>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+              <div className='group'>
+                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
                   Nombres
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.firstNames}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
+                    {patient?.firstNames || 'No especificado'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
                   Apellidos
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.lastNames}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
+                    {patient?.lastNames || 'No especificado'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
                   Fecha de Nacimiento
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.birthDate ? moment(patient.birthDate).format('DD/MM/YYYY') : 'N/A'}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
+                    {patient?.birthDate
+                      ? moment(patient.birthDate).format('DD/MM/YYYY')
+                      : 'No especificado'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
                   Edad
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.birthDate ? calculateAge(patient.birthDate) : 'N/A'}
-                </p>
+                <div className='bg-gradient-to-r from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 shadow-sm'>
+                  <p className='text-blue-800 dark:text-blue-200 font-bold text-lg'>
+                    {patient?.birthDate
+                      ? calculateAge(patient.birthDate)
+                      : 'No calculable'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
                   Teléfono
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.phone || 'N/A'}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
+                    {patient?.phone || 'No especificado'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
                   Correo Electrónico
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.email || 'N/A'}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium break-all'>
+                    {patient?.email || 'No especificado'}
+                  </p>
+                </div>
               </div>
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='sm:col-span-2 group'>
+                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
                   Dirección
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.address || 'N/A'}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
+                    {patient?.address || 'No especificado'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Información Familiar */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
-                Información Familiar
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className='bg-gradient-to-br from-white to-emerald-50 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-xl border border-emerald-100 dark:border-slate-600 p-6 sm:p-8 mb-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'>
+            <div className='flex items-center mb-6'>
+              <div className='flex items-center justify-center w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl shadow-lg mr-4'>
+                <FaUser className='text-white text-xl' />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <h2 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent'>
+                  Información Familiar
+                </h2>
+                <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+                  Datos de contacto familiar y especialistas
+                </p>
+              </div>
+            </div>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+              <div className='group'>
+                <label className='block text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-emerald-500 rounded-full'></div>
                   Nombre del Padre
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.dadName}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
+                    {patient?.dadName || 'No especificado'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-emerald-500 rounded-full'></div>
                   Nombre de la Madre
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.momName}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
+                    {patient?.momName || 'No especificado'}
+                  </p>
+                </div>
               </div>
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='sm:col-span-2 group'>
+                <label className='block text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-emerald-500 rounded-full'></div>
                   Obstetra/Ginecólogo
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                  {patient?.obstetrician}
-                </p>
+                <div className='bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 shadow-sm'>
+                  <p className='text-emerald-800 dark:text-emerald-200 font-medium'>
+                    {patient?.obstetrician || 'No especificado'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Historia Médica */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
-                Historia Médica
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+          <div className='bg-gradient-to-br from-white to-purple-50 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-xl border border-purple-100 dark:border-slate-600 p-6 sm:p-8 mb-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1'>
+            <div className='flex items-center mb-6'>
+              <div className='flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl shadow-lg mr-4'>
+                <FaFileAlt className='text-white text-xl' />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <h2 className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-800 dark:from-purple-400 dark:to-purple-300 bg-clip-text text-transparent'>
+                  Historia Médica
+                </h2>
+                <p className='text-sm text-gray-500 dark:text-gray-400 mt-1'>
+                  Antecedentes médicos del paciente
+                </p>
+              </div>
+            </div>
+            <div className='grid grid-cols-1 gap-6'>
+              <div className='group'>
+                <label className='block text-sm font-semibold text-purple-700 dark:text-purple-300 mb-3 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-purple-500 rounded-full'></div>
                   Historia Neonatal
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base whitespace-pre-wrap">
-                  {patient?.neonatal || 'N/A'}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm min-h-[100px]'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium whitespace-pre-wrap leading-relaxed'>
+                    {patient?.neonatal || (
+                      <span className='text-gray-500 dark:text-gray-400 italic'>
+                        No hay información registrada sobre la historia neonatal
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-purple-700 dark:text-purple-300 mb-3 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-purple-500 rounded-full'></div>
                   Historia Personal
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base whitespace-pre-wrap">
-                  {patient?.personal || 'N/A'}
-                </p>
+                <div className='bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm min-h-[100px]'>
+                  <p className='text-gray-900 dark:text-gray-100 font-medium whitespace-pre-wrap leading-relaxed'>
+                    {patient?.personal || (
+                      <span className='text-gray-500 dark:text-gray-400 italic'>
+                        No hay información registrada sobre la historia personal
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className='group'>
+                <label className='block text-sm font-semibold text-purple-700 dark:text-purple-300 mb-3 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-purple-500 rounded-full'></div>
                   Historia Familiar
                 </label>
-                <p className="mt-1 text-gray-900 dark:text-gray-100 text-sm sm:text-base whitespace-pre-wrap">
-                  {patient?.familiar || 'N/A'}
-                </p>
+                <div className='bg-gradient-to-r from-purple-50 to-purple-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-5 shadow-sm min-h-[100px]'>
+                  <p className='text-purple-800 dark:text-purple-200 font-medium whitespace-pre-wrap leading-relaxed'>
+                    {patient?.familiar || (
+                      <span className='text-purple-500 dark:text-purple-400 italic'>
+                        No hay información registrada sobre la historia familiar
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Gestión de Consultas */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">
+          <div className='bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6'>
+            <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4'>
+              <h2 className='text-lg sm:text-xl font-bold text-gray-800 dark:text-white'>
                 Gestión de Consultas
               </h2>
               <button
                 onClick={handleNewConsultation}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                className='flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center disabled:opacity-50 disabled:cursor-not-allowed'
               >
                 <FaPlus />
                 {isSubmitting ? 'Guardando...' : 'Nueva Consulta'}
               </button>
             </div>
-            
+
             {/* Filtros y controles */}
             {consultations.length > 0 && (
-              <div className="mb-4 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                <div className="flex flex-col sm:flex-row gap-3">
+              <div className='mb-4 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg'>
+                <div className='flex flex-col sm:flex-row gap-3'>
                   {/* Búsqueda */}
-                  <div className="flex-1">
+                  <div className='flex-1'>
                     <input
-                      type="text"
-                      placeholder="Buscar por motivo, diagnóstico, número o fecha..."
+                      type='text'
+                      placeholder='Buscar por motivo, diagnóstico, número o fecha...'
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:text-white text-sm"
+                      className='w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:text-white text-sm'
                     />
                   </div>
-                  
+
                   {/* Ordenamiento */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Ordenar:</span>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm text-gray-600 dark:text-gray-400'>
+                      Ordenar:
+                    </span>
                     <button
-                      onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                      className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm"
+                      onClick={() =>
+                        setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')
+                      }
+                      className='flex items-center gap-1 px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors text-sm'
                     >
                       {sortOrder === 'desc' ? 'Más recientes' : 'Más antiguas'}
-                      <FaSort className="text-xs" />
+                      <FaSort className='text-xs' />
                     </button>
                   </div>
                 </div>
               </div>
             )}
-            
+
             {consultations.length === 0 ? (
-              <div className="text-center py-6 sm:py-8">
-                <FaCalendarAlt className="mx-auto text-3xl sm:text-4xl text-gray-400 mb-3 sm:mb-4" />
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
+              <div className='text-center py-6 sm:py-8'>
+                <FaCalendarAlt className='mx-auto text-3xl sm:text-4xl text-gray-400 mb-3 sm:mb-4' />
+                <p className='text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-3 sm:mb-4'>
                   No hay consultas registradas para este paciente
                 </p>
                 <button
                   onClick={handleNewConsultation}
-                  className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                  className='px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base'
                 >
                   Crear Primera Consulta
                 </button>
               </div>
             ) : (
-              <div className="max-h-96 overflow-y-auto pr-2">
-                <div className="grid gap-3 sm:gap-4">
+              <div className='max-h-96 overflow-y-auto pr-2'>
+                <div className='grid gap-3 sm:gap-4'>
                   {filteredConsultations.map((consultation, index) => (
-                  <div
-                    key={consultation._id}
-                    className="border border-gray-200 dark:border-slate-700 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                            Consulta {consultation.consultationNumber}
-                          </span>
-                          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            {moment(consultation.consultationDate).format('DD/MM/YYYY HH:mm')}
-                          </span>
+                    <div
+                      key={consultation._id}
+                      className='border border-gray-200 dark:border-slate-700 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow'
+                    >
+                      <div className='flex flex-col sm:flex-row justify-between items-start gap-3'>
+                        <div className='flex-1 min-w-0'>
+                          <div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2'>
+                            <span className='text-sm font-medium text-blue-600 dark:text-blue-400'>
+                              Consulta {consultation.consultationNumber}
+                            </span>
+                            <span className='text-xs sm:text-sm text-gray-500 dark:text-gray-400'>
+                              {moment(consultation.consultationDate).format(
+                                'DD/MM/YYYY HH:mm'
+                              )}
+                            </span>
+                          </div>
+                          <h3 className='font-semibold text-gray-800 dark:text-white mb-1 text-sm sm:text-base'>
+                            Motivo: {consultation.consultMotive}
+                          </h3>
+                          <p className='text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2'>
+                            Diagnóstico: {consultation.diagnostic}
+                          </p>
+                          <div className='flex flex-wrap gap-2 sm:gap-4 text-xs text-gray-500 dark:text-gray-400'>
+                            <span>Peso: {consultation.weight}</span>
+                            <span>Talla: {consultation.size}</span>
+                            <span>PC: {consultation.pc}</span>
+                            <span>
+                              Circ. Abdominal:{' '}
+                              {consultation.abdominalCircumference}
+                            </span>
+                          </div>
+
+                          {/* Archivos adjuntos */}
+                          <div className='mt-2 flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400'>
+                            <FaEye />
+                            {consultation.attachments
+                              ? consultation.attachments.length
+                              : 0}{' '}
+                            anexo
+                            {(consultation.attachments
+                              ? consultation.attachments.length
+                              : 0) !== 1
+                              ? 's'
+                              : ''}
+                          </div>
                         </div>
-                        <h3 className="font-semibold text-gray-800 dark:text-white mb-1 text-sm sm:text-base">
-                          Motivo: {consultation.consultMotive}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">
-                          Diagnóstico: {consultation.diagnostic}
-                        </p>
-                        <div className="flex flex-wrap gap-2 sm:gap-4 text-xs text-gray-500 dark:text-gray-400">
-                          <span>Peso: {consultation.weight}</span>
-                          <span>Talla: {consultation.size}</span>
-                          <span>PC: {consultation.pc}</span>
-                          <span>Circ. Abdominal: {consultation.abdominalCircumference}</span>
+                        <div className='flex gap-1 sm:gap-2 flex-shrink-0'>
+                          <button
+                            onClick={() => handleViewConsultation(consultation)}
+                            className='p-1.5 sm:p-2 text-green-600 hover:text-green-700 transition-colors'
+                            title='Ver consulta'
+                          >
+                            <FaEye className='text-sm sm:text-base' />
+                          </button>
+                          <button
+                            onClick={() => handleEditConsultation(consultation)}
+                            className='p-1.5 sm:p-2 text-blue-600 hover:text-blue-700 transition-colors'
+                            title='Editar consulta'
+                          >
+                            <FaEdit className='text-sm sm:text-base' />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteConsultation(consultation)
+                            }
+                            className='p-1.5 sm:p-2 text-red-600 hover:text-red-700 transition-colors'
+                            title='Eliminar consulta'
+                          >
+                            <FaTrash className='text-sm sm:text-base' />
+                          </button>
                         </div>
-                        
-                        {/* Archivos adjuntos */}
-                        <div className="mt-2 flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400">
-                          <FaEye />
-                          {consultation.attachments ? consultation.attachments.length : 0} anexo{(consultation.attachments ? consultation.attachments.length : 0) !== 1 ? 's' : ''}
-                        </div>
-                      </div>
-                      <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                        <button
-                          onClick={() => handleViewConsultation(consultation)}
-                          className="p-1.5 sm:p-2 text-green-600 hover:text-green-700 transition-colors"
-                          title="Ver consulta"
-                        >
-                          <FaEye className="text-sm sm:text-base" />
-                        </button>
-                        <button
-                          onClick={() => handleEditConsultation(consultation)}
-                          className="p-1.5 sm:p-2 text-blue-600 hover:text-blue-700 transition-colors"
-                          title="Editar consulta"
-                        >
-                          <FaEdit className="text-sm sm:text-base" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteConsultation(consultation)}
-                          className="p-1.5 sm:p-2 text-red-600 hover:text-red-700 transition-colors"
-                          title="Eliminar consulta"
-                        >
-                          <FaTrash className="text-sm sm:text-base" />
-                        </button>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 </div>
               </div>
             )}
@@ -849,4 +1051,4 @@ const PatientProfile = () => {
   )
 }
 
-export default PatientProfile 
+export default PatientProfile

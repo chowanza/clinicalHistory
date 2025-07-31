@@ -23,12 +23,15 @@ const App = () => {
     <PatientProvider>
       <AuthProvider>
         <Router>
-          <div className="min-h-screen flex flex-col">
+          <div className='min-h-screen flex flex-col relative'>
             <Routes>
               <Route path='/' element={<AuthContainer />}>
                 <Route index path='signin' element={<SignInForm />} />
                 <Route path='signup' element={<SignUpForm />} />
-                <Route path='forgot-password' element={<ForgotPasswordForm />} />
+                <Route
+                  path='forgot-password'
+                  element={<ForgotPasswordForm />}
+                />
                 <Route path='reset-password' element={<ResetPasswordForm />} />
               </Route>
               <Route element={<ProtectedRoute />}>
@@ -37,10 +40,9 @@ const App = () => {
                   element={
                     <>
                       <Header />
-                      <div className="flex-1">
+                      <div className='flex-1'>
                         <DashboardDoctor />
                       </div>
-                      <Footer />
                     </>
                   }
                 />
@@ -49,7 +51,6 @@ const App = () => {
                   element={
                     <>
                       <PatientProfile />
-                      <Footer />
                     </>
                   }
                 />
@@ -58,7 +59,6 @@ const App = () => {
                   element={
                     <>
                       <ConsultationsPage />
-                      <Footer />
                     </>
                   }
                 />
@@ -67,13 +67,13 @@ const App = () => {
                   element={
                     <>
                       <ConsultationDetail />
-                      <Footer />
                     </>
                   }
                 />
               </Route>
               <Route path='*' element={<NotFound />} />
             </Routes>
+            <Footer />
           </div>
         </Router>
       </AuthProvider>
