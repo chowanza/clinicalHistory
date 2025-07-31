@@ -3,31 +3,38 @@ import Switch from '@mui/material/Switch'
 import useThemeToggle from '../../hooks/useThemeToggle'
 
 const ThemeSwitch = styled(Switch)(({ theme }) => ({
-  width: 42, // Más pequeño que antes (era 62)
-  height: 22, // Más pequeño que antes (era 34)
-  padding: 4, // Menos padding
+  width: 52,
+  height: 28,
+  padding: 0,
   '& .MuiSwitch-switchBase': {
-    margin: 1,
-    padding: 0,
-    transform: 'translateX(4px)', // Ajustado para el nuevo tamaño
+    margin: 0,
+    padding: 4,
+    transform: 'translateX(0px)',
+    transition: 'transform 0.3s ease-in-out',
     '&.Mui-checked': {
       color: '#fff',
-      transform: 'translateX(16px)', // Ajustado para el nuevo tamaño
-      '& .MuiSwitch-thumb:before': {
-        backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
-          '#fff'
-        )}" d="M4.2 2.5l-.7 1.8-1.8.7 1.8.7.7 1.8.6-1.8L6.7 5l-1.9-.7-.6-1.8zm15 8.3a6.7 6.7 0 11-6.6-6.6 5.8 5.8 0 006.6 6.6z"/></svg>')`,
+      transform: 'translateX(24px)',
+      '& .MuiSwitch-thumb': {
+        backgroundColor: '#1e293b',
+        '&:before': {
+          backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+            '#fbbf24'
+          )}" d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/></svg>')`,
+        },
       },
       '& + .MuiSwitch-track': {
+        backgroundColor: '#334155',
         opacity: 1,
-        backgroundColor: '#8796A5',
       },
     },
   },
   '& .MuiSwitch-thumb': {
-    backgroundColor: '#001e3c',
-    width: 20, // Más pequeño (era 32)
-    height: 20, // Más pequeño (era 32)
+    backgroundColor: '#f8fafc',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
+    transition: 'all 0.3s ease-in-out',
     '&::before': {
       content: "''",
       position: 'absolute',
@@ -35,24 +42,42 @@ const ThemeSwitch = styled(Switch)(({ theme }) => ({
       height: '100%',
       left: 0,
       top: 0,
+      borderRadius: '50%',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
-      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
-        '#fff'
-      )}" d="M9.305 1.667V3.75h1.389V1.667h-1.39zm-4.707 1.95l-.982.982L5.09 6.072l.982-.982-1.473-1.473zm10.802 0L13.927 5.09l.982.982 1.473-1.473-.982-.982zM10 5.139a4.872 4.872 0 00-4.862 4.86A4.872 4.872 0 0010 14.862 4.872 4.872 0 0014.86 10 4.872 4.872 0 0010 5.139zm0 1.389A3.462 3.462 0 0113.471 10a3.462 3.462 0 01-3.473 3.472A3.462 3.462 0 016.527 10 3.462 3.462 0 0110 6.528zM1.665 9.305v1.39h2.083v-1.39H1.666zm14.583 0v1.39h2.084v-1.39h-2.084zM5.09 13.928L3.616 15.4l.982.982 1.473-1.473-.982-.982zm9.82 0l-.982.982 1.473 1.473.982-.982-1.473-1.473zM9.305 16.25v2.083h1.389V16.25h-1.39z"/></svg>')`,
+      backgroundSize: '16px 16px',
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        '#64748b'
+      )}" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/></svg>')`,
+    },
+    '&:hover': {
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
     },
   },
   '& .MuiSwitch-track': {
+    backgroundColor: '#e2e8f0',
+    borderRadius: 14,
     opacity: 1,
-    backgroundColor: '#aab4be',
-    borderRadius: 11, // Ajustado para el nuevo tamaño
+    transition: 'background-color 0.3s ease-in-out',
   },
 }))
 
 const ThemeToggle = () => {
   const { isDarkMode, toggleTheme } = useThemeToggle()
 
-  return <ThemeSwitch onClick={toggleTheme} checked={isDarkMode} />
+  return (
+    <div className='relative group'>
+      <ThemeSwitch
+        onClick={toggleTheme}
+        checked={isDarkMode}
+        inputProps={{ 'aria-label': 'Toggle dark mode' }}
+      />
+      {/* Tooltip simple */}
+      <div className='absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap'>
+        {isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}
+      </div>
+    </div>
+  )
 }
 
 export default ThemeToggle
