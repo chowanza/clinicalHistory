@@ -604,7 +604,7 @@ const PatientProfile = () => {
       <main className='w-full min-h-screen bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark pt-2 pb-30'>
         <div className='w-full max-w-6xl mx-auto p-6'>
           {/* Header con navegación */}
-          <div className='rounded-2xl sticky top-0 z-50 bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 backdrop-blur-lg border-b border-gray-200 dark:border-slate-700 shadow-2xl p-4 sm:p-6 mb-8'>
+          <div className='rounded-2xl sticky top-0 z-10 bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 backdrop-blur-lg border-b border-gray-200 dark:border-slate-700 shadow-2xl p-4 sm:p-6 mb-8'>
             <div className='flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6'>
               {/* Sección izquierda: Info del paciente */}
               <div className='flex items-center gap-4 sm:gap-6 flex-1 min-w-0'>
