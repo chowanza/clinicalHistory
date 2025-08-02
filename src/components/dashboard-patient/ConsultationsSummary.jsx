@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import Modal from '../ui/Modal'
 import FormPatient from '../dashboard-doctor/FormPatient'
+import { getConsultationsRequest, createConsultationRequest, updateConsultationRequest, deleteConsultationRequest } from '../../api/consultations'
 
 const ConsultationsSummary = ({ patientId, onConsultationUpdate }) => {
   const [consultations, setConsultations] = useState([])
@@ -19,16 +20,11 @@ const ConsultationsSummary = ({ patientId, onConsultationUpdate }) => {
   const fetchConsultations = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:4000/api/tasks/${patientId}/consultations`, {
-        credentials: 'include'
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setConsultations(data)
-        // Notificar al componente padre sobre la actualización
-        if (onConsultationUpdate) {
-          onConsultationUpdate(data)
-        }
+      const response = await getConsultationsRequest(patientId)
+      setConsultations(response.data)
+      // Notificar al componente padre sobre la actualización
+      if (onConsultationUpdate) {
+        onConsultationUpdate(response.data)
       }
     } catch (error) {
       console.error('Error fetching consultations:', error)
@@ -81,16 +77,8 @@ const ConsultationsSummary = ({ patientId, onConsultationUpdate }) => {
 
     if (window.confirm('¿Estás seguro de que quieres eliminar esta consulta?')) {
       try {
-        const response = await fetch(`http://localhost:4000/api/tasks/${patientId}/consultations/${consultationId}`, {
-          method: 'DELETE',
-          credentials: 'include'
-        })
-        if (response.ok) {
-          await fetchConsultations()
-        } else {
-          const errorData = await response.json().catch(() => ({}));
-          alert(`Error al eliminar la consulta: ${errorData.message || 'Error desconocido'}`);
-        }
+        await deleteConsultationRequest(patientId, consultationId)
+        await fetchConsultations()
       } catch (error) {
         console.error('Error deleting consultation:', error)
         alert('Error al eliminar la consulta')
@@ -102,29 +90,15 @@ const ConsultationsSummary = ({ patientId, onConsultationUpdate }) => {
     try {
       const isNewConsultation = !editingConsultation || !editingConsultation._id;
       
-      const url = isNewConsultation 
-        ? `http://localhost:4000/api/tasks/${patientId}/consultations`
-        : `http://localhost:4000/api/tasks/${patientId}/consultations/${editingConsultation._id}`
-      
-      const method = isNewConsultation ? 'POST' : 'PUT'
-      
-      // Si formData es FormData (con archivos), enviar directamente
-      // Si es un objeto normal, convertirlo a JSON
-      const body = formData instanceof FormData ? formData : JSON.stringify(formData)
-      const headers = formData instanceof FormData ? {} : { 'Content-Type': 'application/json' }
-      
-      const response = await fetch(url, {
-        method,
-        headers,
-        credentials: 'include',
-        body
-      })
-
-      if (response.ok) {
-        await fetchConsultations()
-        setShowFormModal(false)
-        setEditingConsultation(null)
+      if (isNewConsultation) {
+        await createConsultationRequest(patientId, formData)
+      } else {
+        await updateConsultationRequest(patientId, editingConsultation._id, formData)
       }
+      
+      await fetchConsultations()
+      setShowFormModal(false)
+      setEditingConsultation(null)
     } catch (error) {
       console.error('Error saving consultation:', error)
     }

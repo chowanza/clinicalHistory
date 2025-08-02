@@ -21,6 +21,7 @@ import Modal from '../components/ui/Modal'
 import VaccinationSchedule from '../components/dashboard-patient/VaccinationSchedule'
 import MedicalCalendar from '../components/MedicalCalendar/MedicalCalendar'
 import { usePatients } from '../context/PatientsContext'
+import { getConsultationsRequest, createConsultationRequest, updateConsultationRequest, deleteConsultationRequest } from '../api/consultations'
 
 // Función para calcular la edad en años, meses y días
 const calculateAge = (birthDate) => {
@@ -157,20 +158,12 @@ const PatientProfile = () => {
 
   const fetchConsultations = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:4000/api/tasks/${id}/consultations`,
-        {
-          credentials: 'include',
-        }
+      const response = await getConsultationsRequest(id)
+      // Ordenar por fecha de consulta (más reciente primero)
+      const sortedConsultations = response.data.sort(
+        (a, b) => new Date(b.consultationDate) - new Date(a.consultationDate)
       )
-      if (response.ok) {
-        const data = await response.json()
-        // Ordenar por fecha de consulta (más reciente primero)
-        const sortedConsultations = data.sort(
-          (a, b) => new Date(b.consultationDate) - new Date(a.consultationDate)
-        )
-        setConsultations(sortedConsultations)
-      }
+      setConsultations(sortedConsultations)
     } catch (error) {
       console.error('Error fetching consultations:', error)
     }
@@ -290,23 +283,8 @@ const PatientProfile = () => {
       window.confirm('¿Estás seguro de que quieres eliminar esta consulta?')
     ) {
       try {
-        const response = await fetch(
-          `http://localhost:4000/api/tasks/${id}/consultations/${consultation._id}`,
-          {
-            method: 'DELETE',
-            credentials: 'include',
-          }
-        )
-        if (response.ok) {
-          await fetchConsultations()
-        } else {
-          const errorData = await response.json().catch(() => ({}))
-          alert(
-            `Error al eliminar la consulta: ${
-              errorData.message || 'Error desconocido'
-            }`
-          )
-        }
+        await deleteConsultationRequest(id, consultation._id)
+        await fetchConsultations()
       } catch (error) {
         console.error('Error deleting consultation:', error)
         alert('Error al eliminar la consulta')
@@ -344,52 +322,28 @@ const PatientProfile = () => {
 
       const isNewConsultation = !editingConsultation || !editingConsultation._id
 
-      const url = isNewConsultation
-        ? `http://localhost:4000/api/tasks/${id}/consultations`
-        : `http://localhost:4000/api/tasks/${id}/consultations/${editingConsultation._id}`
-
-      const method = isNewConsultation ? 'POST' : 'PUT'
-
       console.log('Submitting consultation:', {
         isNewConsultation,
-        url,
-        method,
         formData,
       })
 
-      // Si formData es FormData (con archivos), enviar directamente
-      // Si es un objeto normal, convertirlo a JSON
-      const body =
-        formData instanceof FormData ? formData : JSON.stringify(formData)
-      const headers =
-        formData instanceof FormData
-          ? {}
-          : { 'Content-Type': 'application/json' }
-
-      console.log('Request body:', body)
-      console.log('Request headers:', headers)
-
-      const response = await fetch(url, {
-        method,
-        credentials: 'include',
-        headers,
-        body,
-      })
-
-      console.log('Response status:', response.status)
-
-      if (response.ok) {
-        const result = await response.json()
-        console.log('Consultation saved successfully:', result)
+      try {
+        let result
+        if (isNewConsultation) {
+          result = await createConsultationRequest(id, formData)
+        } else {
+          result = await updateConsultationRequest(id, editingConsultation._id, formData)
+        }
+        
+        console.log('Consultation saved successfully:', result.data)
         await updateConsultationsAfterChange()
         setModalState((prev) => ({ ...prev, consultationForm: false }))
         setEditingConsultation(null)
-      } else {
-        const errorData = await response.json()
-        console.error('Error response:', errorData)
+      } catch (error) {
+        console.error('Error response:', error.response?.data)
         alert(
           `Error al guardar la consulta: ${
-            errorData.message || 'Error desconocido'
+            error.response?.data?.message || 'Error desconocido'
           }`
         )
       }

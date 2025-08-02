@@ -2,8 +2,11 @@ import axios from 'axios'
 
 // Configuración para diferentes entornos
 const getBaseURL = () => {
-  // En desarrollo, usar localhost
-  if (import.meta.env.DEV) {
+  // Forzar uso del backend de producción incluso en desarrollo
+  // Cambiar a false para usar localhost en desarrollo
+  const useProductionBackend = true
+  
+  if (import.meta.env.DEV && !useProductionBackend) {
     return 'http://localhost:4000/api'
   }
   

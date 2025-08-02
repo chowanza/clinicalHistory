@@ -15,6 +15,7 @@ import FormPatient from '../components/dashboard-doctor/FormPatient'
 import PatientPDF from '../components/dashboard-patient/PatientPDF'
 import VaccinationSchedule from '../components/dashboard-patient/VaccinationSchedule'
 import MedicalCalendar from '../components/MedicalCalendar/MedicalCalendar'
+import { getConsultationsRequest } from '../api/consultations'
 
 const DashboardPatient = () => {
   const { id, consultationId } = useParams()
@@ -77,15 +78,14 @@ const DashboardPatient = () => {
           
           // Si hay consultationId, obtener los datos de esa consulta específica
           if (consultationId) {
-            const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations`, {
-              credentials: 'include'
-            })
-            if (response.ok) {
-              const consultations = await response.json()
-              const consultation = consultations.find(c => c._id === consultationId)
+            try {
+              const response = await getConsultationsRequest(id)
+              const consultation = response.data.find(c => c._id === consultationId)
               if (consultation) {
                 setConsultationData(consultation)
               }
+            } catch (error) {
+              console.error('Error fetching consultation data:', error)
             }
           }
         } finally {

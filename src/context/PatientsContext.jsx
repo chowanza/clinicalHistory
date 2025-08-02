@@ -73,7 +73,7 @@ export function PatientProvider({ children }) {
       
       // Manejar errores específicos
       if (error.message.includes('Unexpected token')) {
-        throw new Error('El servidor no está respondiendo correctamente. Verifique que el backend esté ejecutándose en http://localhost:4000')
+        throw new Error('El servidor no está respondiendo correctamente. Verifique que el backend esté ejecutándose correctamente')
       } else if (error.response?.status === 400) {
         const errorMessage = error.response?.data?.message || error.response?.data || 'Error de validación en los datos'
         throw new Error(errorMessage)
