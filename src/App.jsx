@@ -6,6 +6,7 @@ import SignInForm from './components/auth/SignInForm'
 import SignUpForm from './components/auth/SignUpForm'
 import ForgotPasswordForm from './components/auth/ForgotPasswordForm'
 import ResetPasswordForm from './components/auth/ResetPasswordForm'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import DashboardDoctor from './pages/DashboardDoctor'
 import DashboardPatient from './pages/DashboardPatient'
 import ConsultationsPage from './pages/ConsultationsPage'
@@ -32,8 +33,8 @@ const App = () => {
                   path='forgot-password'
                   element={<ForgotPasswordForm />}
                 />
-                <Route path='reset-password' element={<ResetPasswordForm />} />
               </Route>
+              <Route path='reset-password' element={<ResetPasswordPage />} />
               <Route element={<ProtectedRoute />}>
                 <Route
                   path='dashboard-doctor'

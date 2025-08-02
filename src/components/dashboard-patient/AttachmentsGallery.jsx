@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { FaImage, FaDownload, FaTimes, FaFilePdf, FaFileWord, FaFileExcel, FaFileAlt, FaEye, FaTrash, FaChevronLeft, FaChevronRight, FaPlus } from 'react-icons/fa'
+import { getAPIBaseURL } from '../../api/axios'
 
 const AttachmentsGallery = ({ 
   attachments = [], 
@@ -284,7 +285,7 @@ const AttachmentsGallery = ({
     try {
       // Solo manejar anexos de consultas (base64)
       if (consultationId) {
-        const url = `http://localhost:4000/api/tasks/${patientId}/consultations/${consultationId}/attachments/${attachment.filename}`
+        const url = `${getAPIBaseURL()}/tasks/${patientId}/consultations/${consultationId}/attachments/${attachment.filename}`
         
         const response = await fetch(url, {
           method: 'DELETE',

@@ -16,6 +16,7 @@ import PatientPDF from '../components/dashboard-patient/PatientPDF'
 import VaccinationSchedule from '../components/dashboard-patient/VaccinationSchedule'
 import MedicalCalendar from '../components/MedicalCalendar/MedicalCalendar'
 import { getConsultationsRequest } from '../api/consultations'
+import { getAPIBaseURL } from '../api/axios'
 
 const DashboardPatient = () => {
   const { id, consultationId } = useParams()
@@ -252,7 +253,7 @@ const DashboardPatient = () => {
                 // Simplemente recargar los datos de la consulta, igual que se hace con las consultas
                 try {
                   console.log('Fetching updated consultation from server...');
-                  const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+                  const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${consultationId}`, {
                     credentials: 'include'
                   });
                   
@@ -299,7 +300,7 @@ const DashboardPatient = () => {
                   
                   console.log('Sending update to server:', updateData);
                   
-                  const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+                  const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${consultationId}`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { FaArrowLeft, FaCalendarAlt, FaUser } from 'react-icons/fa'
 import moment from 'moment'
 import Header from '../components/ui/Header'
+import { getAPIBaseURL } from '../api/axios'
 
 const PatientConsultationsList = () => {
   const { id } = useParams()
@@ -20,7 +21,7 @@ const PatientConsultationsList = () => {
       setIsLoading(true)
       
       // Fetch patient data
-      const patientResponse = await fetch(`http://localhost:4000/api/tasks/${id}`, {
+      const patientResponse = await fetch(`${getAPIBaseURL()}/tasks/${id}`, {
         credentials: 'include'
       })
       if (patientResponse.ok) {
@@ -29,7 +30,7 @@ const PatientConsultationsList = () => {
       }
       
       // Fetch consultations
-      const consultationsResponse = await fetch(`http://localhost:4000/api/tasks/${id}/consultations`, {
+      const consultationsResponse = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations`, {
         credentials: 'include'
       })
       if (consultationsResponse.ok) {

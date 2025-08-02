@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { getAPIBaseURL } from '../../api/axios'
 
 const ResetPasswordForm = () => {
   const [searchParams] = useSearchParams()
@@ -34,7 +35,7 @@ const ResetPasswordForm = () => {
     setError('')
     
     try {
-      const response = await fetch('http://localhost:4000/api/auth/reset-password', {
+      const response = await fetch(`${getAPIBaseURL()}/auth/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

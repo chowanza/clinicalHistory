@@ -14,6 +14,11 @@ const getBaseURL = () => {
   return 'https://clinicalhistorybackend.onrender.com/api'
 }
 
+// Helper function para obtener la URL base (para usar con fetch)
+export const getAPIBaseURL = () => {
+  return getBaseURL()
+}
+
 const instance = axios.create({
   baseURL: getBaseURL(),
   withCredentials: true,

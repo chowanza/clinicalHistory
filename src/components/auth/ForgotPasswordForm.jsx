@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { FaEnvelope, FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { getAPIBaseURL } from '../../api/axios'
 
 const ForgotPasswordForm = ({ onBackToSignIn }) => {
   const navigate = useNavigate()
@@ -25,7 +26,7 @@ const ForgotPasswordForm = ({ onBackToSignIn }) => {
     setPreviewUrl('')
     
     try {
-      const response = await fetch('http://localhost:4000/api/auth/forgot-password', {
+      const response = await fetch(`${getAPIBaseURL()}/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

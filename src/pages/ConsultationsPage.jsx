@@ -6,6 +6,7 @@ import Header from '../components/ui/Header'
 import FormPatient from '../components/dashboard-doctor/FormPatient'
 import Modal from '../components/ui/Modal'
 import AttachmentsGallery from '../components/dashboard-patient/AttachmentsGallery'
+import { getAPIBaseURL } from '../api/axios'
 
 const ConsultationsPage = () => {
   const { id } = useParams()
@@ -85,7 +86,7 @@ const ConsultationsPage = () => {
   const fetchConsultations = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations`, {
+      const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations`, {
         credentials: 'include'
       })
       if (response.status === 304) {
@@ -160,7 +161,7 @@ const ConsultationsPage = () => {
 
     if (window.confirm('¿Estás seguro de que quieres eliminar esta consulta?')) {
       try {
-        const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+        const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${consultationId}`, {
           method: 'DELETE',
           credentials: 'include'
         })
@@ -187,8 +188,8 @@ const ConsultationsPage = () => {
       const isNewConsultation = !editingConsultation || !editingConsultation._id;
       
       const url = isNewConsultation 
-        ? `http://localhost:4000/api/tasks/${id}/consultations`
-        : `http://localhost:4000/api/tasks/${id}/consultations/${editingConsultation._id}`
+        ? `${getAPIBaseURL()}/tasks/${id}/consultations`
+        : `${getAPIBaseURL()}/tasks/${id}/consultations/${editingConsultation._id}`
       
       const method = isNewConsultation ? 'POST' : 'PUT'
       
@@ -541,7 +542,7 @@ const ConsultationsPage = () => {
                     await new Promise(resolve => setTimeout(resolve, 500));
                     
                     // Obtener la consulta actualizada del servidor
-                    const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${selectedConsultation._id}`, {
+                    const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${selectedConsultation._id}`, {
                       credentials: 'include'
                     });
                     
@@ -629,7 +630,7 @@ const ConsultationsPage = () => {
                     
                     console.log('Sending update to server:', updateData);
                     
-                    const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${selectedConsultation._id}`, {
+                    const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${selectedConsultation._id}`, {
                       method: 'PUT',
                       credentials: 'include',
                       headers: {

@@ -8,6 +8,7 @@ import FormPatient from '../components/dashboard-doctor/FormPatient'
 import AttachmentsGallery from '../components/dashboard-patient/AttachmentsGallery'
 import { PDFDownloadLink, Document, Page, Text, View } from '@react-pdf/renderer'
 import moment from 'moment'
+import { getAPIBaseURL } from '../api/axios'
 
 const ConsultationDetail = () => {
   const { id, consultationId } = useParams()
@@ -24,7 +25,7 @@ const ConsultationDetail = () => {
       setIsLoading(true)
       // Add cache-busting parameter to ensure fresh data
       const timestamp = Date.now()
-      const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}?_t=${timestamp}`, {
+      const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${consultationId}?_t=${timestamp}`, {
         credentials: 'include'
       })
       
@@ -51,7 +52,7 @@ const ConsultationDetail = () => {
     } catch (error) {
       console.error('Error fetching consultation:', error)
       if (error.message.includes('Unexpected token')) {
-        alert('Error: El servidor no está respondiendo correctamente. Verifique que el backend esté ejecutándose en http://localhost:4000')
+        alert('Error: El servidor no está respondiendo correctamente. Verifique que el backend esté ejecutándose correctamente.')
       } else {
         alert('Error al cargar la consulta. Verifique su conexión a internet.')
       }
@@ -81,7 +82,7 @@ const ConsultationDetail = () => {
   const handleEditConsultation = async (formData) => {
     try {
       // Enviar JSON puro para los datos normales de la consulta
-      const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+      const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${consultationId}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -103,7 +104,7 @@ const ConsultationDetail = () => {
   const handleNewConsultation = async (formData) => {
     try {
       // Enviar JSON puro para los datos normales de la consulta
-      const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations`, {
+      const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -652,7 +653,7 @@ const ConsultationDetail = () => {
                     
                     console.log('Sending update to server:', updateData);
                     
-                    const response = await fetch(`http://localhost:4000/api/tasks/${id}/consultations/${consultationId}`, {
+                    const response = await fetch(`${getAPIBaseURL()}/tasks/${id}/consultations/${consultationId}`, {
                       method: 'PUT',
                       credentials: 'include',
                       headers: {

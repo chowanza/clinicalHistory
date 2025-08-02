@@ -1,6 +1,7 @@
 import FormSection from './formPatient/FormSection'
 import { useForm } from 'react-hook-form'
 import { usePatients } from '../../context/PatientsContext'
+import { getAPIBaseURL } from '../../api/axios'
 import {
   diagnosisFields,
   measurementsFields,
@@ -376,8 +377,8 @@ const FormPatient = ({
         }
 
         const url = isNewConsultation
-          ? `http://localhost:4000/api/tasks/${patientData._id}/consultations`
-          : `http://localhost:4000/api/tasks/${patientData._id}/consultations/${consultationData._id}`
+          ? `${getAPIBaseURL()}/tasks/${patientData._id}/consultations`
+          : `${getAPIBaseURL()}/tasks/${patientData._id}/consultations/${consultationData._id}`
 
         const method = isNewConsultation ? 'POST' : 'PUT'
 
