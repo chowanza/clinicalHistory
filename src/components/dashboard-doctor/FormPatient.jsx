@@ -448,7 +448,11 @@ const FormPatient = ({
   })
 
   const hasImportedData =
-    patientData && Object.keys(patientData).length > 0 && !isConsultationMode
+    patientData && 
+    Object.keys(patientData).length > 0 && 
+    !isConsultationMode && 
+    !isEditMode && 
+    patientData._id === undefined // Solo mostrar si no es un paciente existente (sin _id)
 
   const getTitle = () => {
     if (isConsultationMode) {
@@ -478,7 +482,7 @@ const FormPatient = ({
         {getTitle()}
       </h1>
 
-      {hasImportedData && !isConsultationMode && (
+      {hasImportedData && (
         <div className='w-full max-w-4xl bg-blue-100 text-blue-800 p-2 sm:p-3 rounded-lg mb-3 sm:mb-4 flex items-center gap-2'>
           <FaCheckCircle />
           <span className='text-xs sm:text-sm md:text-base'>
