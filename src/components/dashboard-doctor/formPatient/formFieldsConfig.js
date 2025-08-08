@@ -19,19 +19,6 @@ export const personalInfoFields = [
     dataValue: '{patient.birthDate}',
   },
   {
-    name: 'phone',
-    label: 'Teléfono',
-    colSpan: 'col-span-3',
-    dataValue: '{patient.phone}',
-  },
-  {
-    name: 'email',
-    label: 'Correo Electrónico',
-    type: 'email',
-    colSpan: 'col-span-3',
-    dataValue: '{patient.email}',
-  },
-  {
     name: 'address',
     label: 'Dirección',
     colSpan: 'col-span-full',
@@ -40,6 +27,21 @@ export const personalInfoFields = [
 ]
 
 export const familyInfoFields = [
+  {
+    name: 'phone',
+    label: 'Teléfono',
+    colSpan: 'col-span-3',
+    required: false,
+    dataValue: '{patient.phone}',
+  },
+  {
+    name: 'email',
+    label: 'Correo Electrónico',
+    type: 'email',
+    colSpan: 'col-span-3',
+    required: false,
+    dataValue: '{patient.email}',
+  },
   {
     name: 'dadName',
     label: 'Nombre del Padre',

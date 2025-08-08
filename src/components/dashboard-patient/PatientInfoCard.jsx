@@ -5,7 +5,7 @@ import Skeleton from '@mui/material/Skeleton'
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 
-const PatientContact = ({
+const PatientInfoCard = ({
   title = 'Contact Information',
   titleIcon = <FaUserShield />,
   sections = [
@@ -117,10 +117,10 @@ const PatientContact = ({
             style={{ gridColumn: `span ${section.colSpan || 1}` }}
           >
             <span className='text-purple-600 flex justify-start items-center gap-1 text-sm sm:text-base'>
-              {section.icon} {section.label}
+              {section.icon} {section.title}
             </span>
             <span className='block text-gray-700 dark:text-gray-200 mt-1 text-sm sm:text-base'>
-              {section.value}
+              {section.content}
             </span>
           </div>
         ))}
@@ -129,7 +129,7 @@ const PatientContact = ({
   )
 }
 
-PatientContact.propTypes = {
+PatientInfoCard.propTypes = {
   title: PropTypes.string,
   titleIcon: PropTypes.node,
   sections: PropTypes.arrayOf(
@@ -143,4 +143,4 @@ PatientContact.propTypes = {
   isLoading: PropTypes.bool,
 }
 
-export default PatientContact
+export default PatientInfoCard

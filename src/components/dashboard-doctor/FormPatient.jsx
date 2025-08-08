@@ -270,17 +270,21 @@ const FormPatient = ({
       // Los demás campos (medidas, diagnóstico, etc.) son opcionales
     } else {
       // Validación completa para paciente
-      // Validación frontend para teléfono
-      if (!/^[0-9]{6,}$/.test(data.phone)) {
-        setFormError('El teléfono debe tener al menos 6 dígitos numéricos.')
-        return
+      // Validación frontend para teléfono (solo si se proporciona)
+      if (data.phone && data.phone.trim() !== '') {
+        if (!/^[0-9]{6,}$/.test(data.phone)) {
+          setFormError('El teléfono debe tener al menos 6 dígitos numéricos.')
+          return
+        }
       }
 
-      // Validación frontend para email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(data.email)) {
-        setFormError('El email debe tener un formato válido.')
-        return
+      // Validación frontend para email (solo si se proporciona)
+      if (data.email && data.email.trim() !== '') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(data.email)) {
+          setFormError('El email debe tener un formato válido.')
+          return
+        }
       }
     }
 

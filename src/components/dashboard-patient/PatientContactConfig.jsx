@@ -28,18 +28,6 @@ export const patientContactSections = [
     titleIcon: <FaUser />,
     sections: [
       {
-        title: 'Teléfono',
-        icon: <FaPhone />,
-        content: '{phone}',
-        colSpan: 1,
-      },
-      {
-        title: 'Correo Electrónico',
-        icon: <FaEnvelope />,
-        content: '{email}',
-        colSpan: 1,
-      },
-      {
         title: 'Edad',
         icon: <FaPhone />,
         content: '{actualAge}',
@@ -63,6 +51,18 @@ export const patientContactSections = [
     title: 'Información Familiar',
     titleIcon: <FaUsers />,
     sections: [
+      {
+        title: 'Teléfono',
+        icon: <FaPhone />,
+        content: '{phone}',
+        colSpan: 1,
+      },
+      {
+        title: 'Correo Electrónico',
+        icon: <FaEnvelope />,
+        content: '{email}',
+        colSpan: 1,
+      },
       {
         title: 'Nombre del Padre',
         icon: <FaMale />,

@@ -23,7 +23,7 @@ const FormSection = ({
           </label>
           {field.isTextArea ? (
             <textarea
-              required
+              required={field.required !== false}
               {...register(field.name)}
               id={field.name}
               rows={field.rows || 3}
@@ -33,7 +33,7 @@ const FormSection = ({
           ) : field.type === 'number' ? (
             <div className='flex items-center gap-2'>
               <input
-                required
+                required={field.required !== false}
                 {...register(field.name, { valueAsNumber: true, min: 1 })}
                 type='number'
                 id={field.name}
@@ -56,7 +56,7 @@ const FormSection = ({
             </div>
           ) : (
             <input
-              required
+              required={field.required !== false}
               {...register(field.name)}
               type={field.type || 'text'}
               id={field.name}
