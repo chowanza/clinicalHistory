@@ -31,7 +31,7 @@ export const familyInfoFields = [
     name: 'phone',
     label: 'Teléfono',
     colSpan: 'col-span-3',
-    required: false,
+    required: true,
     dataValue: '{patient.phone}',
   },
   {

@@ -201,7 +201,8 @@ const DashboardPatient = () => {
                 (match, field) => {
                   // Si tenemos datos de consulta específica, usar esos datos
                   const dataToUse = consultationData || patient
-                  return dataToUse[field] || ''
+                  const value = dataToUse[field] || ''
+                  return value
                 }
               ),
             }))

@@ -702,28 +702,6 @@ const PatientProfile = () => {
                   </p>
                 </div>
               </div>
-              <div className='group'>
-                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
-                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-                  Teléfono
-                </label>
-                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
-                  <p className='text-gray-900 dark:text-gray-100 font-medium'>
-                    {patient?.phone || 'No especificado'}
-                  </p>
-                </div>
-              </div>
-              <div className='group'>
-                <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
-                  <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-                  Correo Electrónico
-                </label>
-                <div className='bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm'>
-                  <p className='text-gray-900 dark:text-gray-100 font-medium break-all'>
-                    {patient?.email || 'No especificado'}
-                  </p>
-                </div>
-              </div>
               <div className='sm:col-span-2 group'>
                 <label className='block text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-2'>
                   <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
@@ -784,6 +762,28 @@ const PatientProfile = () => {
                 <div className='bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 shadow-sm'>
                   <p className='text-emerald-800 dark:text-emerald-200 font-medium'>
                     {patient?.obstetrician || 'No especificado'}
+                  </p>
+                </div>
+              </div>
+              <div className='group'>
+                <label className='block text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-emerald-500 rounded-full'></div>
+                  Teléfono
+                </label>
+                <div className='bg-gradient-to-r from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 shadow-sm border-2 border-blue-200 dark:border-blue-700'>
+                  <p className='text-blue-800 dark:text-blue-200 font-medium'>
+                    {patient?.phone || 'No especificado'}
+                  </p>
+                </div>
+              </div>
+              <div className='group'>
+                <label className='block text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-2'>
+                  <div className='w-2 h-2 bg-emerald-500 rounded-full'></div>
+                  Correo Electrónico
+                </label>
+                <div className='bg-gradient-to-r from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-4 shadow-sm border-2 border-blue-200 dark:border-blue-700'>
+                  <p className='text-blue-800 dark:text-blue-200 font-medium break-all'>
+                    {patient?.email || 'No especificado'}
                   </p>
                 </div>
               </div>

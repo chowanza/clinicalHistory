@@ -110,20 +110,26 @@ const PatientInfoCard = ({
         {titleIcon} {title}
       </h2>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
-        {sections.map((section, index) => (
-          <div
-            key={index}
-            className={`p-3 sm:p-4 ${index < sections.length - 1 ? 'border-b border-purple-100' : ''}`}
-            style={{ gridColumn: `span ${section.colSpan || 1}` }}
-          >
-            <span className='text-purple-600 flex justify-start items-center gap-1 text-sm sm:text-base'>
-              {section.icon} {section.title}
-            </span>
-            <span className='block text-gray-700 dark:text-gray-200 mt-1 text-sm sm:text-base'>
-              {section.content}
-            </span>
-          </div>
-        ))}
+        {sections.map((section, index) => {
+          return (
+            <div
+              key={index}
+              className={`p-3 sm:p-4 ${index < sections.length - 1 ? 'border-b border-purple-100' : ''} ${
+                section.title === 'Teléfono' || section.title === 'Correo Electrónico' 
+                  ? 'border-2 border-blue-200 bg-blue-50 dark:bg-blue-900/20' 
+                  : ''
+              }`}
+              style={{ gridColumn: `span ${section.colSpan || 1}` }}
+            >
+              <span className='text-purple-600 flex justify-start items-center gap-1 text-sm sm:text-base'>
+                {section.icon} {section.title}
+              </span>
+              <span className='block text-gray-700 dark:text-gray-200 mt-1 text-sm sm:text-base'>
+                {section.content && section.content.trim() !== '' ? section.content : 'No disponible'}
+              </span>
+            </div>
+          )
+        })}
       </div>
     </section>
   )
