@@ -1,16 +1,16 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 
-// Configuración para diferentes entornos
+// ConfiguraciÃ³n para diferentes entornos
 const getBaseURL = () => {
-  // Forzar uso del backend de producción incluso en desarrollo
+  // Forzar uso del backend de producciÃ³n incluso en desarrollo
   // Cambiar a false para usar localhost en desarrollo
-  const useProductionBackend = true
+  const useProductionBackend = false
   
   if (import.meta.env.DEV && !useProductionBackend) {
     return 'http://localhost:4000/api'
   }
   
-  // En producción, usar la URL del backend desplegado en Render
+  // En producciÃ³n, usar la URL del backend desplegado en Render
   return 'https://clinicalhistorybackend.onrender.com/api'
 }
 
@@ -40,3 +40,4 @@ instance.interceptors.response.use(
 )
 
 export default instance
+
