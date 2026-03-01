@@ -1,17 +1,10 @@
 ﻿import axios from 'axios'
 
-// ConfiguraciÃ³n para diferentes entornos
+// Configuración para usar la variable de entorno de Vite
+// Esto permite que el build para la clínica (local) apunte a :4000
+// y el build para Vercel apunte a la nube en Render
 const getBaseURL = () => {
-  // Forzar uso del backend de producciÃ³n incluso en desarrollo
-  // Cambiar a false para usar localhost en desarrollo
-  const useProductionBackend = false
-  
-  if (import.meta.env.DEV && !useProductionBackend) {
-    return 'http://localhost:4000/api'
-  }
-  
-  // En producciÃ³n, usar la URL del backend desplegado en Render
-  return 'https://clinicalhistorybackend.onrender.com/api'
+  return import.meta.env.VITE_API_URL || 'https://clinicalhistorybackend.onrender.com/api'
 }
 
 // Helper function para obtener la URL base (para usar con fetch)
@@ -30,11 +23,11 @@ instance.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error)
-    
+
     if (error.code === 'ERR_NETWORK') {
       console.error('Network error - Backend server might be down')
     }
-    
+
     return Promise.reject(error)
   }
 )
