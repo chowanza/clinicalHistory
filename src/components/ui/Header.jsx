@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ThemeSwitch from './ThemeSwitch'
 import { useAuth } from '../../context/AuthContext'
 import Tooltip from '@mui/material/Tooltip'
+import { triggerManualSyncRequest } from '../../api/sync'
 
 import {
   FaArrowRightFromBracket,
@@ -10,7 +12,8 @@ import {
   FaStethoscope,
   FaUserDoctor,
   FaCloud,
-  FaServer
+  FaServer,
+  FaArrowsRotate
 } from 'react-icons/fa6'
 
 const Header = ({ patientPage, openModal }) => {
@@ -19,6 +22,24 @@ const Header = ({ patientPage, openModal }) => {
   // Determinar si estamos conectados al servidor local o en la nube
   const apiUrl = import.meta.env.VITE_API_URL || '';
   const isLocal = apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1');
+
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleManualSync = async () => {
+    if (isSyncing || !isLocal) return;
+
+    try {
+      setIsSyncing(true);
+      await triggerManualSyncRequest();
+      // Pequeño delay artificial para feedback visual asegurado, la carga en BDD es muy rápida
+      await new Promise(resolve => setTimeout(resolve, 800));
+    } catch (error) {
+      console.error('Error in manual sync:', error);
+      alert('Error sincronizando con la nube: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   return (
     <header className='top-0 z-50 backdrop-blur-xl bg-gradient-to-r from-white/95 via-slate-50/95 to-white/95 dark:from-slate-900/95 dark:via-slate-800/95 dark:to-slate-900/95 border-b border-slate-200/50 dark:border-slate-700/50 shadow-xl'>
@@ -33,16 +54,33 @@ const Header = ({ patientPage, openModal }) => {
               <h1 className='font-bold text-xl sm:text-2xl lg:text-3xl bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent leading-tight'>
                 Consultorio Dra. Eunice Brito
               </h1>
-              {/* Badge de Sincronización */}
-              <Tooltip title={isLocal ? "Conectado al servidor local de la clínica. Los datos se sincronizan automáticamente en 2do plano." : "Conectado directamente a la nube."} arrow>
-                <div className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm whitespace-nowrap ${isLocal
+              {/* Badge y Botón de Sincronización */}
+              <div className="flex items-center gap-2">
+                <Tooltip title={isLocal ? "Conectado al servidor local de la clínica. Los datos se sincronizan automáticamente en 2do plano." : "Conectado directamente a la nube."} arrow>
+                  <div className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm whitespace-nowrap ${isLocal
                     ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
                     : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-                  }`}>
-                  {isLocal ? <FaServer className="text-[10px]" /> : <FaCloud className="text-[10px]" />}
-                  {isLocal ? 'Modo Local' : 'Nube'}
-                </div>
-              </Tooltip>
+                    }`}>
+                    {isLocal ? <FaServer className="text-[10px]" /> : <FaCloud className="text-[10px]" />}
+                    {isLocal ? 'Modo Local' : 'Nube'}
+                  </div>
+                </Tooltip>
+
+                {isLocal && (
+                  <Tooltip title="Fuerza Sincronización Manual (Push & Pull hacia/desde Atlas)" arrow>
+                    <button
+                      onClick={handleManualSync}
+                      disabled={isSyncing}
+                      className={`hidden md:flex items-center justify-center p-1.5 rounded-full transition-all duration-300 ${isSyncing
+                          ? 'bg-emerald-200 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-200 shadow-inner'
+                          : 'bg-white border border-emerald-300 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-800 dark:border-emerald-700 dark:hover:bg-emerald-900/30'
+                        }`}
+                    >
+                      <FaArrowsRotate className={`text-sm ${isSyncing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-500'}`} />
+                    </button>
+                  </Tooltip>
+                )}
+              </div>
             </div>
             <p className='text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium'>
               Sistema de Gestión Médica
@@ -51,16 +89,28 @@ const Header = ({ patientPage, openModal }) => {
         </div>
 
         {/* Badge móvil */}
-        <div className='md:hidden flex w-full justify-center mb-2'>
+        <div className='md:hidden flex w-full justify-center items-center gap-2 mb-2'>
           <Tooltip title={isLocal ? "Servidor Local" : "Nube"} arrow>
             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-sm ${isLocal
-                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
-                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400'
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
+              : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400'
               }`}>
               {isLocal ? <FaServer className="text-[10px]" /> : <FaCloud className="text-[10px]" />}
-              {isLocal ? 'Modo Local - Sync Automática' : 'Modo Nube'}
+              {isLocal ? 'Modo Local' : 'Modo Nube'}
             </div>
           </Tooltip>
+          {isLocal && (
+            <button
+              onClick={handleManualSync}
+              disabled={isSyncing}
+              className={`p-1.5 rounded-full transition-all duration-300 ${isSyncing
+                  ? 'bg-emerald-200 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-200'
+                  : 'bg-white border border-emerald-300 text-emerald-600 dark:bg-slate-800 dark:border-emerald-700'
+                }`}
+            >
+              <FaArrowsRotate className={`text-sm ${isSyncing ? 'animate-spin' : ''}`} />
+            </button>
+          )}
         </div>
 
         {/* Navegación mejorada */}
