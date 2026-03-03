@@ -264,6 +264,7 @@ const FormPatient = ({
           data[field].trim() === ''
         ) {
           setFormError(`El campo ${field} es requerido y no puede estar vacío.`)
+          setIsSubmitting(false)
           return
         }
       }
@@ -273,10 +274,12 @@ const FormPatient = ({
       // Validación frontend para teléfono
       if (!data.phone || data.phone.trim() === '') {
         setFormError('El teléfono es requerido.')
+        setIsSubmitting(false)
         return
       }
       if (!/^[0-9]{6,}$/.test(data.phone)) {
         setFormError('El teléfono debe tener al menos 6 dígitos numéricos.')
+        setIsSubmitting(false)
         return
       }
 
@@ -285,6 +288,7 @@ const FormPatient = ({
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(data.email)) {
           setFormError('El email debe tener un formato válido.')
+          setIsSubmitting(false)
           return
         }
       }
@@ -409,8 +413,7 @@ const FormPatient = ({
           const errorData = await response.json()
           console.error('Error response:', errorData)
           setFormError(
-            `Error al guardar la consulta: ${
-              errorData.message || 'Error desconocido'
+            `Error al guardar la consulta: ${errorData.message || 'Error desconocido'
             }`
           )
         }
@@ -448,10 +451,10 @@ const FormPatient = ({
   })
 
   const hasImportedData =
-    patientData && 
-    Object.keys(patientData).length > 0 && 
-    !isConsultationMode && 
-    !isEditMode && 
+    patientData &&
+    Object.keys(patientData).length > 0 &&
+    !isConsultationMode &&
+    !isEditMode &&
     patientData._id === undefined // Solo mostrar si no es un paciente existente (sin _id)
 
   const getTitle = () => {
@@ -712,7 +715,7 @@ const FormPatient = ({
                               <p className='text-xs text-gray-500 dark:text-gray-400'>
                                 {attachment.size
                                   ? (attachment.size / 1024 / 1024).toFixed(2) +
-                                    ' MB'
+                                  ' MB'
                                   : 'Tamaño desconocido'}
                               </p>
                             </div>
@@ -744,7 +747,14 @@ const FormPatient = ({
           </div>
         )}
 
-        <div className='flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-6 sm:mt-8'>
+        {/* Mensaje de error cerca de los botones para mejor visibilidad */}
+        {formError && (
+          <div className='bg-red-100 text-red-700 p-3 rounded-lg mt-4 text-center font-semibold border-l-4 border-red-500 shadow-sm'>
+            {formError}
+          </div>
+        )}
+
+        <div className='flex flex-col sm:flex-row justify-end gap-2 sm:gap-4 mt-4 sm:mt-6'>
           <button
             type='button'
             onClick={closeModal}
