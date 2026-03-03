@@ -18,9 +18,11 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [errors, setErrors] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isAuthLoading, setIsAuthLoading] = useState(false)
   const { setPatients } = usePatients()
 
   const signup = async (user) => {
+    setIsAuthLoading(true)
     try {
       setErrors([]) // Limpiar errores anteriores
       const res = await signupRequest(user)
@@ -39,10 +41,13 @@ export const AuthProvider = ({ children }) => {
       } else {
         setErrors(['Error de conexión'])
       }
+    } finally {
+      setIsAuthLoading(false)
     }
   }
 
   const signin = async (user) => {
+    setIsAuthLoading(true)
     try {
       setErrors([]) // Limpiar errores anteriores
       const res = await signinRequest(user)
@@ -61,6 +66,8 @@ export const AuthProvider = ({ children }) => {
       } else {
         setErrors(['Error de conexión'])
       }
+    } finally {
+      setIsAuthLoading(false)
     }
   }
 
@@ -118,6 +125,7 @@ export const AuthProvider = ({ children }) => {
         signin,
         logout,
         loading,
+        isAuthLoading,
         isAuthenticated,
         errors,
       }}
