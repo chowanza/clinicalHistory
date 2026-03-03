@@ -7,6 +7,7 @@ const SignInForm = ({ onForgotPassword }) => {
   const {
     register,
     handleSubmit,
+    formState: { errors },
   } = useForm()
   const { signin, errors: signinErrors, isAuthenticated, isAuthLoading } = useAuth()
 
@@ -56,8 +57,8 @@ const SignInForm = ({ onForgotPassword }) => {
           type='submit'
           disabled={isAuthLoading}
           className={`font-semibold bg-gradient-to-r from-primary to-secondary p-2 sm:p-3 rounded-xl text-white border-slate-400 border text-sm sm:text-base transition-all duration-300 ${isAuthLoading
-              ? 'opacity-70 cursor-not-allowed'
-              : 'cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-secondary/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse'
+            ? 'opacity-70 cursor-not-allowed'
+            : 'cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-secondary/50 hover:outline-2 hover:outline-white hover:bg-opacity-80 hover:animate-pulse'
             }`}
         >
           {isAuthLoading ? (
