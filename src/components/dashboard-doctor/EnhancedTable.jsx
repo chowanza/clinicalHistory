@@ -361,6 +361,13 @@ export default function EnhancedTable({ filter }) {
     }
 
     fetchData()
+
+    // Auto-refresh silencioso cada 30 segundos para traer cambios de la sincronizacion en 2do plano
+    const intervalId = setInterval(() => {
+      fetchData()
+    }, 30000)
+
+    return () => clearInterval(intervalId)
   }, [])
 
   React.useEffect(() => {
@@ -610,15 +617,15 @@ export default function EnhancedTable({ filter }) {
                         position: 'relative',
                         '&::before': isItemSelected
                           ? {
-                              content: '""',
-                              position: 'absolute',
-                              left: 0,
-                              top: 0,
-                              bottom: 0,
-                              width: '4px',
-                              backgroundColor: 'oklch(0.41 0.2072 300)',
-                              borderRadius: '0 4px 4px 0',
-                            }
+                            content: '""',
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: '4px',
+                            backgroundColor: 'oklch(0.41 0.2072 300)',
+                            borderRadius: '0 4px 4px 0',
+                          }
                           : {},
                       }}
                       className='group'
