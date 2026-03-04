@@ -47,19 +47,27 @@ const Header = ({ patientPage, openModal }) => {
   }, [isLocal, isSyncing]); // Dependemos de isSyncing para recargar al terminar un sync manual
 
   const handleManualSync = async () => {
-    if (isSyncing || !isLocal) return;
+    if (isSyncing) return;
 
-    try {
+    if (isLocal) {
+      try {
+        setIsSyncing(true);
+        await triggerManualSyncRequest();
+        await new Promise(resolve => setTimeout(resolve, 800));
+      } catch (error) {
+        console.error('Error in manual sync:', error);
+        alert('Error sincronizando con la nube: ' + (error.response?.data?.message || error.message));
+        setIsSyncing(false);
+        return;
+      }
+    } else {
+      // Si es nube, simular un peque\u00f1o delay visual
       setIsSyncing(true);
-      await triggerManualSyncRequest();
-      // Pequeño delay artificial para feedback visual asegurado, la carga en BDD es muy rápida
-      await new Promise(resolve => setTimeout(resolve, 800));
-    } catch (error) {
-      console.error('Error in manual sync:', error);
-      alert('Error sincronizando con la nube: ' + (error.response?.data?.message || error.message));
-    } finally {
-      setIsSyncing(false);
+      await new Promise(resolve => setTimeout(resolve, 400));
     }
+
+    // Recargar la p\u00e1gina para traer los datos frescos
+    window.location.reload();
   };
 
   return (
@@ -97,20 +105,20 @@ const Header = ({ patientPage, openModal }) => {
                   </div>
                 </Tooltip>
 
-                {isLocal && (
-                  <Tooltip title="Fuerza Sincronización Manual (Push & Pull hacia/desde Atlas)" arrow>
-                    <button
-                      onClick={handleManualSync}
-                      disabled={isSyncing}
-                      className={`hidden md:flex items-center justify-center p-1.5 rounded-full transition-all duration-300 ${isSyncing
-                        ? 'bg-emerald-200 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-200 shadow-inner'
-                        : 'bg-white border border-emerald-300 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-800 dark:border-emerald-700 dark:hover:bg-emerald-900/30'
-                        }`}
-                    >
-                      <FaArrowsRotate className={`text-sm ${isSyncing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-500'}`} />
-                    </button>
-                  </Tooltip>
-                )}
+                <Tooltip title={isLocal ? "Sincronizar con la nube y recargar" : "Recargar datos"} arrow>
+                  <button
+                    onClick={handleManualSync}
+                    disabled={isSyncing}
+                    className={`hidden md:flex items-center justify-center p-1.5 rounded-full transition-all duration-300 ${isSyncing
+                      ? isLocal ? 'bg-emerald-200 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-200 shadow-inner' : 'bg-blue-200 text-blue-800 shadow-inner'
+                      : isLocal
+                        ? 'bg-white border border-emerald-300 text-emerald-600 hover:bg-emerald-50 dark:bg-slate-800 dark:border-emerald-700 dark:hover:bg-emerald-900/30'
+                        : 'bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 dark:bg-slate-800'
+                      }`}
+                  >
+                    <FaArrowsRotate className={`text-sm ${isSyncing ? 'animate-spin' : 'hover:rotate-180 transition-transform duration-500'}`} />
+                  </button>
+                </Tooltip>
               </div>
             </div>
             <p className='text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium'>
@@ -131,18 +139,16 @@ const Header = ({ patientPage, openModal }) => {
                 {isLocal ? 'Modo Local' : 'Modo Nube'}
               </div>
             </Tooltip>
-            {isLocal && (
-              <button
-                onClick={handleManualSync}
-                disabled={isSyncing}
-                className={`p-1.5 rounded-full transition-all duration-300 ${isSyncing
-                  ? 'bg-emerald-200 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-200'
-                  : 'bg-white border border-emerald-300 text-emerald-600 dark:bg-slate-800 dark:border-emerald-700'
-                  }`}
-              >
-                <FaArrowsRotate className={`text-sm ${isSyncing ? 'animate-spin' : ''}`} />
-              </button>
-            )}
+            <button
+              onClick={handleManualSync}
+              disabled={isSyncing}
+              className={`p-1.5 rounded-full transition-all duration-300 ${isSyncing
+                ? isLocal ? 'bg-emerald-200 text-emerald-800 dark:bg-emerald-800' : 'bg-blue-200 text-blue-800'
+                : isLocal ? 'bg-white border border-emerald-300 text-emerald-600' : 'bg-white border border-blue-300 text-blue-600'
+                }`}
+            >
+              <FaArrowsRotate className={`text-sm ${isSyncing ? 'animate-spin' : ''}`} />
+            </button>
           </div>
 
           {/* Indicador móvil de Desincronización */}
