@@ -22,7 +22,7 @@ import { visuallyHidden } from '@mui/utils'
 import { usePatients } from '../../context/PatientsContext'
 import { useNavigate } from 'react-router-dom'
 
-function createData(id, name, dni, birthDate, lastConsultation, diagnosis) {
+function createData(id, name, dni, birthDate, lastConsultation, diagnosis, lastModifiedAt, lastModifiedByNode) {
   return {
     id,
     name,
@@ -30,6 +30,8 @@ function createData(id, name, dni, birthDate, lastConsultation, diagnosis) {
     birthDate,
     lastConsultation,
     diagnosis,
+    lastModifiedAt,
+    lastModifiedByNode,
   }
 }
 
@@ -84,6 +86,12 @@ const headCells = [
     numeric: true,
     disablePadding: false,
     label: 'Diagnostico',
+  },
+  {
+    id: 'lastModifiedAt',
+    numeric: true,
+    disablePadding: false,
+    label: 'Última Modificación',
   },
   {
     id: 'actions',
@@ -390,7 +398,9 @@ export default function EnhancedTable({ filter }) {
           : 'N/A',
         lastConsultation
           ? lastConsultation.diagnostic || 'No diagnosis'
-          : 'No diagnosis'
+          : 'No diagnosis',
+        patient.updatedAt ? new Date(patient.updatedAt).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A',
+        patient.lastModifiedByNode || 'Desconocido'
       )
     })
 
@@ -816,6 +826,29 @@ export default function EnhancedTable({ filter }) {
                           border: 'none',
                         }}
                       >
+                        <div className='flex flex-col items-end justify-center'>
+                          <span className='text-xs text-gray-500 dark:text-gray-400 font-medium mb-1'>
+                            {row.lastModifiedAt}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${row.lastModifiedByNode === 'local'
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
+                                : row.lastModifiedByNode === 'cloud'
+                                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400'
+                                  : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                              }`}
+                          >
+                            {row.lastModifiedByNode === 'local' ? 'Local' : row.lastModifiedByNode === 'cloud' ? 'Nube' : row.lastModifiedByNode}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align='right'
+                        sx={{
+                          backgroundColor: 'transparent !important',
+                          border: 'none',
+                        }}
+                      >
                         <Tooltip title='Ver ficha del paciente' arrow>
                           <Button
                             onClick={(e) => {
@@ -873,7 +906,7 @@ export default function EnhancedTable({ filter }) {
                       },
                     }}
                   >
-                    <TableCell colSpan={7} />
+                    <TableCell colSpan={8} />
                   </TableRow>
                 )}
               </TableBody>
