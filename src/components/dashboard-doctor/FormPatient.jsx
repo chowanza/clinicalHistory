@@ -271,16 +271,13 @@ const FormPatient = ({
       // Los demás campos (medidas, diagnóstico, etc.) son opcionales
     } else {
       // Validación completa para paciente
-      // Validación frontend para teléfono
-      if (!data.phone || data.phone.trim() === '') {
-        setFormError('El teléfono es requerido.')
-        setIsSubmitting(false)
-        return
-      }
-      if (!/^[0-9]{6,}$/.test(data.phone)) {
-        setFormError('El teléfono debe tener al menos 6 dígitos numéricos.')
-        setIsSubmitting(false)
-        return
+      // Validación frontend para teléfono si se proporciona
+      if (data.phone && data.phone.trim() !== '') {
+        if (!/^[0-9]{6,}$/.test(data.phone)) {
+          setFormError('El teléfono debe tener al menos 6 dígitos numéricos.')
+          setIsSubmitting(false)
+          return
+        }
       }
 
       // Validación frontend para email (solo si se proporciona)
