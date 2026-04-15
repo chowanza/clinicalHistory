@@ -166,12 +166,64 @@ const FormPatient = ({
     return cleanedAttachments
   }
 
-  // Función para convertir archivo a base64
+  // Función para comprimir imagen en frontend antes de Base64
+  const compressImage = (file, maxWidth = 1280, maxHeight = 1280, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = (event) => {
+        const img = new Image()
+        img.src = event.target.result
+        img.onload = () => {
+          let width = img.width
+          let height = img.height
+
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width)
+              width = maxWidth
+            } else {
+              width = Math.round((width * maxHeight) / height)
+              height = maxHeight
+            }
+          }
+
+          const canvas = document.createElement('canvas')
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, width, height)
+
+          const dataUrl = canvas.toDataURL('image/jpeg', quality)
+          
+          const base64Length = dataUrl.length - (dataUrl.indexOf(',') + 1)
+          const padding = (dataUrl.charAt(dataUrl.length - 2) === '=') ? 2 : ((dataUrl.charAt(dataUrl.length - 1) === '=') ? 1 : 0)
+          const newSize = (base64Length * 0.75) - padding
+
+          resolve({
+            data: dataUrl,
+            size: newSize,
+            type: 'image/jpeg',
+            name: file.name.replace(/\.[^/.]+$/, "") + ".jpg" 
+          })
+        }
+        img.onerror = (error) => reject(error)
+      }
+      reader.onerror = (error) => reject(error)
+    })
+  }
+
+  // Función para convertir archivo a base64 para PDFs/Docs
   const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result)
+      reader.onload = () => resolve({
+        data: reader.result,
+        size: file.size,
+        type: file.type,
+        name: file.name
+      })
       reader.onerror = (error) => reject(error)
     })
   }
@@ -192,13 +244,15 @@ const FormPatient = ({
     try {
       const base64Files = await Promise.all(
         files.map(async (file) => {
-          const base64 = await fileToBase64(file)
-          return {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            data: base64,
+          if (file.type.startsWith('image/')) {
+            try {
+              return await compressImage(file)
+            } catch (e) {
+              console.error("Error compressing image, falling back to original", e)
+              return await fileToBase64(file)
+            }
           }
+          return await fileToBase64(file)
         })
       )
 
