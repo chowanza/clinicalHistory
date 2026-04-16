@@ -538,7 +538,7 @@ export default function EnhancedTable({ filter }) {
       <Paper
         sx={{
           width: '100%',
-          mb: 3,
+          mb: 12,
           borderRadius: '0 0 12px 12px',
           overflow: 'hidden',
           boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
@@ -636,7 +636,7 @@ export default function EnhancedTable({ filter }) {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.id)}
+                      onClick={() => navigate(`/dashboard-doctor/patients/${row.id}`)}
                       role='checkbox'
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -662,6 +662,10 @@ export default function EnhancedTable({ filter }) {
                     >
                       <TableCell
                         padding='checkbox'
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          handleClick(event, row.id)
+                        }}
                         sx={{
                           backgroundColor: 'transparent !important',
                           border: 'none',

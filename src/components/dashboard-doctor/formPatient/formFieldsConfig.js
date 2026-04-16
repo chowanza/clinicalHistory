@@ -19,6 +19,13 @@ export const personalInfoFields = [
     dataValue: '{patient.birthDate}',
   },
   {
+    name: 'bloodType',
+    label: 'Grupo Sanguíneo y RH',
+    colSpan: 'col-span-3',
+    required: false,
+    dataValue: '{patient.bloodType}',
+  },
+  {
     name: 'address',
     label: 'Dirección',
     colSpan: 'col-span-full',

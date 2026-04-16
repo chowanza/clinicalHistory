@@ -94,6 +94,7 @@ const PatientPDF = ({ patient }) => {
               <Text>Nombres: {patient.firstNames}</Text>
               <Text>Apellidos: {patient.lastNames}</Text>
               <Text>Fecha de Nacimiento: {patient.birthDate}</Text>
+              <Text>Grupo Sang. y RH: {patient.bloodType || 'N/E'}</Text>
             </View>
             <View style={styles.column}>
               <Text>Teléfono: {patient.phone}</Text>
