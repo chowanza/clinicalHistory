@@ -36,8 +36,26 @@ function createData(id, name, dni, birthDate, lastConsultation, diagnosis, lastM
 }
 
 function formatDate(isoString) {
-  const [year, month, day] = isoString.split('T')[0].split('-')
-  return `${day}/${month}/${year}`
+  if (!isoString || isoString === 'N/A') return 'N/A'
+  try {
+    const parts = isoString.split('T')[0].split('-')
+    if (parts.length === 3) {
+      const [year, month, day] = parts
+      return `${day}/${month}/${year}`
+    }
+  } catch (e) {}
+  return isoString
+}
+
+function formatDateTime(isoString) {
+  if (!isoString || isoString === 'N/A') return 'N/A'
+  try {
+    const d = new Date(isoString)
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    }
+  } catch (e) {}
+  return isoString
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -352,11 +370,11 @@ EnhancedTableToolbar.propTypes = {
 }
 
 export default function EnhancedTable({ filter }) {
-  const [order, setOrder] = React.useState('asc')
-  const [orderBy, setOrderBy] = React.useState('calories')
+  const [order, setOrder] = React.useState('desc')
+  const [orderBy, setOrderBy] = React.useState('lastModifiedAt')
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
-  const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [rowsPerPage, setRowsPerPage] = React.useState(25)
   const [rows, setRows] = React.useState([])
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [error, setError] = React.useState(null)
@@ -392,14 +410,12 @@ export default function EnhancedTable({ filter }) {
         patient._id,
         `${patient.firstNames} ${patient.lastNames}`,
         patient.phone || 'N/A',
-        patient.birthDate ? formatDate(patient.birthDate) : 'N/A',
-        patient.lastConsultationDate
-          ? formatDate(patient.lastConsultationDate)
-          : 'N/A',
+        patient.birthDate ? patient.birthDate : 'N/A',
+        patient.lastConsultationDate ? patient.lastConsultationDate : 'N/A',
         lastConsultation
           ? lastConsultation.diagnostic || 'No diagnosis'
           : 'No diagnosis',
-        patient.updatedAt ? new Date(patient.updatedAt).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A',
+        patient.updatedAt ? patient.updatedAt : 'N/A',
         patient.lastModifiedByNode || 'Desconocido'
       )
     })
@@ -488,17 +504,19 @@ export default function EnhancedTable({ filter }) {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
+    page > 0 && rowsPerPage > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
 
   const filteredRows = rows.filter((row) =>
     row.name.toLowerCase().includes(filter.toLowerCase())
   )
 
   const visibleRows = React.useMemo(
-    () =>
-      [...filteredRows]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    () => {
+      const sortedRows = [...filteredRows].sort(getComparator(order, orderBy))
+      return rowsPerPage > 0
+        ? sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        : sortedRows
+    },
     [filteredRows, order, orderBy, page, rowsPerPage]
   )
 
@@ -540,7 +558,9 @@ export default function EnhancedTable({ filter }) {
           <TableContainer
             className='bg-white dark:bg-gray-800'
             sx={{
+              maxHeight: 'calc(100vh - 350px)',
               '&::-webkit-scrollbar': {
+                width: 8,
                 height: 8,
               },
               '&::-webkit-scrollbar-track': {
@@ -753,7 +773,7 @@ export default function EnhancedTable({ filter }) {
                               />
                             </svg>
                             <span className='text-sm font-medium text-emerald-600 dark:text-emerald-400'>
-                              {row.birthDate}
+                              {formatDate(row.birthDate)}
                             </span>
                           </div>
                         </div>
@@ -781,7 +801,7 @@ export default function EnhancedTable({ filter }) {
                               />
                             </svg>
                             <span className='text-sm font-medium text-amber-600 dark:text-amber-400'>
-                              {row.lastConsultation}
+                              {formatDate(row.lastConsultation)}
                             </span>
                           </div>
                         </div>
@@ -828,7 +848,7 @@ export default function EnhancedTable({ filter }) {
                       >
                         <div className='flex flex-col items-end justify-center'>
                           <span className='text-xs text-gray-500 dark:text-gray-400 font-medium mb-1'>
-                            {row.lastModifiedAt}
+                            {formatDateTime(row.lastModifiedAt)}
                           </span>
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${row.lastModifiedByNode === 'local'
@@ -914,7 +934,8 @@ export default function EnhancedTable({ filter }) {
           </TableContainer>
         </div>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 50, 100, { label: 'Todos', value: -1 }]}
+          labelRowsPerPage='Pacientes por página:'
           component='div'
           count={filteredRows.length}
           rowsPerPage={rowsPerPage}
